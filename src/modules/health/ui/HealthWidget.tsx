@@ -1,0 +1,31 @@
+import { useEffect, useMemo, useState } from "react";
+import type { HealthStatus } from "../domain/HealthStatus";
+import { getHealthStatus } from "../application/getHealthStatus";
+import { HealthMockRepository } from "../infrastructure/HealthMockRepository";
+
+export function HealthWidget() {
+  const repo = useMemo(() => new HealthMockRepository(), []);
+  const load = useMemo(() => getHealthStatus(repo), [repo]);
+
+  const [status, setStatus] = useState<HealthStatus | null>(null);
+
+  useEffect(() => {
+    load().then(setStatus);
+  }, [load]);
+
+  if (!status) return <p>Checking status…</p>;
+
+  return (
+    <div
+      style={{
+        marginTop: 16,
+        padding: 12,
+        border: "1px solid #ddd",
+        borderRadius: 8,
+      }}
+    >
+      <strong>{status.ok ? "✅ OK" : "❌ DOWN"}</strong>
+      <div>{status.message}</div>
+    </div>
+  );
+}

@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import type { HealthStatus } from "../domain/HealthStatus";
 import { getHealthStatus } from "../application/getHealthStatus";
-import { HealthMockRepository } from "../infrastructure/HealthMockRepository";
+import { useAppContainer } from "../../../app/providers/AppContainerProvider";
 
 export function HealthWidget() {
-  const repo = useMemo(() => new HealthMockRepository(), []);
-  const load = useMemo(() => getHealthStatus(repo), [repo]);
+  const container = useAppContainer();
+  const load = useMemo(() => getHealthStatus(container.health.repository), [container.health.repository]);
 
   const [status, setStatus] = useState<HealthStatus | null>(null);
 

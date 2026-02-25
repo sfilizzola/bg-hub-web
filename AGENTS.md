@@ -61,3 +61,43 @@ Requirements:
 - Use JWT via NestJS (passport-jwt is fine)
 - Validate input (DTO + class-validator)
 - Do not implement follow/profile/feed yet
+
+## Step 3 — Game Catalog + Search (Local DB + External Fallback)
+
+Goal:
+Implement a Game catalog in Postgres and a search endpoint that:
+1) searches local DB first
+2) if local results are empty, queries an external provider and persists results locally
+3) if external fails, returns local-only results gracefully
+
+Requirements:
+- Create `Game` entity/table with at least:
+  - id (uuid)
+  - name
+  - externalId
+  - apiRef (string, e.g. "bgg")
+  - imageUrl (nullable)
+  - year (nullable int)
+  - minPlayers, maxPlayers (nullable int)
+  - playTime (nullable int)
+  - complexityWeight (nullable float)
+  - categories (text[] or json)
+  - mechanics (text[] or json)
+  - description (text, nullable)
+  - createdAt, updatedAt
+- Add unique constraint on (apiRef, externalId)
+- Endpoints:
+  - GET `/games/search?q=...`
+    - returns array of Game DTOs
+    - local DB query: ILIKE on name, limit 20
+    - if local results empty:
+      - call external provider search by name
+      - persist mapped games locally
+      - return persisted results
+    - if external provider fails/quota:
+      - return local results (empty ok) + flag `externalAvailable: false` in response
+- External provider (MVP):
+  - Implement a provider interface `GameProvider`
+  - Implement a first provider using BoardGameGeek XML API2:
+    - search endpoint (by query) then fetch details via `thing?stats=1`
+    - parse XML into our fields as best-effort

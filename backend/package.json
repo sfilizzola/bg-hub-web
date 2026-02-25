@@ -7,16 +7,17 @@
     "build": "tsc -p tsconfig.build.json",
     "start": "node dist/main.js",
     "start:dev": "ts-node-dev --respawn --transpile-only src/main.ts",
-    "migration:run": "typeorm-ts-node-commonjs migration:run -d src/data-source.ts"
+    "migration:show": "npm run build && npx typeorm migration:show -d dist/data-source.js",
+    "migration:run": "npm run build && npx typeorm migration:run -d dist/data-source.js"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
-    "@nestjs/core": "^10.0.0",
-    "@nestjs/platform-express": "^10.0.0",
     "@nestjs/config": "^3.2.3",
-    "@nestjs/typeorm": "^10.0.0",
+    "@nestjs/core": "^10.0.0",
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/passport": "^10.0.0",
+    "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/typeorm": "^10.0.0",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
@@ -30,9 +31,12 @@
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/node": "^22.10.2",
+    "@types/passport": "^1.0.17",
+    "@types/passport-jwt": "^4.0.1",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
-    "typeorm-ts-node-commonjs": "^0.0.27",
+    "typeorm-ts-node-commonjs": "^0.3.20",
+    "typeorm-ts-node-esm": "latest",
     "typescript": "^5.9.3"
   }
 }

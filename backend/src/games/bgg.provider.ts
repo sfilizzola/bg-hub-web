@@ -1,19 +1,35 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { XMLParser } from 'fast-xml-parser';
-import { GameProvider, GameProviderResult } from './game.provider';
-
-const BGG_BASE_URL = process.env.BGG_BASE_URL || 'https://boardgamegeek.com/xmlapi2';
+import type { ExternalGame, GameProvider } from './providers/types';
 
 @Injectable()
 export class BggGameProvider implements GameProvider {
+  readonly id = 'bgg';
   private readonly logger = new Logger(BggGameProvider.name);
   private readonly parser = new XMLParser({
     ignoreAttributes: false,
     attributeNamePrefix: '',
   });
 
-  async searchByName(query: string): Promise<GameProviderResult[]> {
-    const searchUrl = `${BGG_BASE_URL}/search?type=boardgame&query=${encodeURIComponent(query)}`;
+  constructor(private readonly config: ConfigService) {}
+
+  private getBaseUrl(): string {
+    return this.config.get<string>('BGG_BASE_URL', '') || 'https://boardgamegeek.com/xmlapi2';
+  }
+
+  /**
+   * Available if base URL is set (BGG public API does not require a token).
+   * Optional BGG_BEARER_TOKEN can be set for future use.
+   */
+  isAvailable(): boolean {
+    const base = this.getBaseUrl();
+    return typeof base === 'string' && base.length > 0;
+  }
+
+  async search(query: string): Promise<ExternalGame[]> {
+    const baseUrl = this.getBaseUrl();
+    const searchUrl = `${baseUrl}/search?type=boardgame&query=${encodeURIComponent(query)}`;
 
     const searchResponse = await fetch(searchUrl);
     if (!searchResponse.ok) {
@@ -29,12 +45,10 @@ export class BggGameProvider implements GameProvider {
       ? [searchJson.items.item]
       : [];
 
-    const firstIds = items.slice(0, 10).map((item: any) => String(item.id));
-    if (firstIds.length === 0) {
-      return [];
-    }
+    const firstIds = items.slice(0, 10).map((item: { id: string }) => String(item.id));
+    if (firstIds.length === 0) return [];
 
-    const thingsUrl = `${BGG_BASE_URL}/thing?stats=1&id=${firstIds.join(',')}`;
+    const thingsUrl = `${baseUrl}/thing?stats=1&id=${firstIds.join(',')}`;
     const thingsResponse = await fetch(thingsUrl);
     if (!thingsResponse.ok) {
       this.logger.warn(`BGG thing failed with status ${thingsResponse.status}`);
@@ -49,28 +63,34 @@ export class BggGameProvider implements GameProvider {
       ? [thingsJson.items.item]
       : [];
 
-    return gameItems.map((item: any) => this.mapItemToResult(item));
+    return gameItems.map((item: Record<string, unknown>) => this.mapItemToExternal(item));
   }
 
-  private mapItemToResult(item: any): GameProviderResult {
+  private mapItemToExternal(item: Record<string, unknown>): ExternalGame {
     const nameNode = Array.isArray(item.name)
-      ? item.name.find((n: any) => n.type === 'primary') || item.name[0]
-      : item.name;
+      ? (item.name as { type?: string; value?: string }[]).find((n) => n.type === 'primary') ?? (item.name as { value?: string }[])[0]
+      : (item.name as { value?: string } | undefined);
     const name = nameNode?.value ?? '';
 
-    const year = item.yearpublished?.value ? Number(item.yearpublished.value) : null;
-    const minPlayers = item.minplayers?.value ? Number(item.minplayers.value) : null;
-    const maxPlayers = item.maxplayers?.value ? Number(item.maxplayers.value) : null;
-    const playTime = item.playingtime?.value ? Number(item.playingtime.value) : null;
-    const complexityWeight = item.statistics?.ratings?.averageweight?.value
-      ? Number(item.statistics.ratings.averageweight.value)
+    const year = item.yearpublished && typeof (item.yearpublished as { value?: string }).value === 'string'
+      ? Number((item.yearpublished as { value: string }).value)
       : null;
+    const minPlayers = item.minplayers && typeof (item.minplayers as { value?: string }).value === 'string'
+      ? Number((item.minplayers as { value: string }).value)
+      : null;
+    const maxPlayers = item.maxplayers && typeof (item.maxplayers as { value?: string }).value === 'string'
+      ? Number((item.maxplayers as { value: string }).value)
+      : null;
+    const playTime = item.playingtime && typeof (item.playingtime as { value?: string }).value === 'string'
+      ? Number((item.playingtime as { value: string }).value)
+      : null;
+    const weight = item.statistics && (item.statistics as { ratings?: { averageweight?: { value?: string } } }).ratings?.averageweight?.value;
+    const complexityWeight = weight != null ? Number(weight) : null;
 
-    const categories = this.collectValues(item.link, 'boardgamecategory');
-    const mechanics = this.collectValues(item.link, 'boardgamemechanic');
-
-    const imageUrl = item.image ?? null;
-    const description = item.description ?? null;
+    const categories = this.collectValues(item.link as unknown, 'boardgamecategory');
+    const mechanics = this.collectValues(item.link as unknown, 'boardgamemechanic');
+    const imageUrl = (item.image as string) ?? null;
+    const description = (item.description as string) ?? null;
 
     return {
       externalId: String(item.id),
@@ -88,16 +108,11 @@ export class BggGameProvider implements GameProvider {
     };
   }
 
-  private collectValues(links: any, type: string): string[] | null {
-    if (!links) {
-      return null;
-    }
+  private collectValues(links: unknown, type: string): string[] | null {
+    if (!links) return null;
     const all = Array.isArray(links) ? links : [links];
-    const filtered = all.filter((l: any) => l.type === type);
-    if (filtered.length === 0) {
-      return null;
-    }
-    return filtered.map((l: any) => l.value).filter(Boolean);
+    const filtered = all.filter((l: { type?: string }) => (l as { type?: string }).type === type);
+    if (filtered.length === 0) return null;
+    return filtered.map((l: { value?: string }) => (l as { value?: string }).value).filter(Boolean) as string[];
   }
 }
-

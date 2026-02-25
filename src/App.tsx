@@ -8,6 +8,7 @@ import { SearchPage } from "./pages/SearchPage";
 import { OwnedPage } from "./pages/OwnedPage";
 import { WishlistPage } from "./pages/WishlistPage";
 import { PlaysPage } from "./pages/PlaysPage";
+import { GameDetailsPage } from "./pages/GameDetailsPage";
 
 function App() {
   return (
@@ -23,6 +24,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <SearchPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="games/:id"
+              element={
+                <ProtectedRoute>
+                  <GameDetailsPage />
                 </ProtectedRoute>
               }
             />

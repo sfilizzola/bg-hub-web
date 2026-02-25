@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { GamesService } from './games.service';
 import { GameDto } from './dto/game.dto';
 
@@ -13,6 +13,12 @@ export class GamesController {
       games: result.games.map((g) => new GameDto(g)),
       externalAvailable: result.externalAvailable,
     };
+  }
+
+  @Get(':id')
+  async getOne(@Param('id') id: string) {
+    const game = await this.gamesService.findOne(id);
+    return new GameDto(game);
   }
 }
 

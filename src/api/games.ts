@@ -25,3 +25,7 @@ export async function searchGames(q: string): Promise<SearchGamesResponse> {
   const params = new URLSearchParams({ q: q.trim() });
   return apiFetch<SearchGamesResponse>(`/games/search?${params}`);
 }
+
+export async function getGame(id: string): Promise<GameDto> {
+  return apiFetch<GameDto>(`/games/${id}`);
+}

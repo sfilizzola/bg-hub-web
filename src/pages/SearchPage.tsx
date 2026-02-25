@@ -1,6 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { search } from "../api/search";
-import { addOwned, addWishlist, followUserById, unfollowUserById } from "../api/me";
+import {
+  addOwned,
+  addWishlist,
+  getOwned,
+  getWishlist,
+  removeOwned,
+  removeWishlist,
+  followUserById,
+  unfollowUserById,
+} from "../api/me";
 import type { GameDto } from "../api/games";
 import type { SearchUserDto } from "../api/search";
 import { GameCard } from "../components/GameCard";
@@ -26,6 +35,32 @@ export function SearchPage() {
   const [error, setError] = useState("");
   const [acting, setActing] = useState<Record<string, string>>({});
   const [actingFollow, setActingFollow] = useState<Record<string, boolean>>({});
+  const [ownedIds, setOwnedIds] = useState<string[]>([]);
+  const [wishlistIds, setWishlistIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!user) {
+      setOwnedIds([]);
+      setWishlistIds([]);
+      return;
+    }
+    let cancelled = false;
+    Promise.all([getOwned(), getWishlist()])
+      .then(([ownedRes, wishlistRes]) => {
+        if (cancelled) return;
+        setOwnedIds(ownedRes.games.map((g) => g.id));
+        setWishlistIds(wishlistRes.games.map((g) => g.id));
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setOwnedIds([]);
+          setWishlistIds([]);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   async function handleSearch(e: { preventDefault(): void }) {
     e.preventDefault();
@@ -48,10 +83,38 @@ export function SearchPage() {
     if (acting[gameId]) return;
     setActing((a) => ({ ...a, [gameId]: key }));
     try {
-      if (key === "owned") await addOwned(gameId);
-      else await addWishlist(gameId);
+      if (key === "owned") {
+        await addOwned(gameId);
+        setOwnedIds((prev) => (prev.includes(gameId) ? prev : [...prev, gameId]));
+      } else {
+        await addWishlist(gameId);
+        setWishlistIds((prev) => (prev.includes(gameId) ? prev : [...prev, gameId]));
+      }
     } catch {
       // User feedback via acting state; ignore network errors
+    } finally {
+      setActing((a) => {
+        const next = { ...a };
+        delete next[gameId];
+        return next;
+      });
+    }
+  }
+
+  async function removeFrom(gameId: string, key: "owned" | "wishlist") {
+    const actingKey = key === "owned" ? "removeOwned" : "removeWishlist";
+    if (acting[gameId]) return;
+    setActing((a) => ({ ...a, [gameId]: actingKey }));
+    try {
+      if (key === "owned") {
+        await removeOwned(gameId);
+        setOwnedIds((prev) => prev.filter((id) => id !== gameId));
+      } else {
+        await removeWishlist(gameId);
+        setWishlistIds((prev) => prev.filter((id) => id !== gameId));
+      }
+    } catch {
+      // Ignore network errors
     } finally {
       setActing((a) => {
         const next = { ...a };
@@ -165,14 +228,20 @@ export function SearchPage() {
           </Typography>
           <Grid container spacing={2}>
             {games.map((g) => (
-              <Grid item key={g.id} xs={12} sm={6} md={4}>
-                <GameCard
+              <Grid item key={g.id} xs={12} sm={6} md={4} sx={{ minWidth: 0 }}>
+                <Box sx={{ width: "100%", minWidth: 0 }}>
+                  <GameCard
                   game={g}
                   variant="search"
+                  inCollection={ownedIds.includes(g.id)}
+                  inWishlist={wishlistIds.includes(g.id)}
                   acting={acting[g.id]}
-                  onAddOwned={() => addTo(g.id, "owned")}
-                  onAddWishlist={() => addTo(g.id, "wishlist")}
-                />
+                  onAddOwned={user ? () => addTo(g.id, "owned") : undefined}
+                  onAddWishlist={user ? () => addTo(g.id, "wishlist") : undefined}
+                  onRemoveOwned={user && ownedIds.includes(g.id) ? () => removeFrom(g.id, "owned") : undefined}
+                  onRemoveWishlist={user && wishlistIds.includes(g.id) ? () => removeFrom(g.id, "wishlist") : undefined}
+                  />
+                </Box>
               </Grid>
             ))}
           </Grid>

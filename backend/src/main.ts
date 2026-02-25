@@ -4,6 +4,9 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ApiErrorDto } from './common/dto/api-error.dto';
+import { join } from 'node:path';
+import { existsSync, mkdirSync } from 'node:fs';
+import express from 'express';
 
 const SCALAR_HTML = `<!DOCTYPE html>
 <html>
@@ -15,7 +18,12 @@ const SCALAR_HTML = `<!DOCTYPE html>
 </html>`;
 
 async function bootstrap() {
+  const uploadsDir = join(process.cwd(), 'uploads');
+  if (!existsSync(uploadsDir)) {
+    mkdirSync(uploadsDir, { recursive: true });
+  }
   const app = await NestFactory.create(AppModule);
+  app.use('/uploads', express.static(uploadsDir));
   app.enableCors({
     origin: 'http://localhost:5173',
     credentials: true,

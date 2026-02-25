@@ -1,8 +1,17 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getGame } from "../api/games";
-import { addOwned, addWishlist } from "../api/me";
+import {
+  addOwned,
+  addWishlist,
+  getOwned,
+  getWishlist,
+  removeOwned,
+  removeWishlist,
+} from "../api/me";
 import type { GameDto } from "../api/games";
+import { useAuth } from "../contexts/useAuth";
+import CheckCircle from "@mui/icons-material/CheckCircle";
 import {
   Box,
   Container,
@@ -51,14 +60,78 @@ function TabPanel({ value, index, children }: TabPanelProps) {
   );
 }
 
+type GameDetailsActionsProps = Readonly<{
+  inCollection: boolean;
+  inWishlist: boolean;
+  user: unknown;
+  acting: string | null;
+  onAddOwned: () => void;
+  onAddWishlist: () => void;
+  onRemoveOwned: () => void;
+  onRemoveWishlist: () => void;
+}>;
+
+function GameDetailsActions({
+  inCollection,
+  inWishlist,
+  user,
+  acting,
+  onAddOwned,
+  onAddWishlist,
+  onRemoveOwned,
+  onRemoveWishlist,
+}: GameDetailsActionsProps) {
+  if (inCollection) {
+    return (
+      <>
+        <Button size="small" variant="contained" disabled startIcon={<CheckCircle />}>
+          In collection
+        </Button>
+        <Button size="small" color="error" variant="outlined" disabled={!!acting} onClick={onRemoveOwned}>
+          {acting === "removeOwned" ? "…" : "Remove from collection"}
+        </Button>
+      </>
+    );
+  }
+  if (inWishlist) {
+    return (
+      <>
+        <Button size="small" variant="outlined" disabled startIcon={<CheckCircle />}>
+          In wanted
+        </Button>
+        <Button size="small" variant="contained" disabled={!!acting} onClick={onAddOwned}>
+          {acting === "owned" ? "…" : "Add to collection"}
+        </Button>
+        <Button size="small" color="error" variant="outlined" disabled={!!acting} onClick={onRemoveWishlist}>
+          {acting === "removeWishlist" ? "…" : "Remove from wanted"}
+        </Button>
+      </>
+    );
+  }
+  if (!user) return null;
+  return (
+    <>
+      <Button size="small" variant="contained" disabled={!!acting} onClick={onAddOwned}>
+        {acting === "owned" ? "…" : "Add to collection"}
+      </Button>
+      <Button size="small" variant="outlined" disabled={!!acting} onClick={onAddWishlist}>
+        {acting === "wishlist" ? "…" : "Add to wanted"}
+      </Button>
+    </>
+  );
+}
+
 export function GameDetailsPage() {
   const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
   const [game, setGame] = useState<GameDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [acting, setActing] = useState<string | null>(null);
   const [tab, setTab] = useState(0);
   const [notes, setNotes] = useState("");
+  const [ownedIds, setOwnedIds] = useState<string[]>([]);
+  const [wishlistIds, setWishlistIds] = useState<string[]>([]);
 
   useEffect(() => {
     if (!id) {
@@ -76,14 +149,65 @@ export function GameDetailsPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
+  useEffect(() => {
+    if (!user) {
+      setOwnedIds([]);
+      setWishlistIds([]);
+      return;
+    }
+    let cancelled = false;
+    Promise.all([getOwned(), getWishlist()])
+      .then(([ownedRes, wishlistRes]) => {
+        if (cancelled) return;
+        setOwnedIds(ownedRes.games.map((g) => g.id));
+        setWishlistIds(wishlistRes.games.map((g) => g.id));
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setOwnedIds([]);
+          setWishlistIds([]);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  const inCollection = game ? ownedIds.includes(game.id) : false;
+  const inWishlist = game ? wishlistIds.includes(game.id) : false;
+
   async function addTo(key: "owned" | "wishlist") {
     if (!game || acting) return;
     setActing(key);
     try {
-      if (key === "owned") await addOwned(game.id);
-      else await addWishlist(game.id);
+      if (key === "owned") {
+        await addOwned(game.id);
+        setOwnedIds((prev) => (prev.includes(game.id) ? prev : [...prev, game.id]));
+      } else {
+        await addWishlist(game.id);
+        setWishlistIds((prev) => (prev.includes(game.id) ? prev : [...prev, game.id]));
+      }
     } catch {
       // Ignore add owned/wishlist errors
+    } finally {
+      setActing(null);
+    }
+  }
+
+  async function removeFrom(key: "owned" | "wishlist") {
+    if (!game || acting) return;
+    const actingKey = key === "owned" ? "removeOwned" : "removeWishlist";
+    setActing(actingKey);
+    try {
+      if (key === "owned") {
+        await removeOwned(game.id);
+        setOwnedIds((prev) => prev.filter((id) => id !== game.id));
+      } else {
+        await removeWishlist(game.id);
+        setWishlistIds((prev) => prev.filter((id) => id !== game.id));
+      }
+    } catch {
+      // Ignore
     } finally {
       setActing(null);
     }
@@ -194,14 +318,14 @@ export function GameDetailsPage() {
                 {meta.join(" · ")}
               </Typography>
             )}
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+            <Stack direction="row" flexWrap="wrap" gap={0.5} useFlexGap>
               {categories.map((c, i) => (
-                <Chip key={`cat-${i}-${c}`} label={c} size="small" color="secondary" />
+                <Chip key={`cat-${i}-${c}`} label={c} size="small" variant="outlined" />
               ))}
               {mechanics.map((m, i) => (
                 <Chip key={`mech-${i}-${m}`} label={m} size="small" variant="outlined" />
               ))}
-            </Box>
+            </Stack>
           </Stack>
         </Grid>
 
@@ -212,28 +336,17 @@ export function GameDetailsPage() {
           </Typography>
 
           <Stack direction="row" flexWrap="wrap" gap={1} sx={{ mb: 2 }}>
-            <Button
-              variant="contained"
-              size="small"
-              disabled={!!acting}
-              onClick={() => addTo("owned")}
-            >
-              {acting === "owned" ? "…" : "Add to Owned"}
-            </Button>
-            <Button
-              variant="outlined"
-              size="small"
-              disabled={!!acting}
-              onClick={() => addTo("wishlist")}
-            >
-              {acting === "wishlist" ? "…" : "Add to Wishlist"}
-            </Button>
-            <Button
-              component={Link}
-              to="/me/plays"
-              variant="outlined"
-              size="small"
-            >
+            <GameDetailsActions
+              inCollection={inCollection}
+              inWishlist={inWishlist}
+              user={user}
+              acting={acting}
+              onAddOwned={() => addTo("owned")}
+              onAddWishlist={() => addTo("wishlist")}
+              onRemoveOwned={() => removeFrom("owned")}
+              onRemoveWishlist={() => removeFrom("wishlist")}
+            />
+            <Button component={Link} to="/me/plays" variant="outlined" size="small">
               Log Play
             </Button>
           </Stack>

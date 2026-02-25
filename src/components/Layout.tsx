@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -34,9 +34,14 @@ const navLinks = [
   { to: "/me/followers", label: "Followers" },
 ];
 
+const LOGIN_PATH = "/login";
+
 export function Layout() {
   const { user, logout } = useAuth();
+  const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const isLoginRoute = location.pathname === LOGIN_PATH;
 
   const profilePath = user ? `/u/${user.username}` : "/profile";
 
@@ -99,6 +104,10 @@ export function Layout() {
       </Button>
     </Box>
   );
+
+  if (isLoginRoute) {
+    return <Outlet />;
+  }
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>

@@ -18,6 +18,9 @@ export class UsersService {
     username: string;
     followersCount: number;
     followingCount: number;
+    displayName?: string;
+    bio?: string;
+    avatarUrl?: string;
   }> {
     const user = await this.usersRepository.findOne({ where: { username } });
     if (!user) {
@@ -32,6 +35,9 @@ export class UsersService {
       username: user.username,
       followersCount,
       followingCount,
+      displayName: user.displayName ?? undefined,
+      bio: user.bio ?? undefined,
+      avatarUrl: user.avatarUrl ?? undefined,
     };
   }
 }

@@ -252,5 +252,25 @@ export class MeService {
     }));
     return { users };
   }
+
+  /** Update current user profile. Only displayName, bio, avatarUrl are updatable; username is immutable. */
+  async updateProfile(
+    userId: string,
+    dto: { displayName?: string; bio?: string; avatarUrl?: string },
+  ): Promise<{ displayName?: string; bio?: string; avatarUrl?: string }> {
+    const user = await this.usersRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException({ message: 'User not found' });
+    }
+    if (dto.displayName !== undefined) user.displayName = dto.displayName || null;
+    if (dto.bio !== undefined) user.bio = dto.bio || null;
+    if (dto.avatarUrl !== undefined) user.avatarUrl = dto.avatarUrl || null;
+    await this.usersRepository.save(user);
+    return {
+      ...(user.displayName != null && { displayName: user.displayName }),
+      ...(user.bio != null && { bio: user.bio }),
+      ...(user.avatarUrl != null && { avatarUrl: user.avatarUrl }),
+    };
+  }
 }
 

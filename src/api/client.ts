@@ -18,12 +18,17 @@ export async function apiFetch<T>(
   path: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const url = `${API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`;
+  const base = API_BASE_URL.replace(/\/$/, "");
+  const pathStr = path.startsWith("/") ? path : `/${path}`;
+  const url = base + pathStr;
   const token = getToken();
   const headers: HeadersInit = {
-    "Content-Type": "application/json",
     ...(options.headers as Record<string, string>),
   };
+  // Do not set Content-Type for FormData; browser sets multipart boundary
+  if (!(options.body instanceof FormData)) {
+    (headers)["Content-Type"] = "application/json";
+  }
   if (token) {
     (headers)["Authorization"] = `Bearer ${token}`;
   }

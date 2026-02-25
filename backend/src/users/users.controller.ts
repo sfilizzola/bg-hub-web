@@ -48,6 +48,30 @@ export class UsersController {
     await this.meService.unfollowById(req.user.id, id);
   }
 
+  @Get(':username/owned')
+  @ApiOperation({ summary: 'Get user collection', description: 'Returns the public user’s owned games (collection).' })
+  @ApiParam({ name: 'username', required: true, description: 'Username', schema: { type: 'string' }, example: 'johndoe' })
+  @ApiResponse({ status: 200, description: 'Owned games', schema: { type: 'object', properties: { games: { type: 'array', items: { $ref: '#/components/schemas/GameDto' } } } } })
+  @ApiResponse({ status: 404, description: 'User not found', schema: API_ERROR })
+  @ApiResponse({ status: 500, description: 'Internal server error', schema: API_ERROR })
+  async getPublicOwned(@Param('username') username: string) {
+    const profile = await this.usersService.getPublicProfile(username);
+    const games = await this.meService.listOwned(profile.id);
+    return { games };
+  }
+
+  @Get(':username/wishlist')
+  @ApiOperation({ summary: 'Get user wanted list', description: 'Returns the public user’s wishlist (wanted) games.' })
+  @ApiParam({ name: 'username', required: true, description: 'Username', schema: { type: 'string' }, example: 'johndoe' })
+  @ApiResponse({ status: 200, description: 'Wishlist games', schema: { type: 'object', properties: { games: { type: 'array', items: { $ref: '#/components/schemas/GameDto' } } } } })
+  @ApiResponse({ status: 404, description: 'User not found', schema: API_ERROR })
+  @ApiResponse({ status: 500, description: 'Internal server error', schema: API_ERROR })
+  async getPublicWishlist(@Param('username') username: string) {
+    const profile = await this.usersService.getPublicProfile(username);
+    const games = await this.meService.listWishlist(profile.id);
+    return { games };
+  }
+
   @Get(':username')
   @ApiOperation({
     summary: 'Get public profile',

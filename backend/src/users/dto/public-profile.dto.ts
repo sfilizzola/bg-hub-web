@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 /** Public profile for /users/:username. */
 export class PublicProfileDto {
@@ -13,4 +13,13 @@ export class PublicProfileDto {
 
   @ApiProperty({ description: 'Number of users this user follows', example: 10 })
   followingCount!: number;
+
+  @ApiPropertyOptional({ description: 'Display name', example: 'John' })
+  displayName?: string;
+
+  @ApiPropertyOptional({ description: 'Short bio', example: 'Board game enthusiast.' })
+  bio?: string;
+
+  @ApiPropertyOptional({ description: 'Avatar image URL', example: 'https://example.com/avatar.jpg' })
+  avatarUrl?: string;
 }

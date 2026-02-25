@@ -1,8 +1,45 @@
-import { Body, Controller, Delete, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Request,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { extname } from 'node:path';
+
+// Multer types (avoid dependency on @types/multer for build)
+interface MulterFile {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  destination: string;
+  filename: string;
+  path: string;
+  size: number;
+}
+
+function multerDiskStorage(options: {
+  destination: string;
+  filename: (req: AuthRequest, file: MulterFile, cb: (err: Error | null, name: string) => void) => void;
+}) {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const multer = require('multer');
+  return multer.diskStorage(options);
+}
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { MeService } from './me.service';
 import { CreatePlayLogDto } from './dto/create-play-log.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { GameWrapperDto } from '../games/dto/game-wrapper.dto';
 import { GamesListResponseDto } from './dto/games-list-response.dto';
 import { PlayLogResponseDto } from './dto/play-log-response.dto';
@@ -199,6 +236,53 @@ export class MeController {
   @ApiResponse({ status: 500, description: 'Internal server error', schema: API_ERROR })
   async listFollowers(@Request() req: AuthRequest) {
     return this.meService.listFollowers(req.user.id);
+  }
+
+  @Patch('profile')
+  @ApiOperation({ summary: 'Update profile', description: 'Updates the current user profile (displayName, bio, avatarUrl). Username is immutable.' })
+  @ApiBody({ type: UpdateProfileDto })
+  @ApiResponse({ status: 200, description: 'Profile updated', schema: { type: 'object', properties: { displayName: { type: 'string' }, bio: { type: 'string' }, avatarUrl: { type: 'string' } } } })
+  @ApiResponse({ status: 401, description: 'Unauthorized', schema: API_ERROR })
+  @ApiResponse({ status: 500, description: 'Internal server error', schema: API_ERROR })
+  async updateProfile(@Request() req: AuthRequest, @Body() body: UpdateProfileDto) {
+    return this.meService.updateProfile(req.user.id, body);
+  }
+
+  @Post('photo')
+  @ApiOperation({ summary: 'Upload profile photo', description: 'Uploads an image as the current user avatar. Returns URL to use in PATCH /me/profile avatarUrl.' })
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: multerDiskStorage({
+        destination: './uploads',
+        filename: (req: AuthRequest, file: MulterFile, cb: (err: Error | null, name: string) => void) => {
+          const user = req.user;
+          const ext = extname(file.originalname || '') || '.jpg';
+          const safe = `${user.id}-${Date.now()}${ext}`.replace(/[^a-zA-Z0-9._-]/g, '_');
+          cb(null, safe);
+        },
+      }),
+      limits: { fileSize: 5 * 1024 * 1024 },
+      fileFilter: (_req, file, cb) => {
+        if (!file.mimetype.startsWith('image/')) {
+          cb(new BadRequestException('Only images allowed'), false);
+        } else {
+          cb(null, true);
+        }
+      },
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ schema: { type: 'object', properties: { file: { type: 'string', format: 'binary' } } } })
+  @ApiResponse({ status: 201, description: 'Photo uploaded', schema: { type: 'object', properties: { url: { type: 'string' } } } })
+  @ApiResponse({ status: 400, description: 'Invalid file (e.g. not an image)', schema: API_ERROR })
+  @ApiResponse({ status: 401, description: 'Unauthorized', schema: API_ERROR })
+  @ApiResponse({ status: 500, description: 'Internal server error', schema: API_ERROR })
+  async uploadPhoto(@Request() req: AuthRequest, @UploadedFile() file: MulterFile | undefined) {
+    if (file) {
+      const url = `/uploads/${file.filename}`;
+      return { url };
+    }
+    throw new BadRequestException({ message: 'No file provided' });
   }
 }
 

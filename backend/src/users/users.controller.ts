@@ -4,6 +4,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { MeService } from '../me/me.service';
 import { UsersService } from './users.service';
 import { PublicProfileDto } from './dto/public-profile.dto';
+import { GamesListResponseDto } from '../me/dto/games-list-response.dto';
 
 const API_ERROR = { $ref: '#/components/schemas/ApiErrorDto' };
 
@@ -49,9 +50,9 @@ export class UsersController {
   }
 
   @Get(':username/owned')
-  @ApiOperation({ summary: 'Get user collection', description: 'Returns the public user’s owned games (collection).' })
+  @ApiOperation({ summary: 'Get user collection', description: 'Returns the viewed user’s owned games (collection) by username. Public endpoint.' })
   @ApiParam({ name: 'username', required: true, description: 'Username', schema: { type: 'string' }, example: 'johndoe' })
-  @ApiResponse({ status: 200, description: 'Owned games', schema: { type: 'object', properties: { games: { type: 'array', items: { $ref: '#/components/schemas/GameDto' } } } } })
+  @ApiResponse({ status: 200, description: 'Owned games', type: GamesListResponseDto })
   @ApiResponse({ status: 404, description: 'User not found', schema: API_ERROR })
   @ApiResponse({ status: 500, description: 'Internal server error', schema: API_ERROR })
   async getPublicOwned(@Param('username') username: string) {
@@ -61,9 +62,9 @@ export class UsersController {
   }
 
   @Get(':username/wishlist')
-  @ApiOperation({ summary: 'Get user wanted list', description: 'Returns the public user’s wishlist (wanted) games.' })
+  @ApiOperation({ summary: 'Get user wanted list', description: 'Returns the viewed user’s wishlist (wanted) games by username. Public endpoint.' })
   @ApiParam({ name: 'username', required: true, description: 'Username', schema: { type: 'string' }, example: 'johndoe' })
-  @ApiResponse({ status: 200, description: 'Wishlist games', schema: { type: 'object', properties: { games: { type: 'array', items: { $ref: '#/components/schemas/GameDto' } } } } })
+  @ApiResponse({ status: 200, description: 'Wishlist games', type: GamesListResponseDto })
   @ApiResponse({ status: 404, description: 'User not found', schema: API_ERROR })
   @ApiResponse({ status: 500, description: 'Internal server error', schema: API_ERROR })
   async getPublicWishlist(@Param('username') username: string) {

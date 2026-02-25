@@ -1,0 +1,2427 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "HealthController_getHealth",
+        "summary": "Health check",
+        "description": "Returns service liveness. Use for load balancers and readiness probes.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/auth/signup": {
+      "post": {
+        "operationId": "AuthController_signup",
+        "summary": "Register a new user",
+        "description": "Creates a new user with email, username and password. Returns user id, email and username.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignupDto"
+              },
+              "examples": {
+                "default": {
+                  "summary": "New user",
+                  "value": {
+                    "email": "user@example.com",
+                    "username": "johndoe",
+                    "password": "secret123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthUserDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email or username already in use",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "summary": "Log in",
+        "description": "Authenticates with email and password. Returns a JWT access token for Authorization header.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              },
+              "examples": {
+                "default": {
+                  "summary": "Credentials",
+                  "value": {
+                    "email": "user@example.com",
+                    "password": "secret123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid email or password",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "operationId": "AuthController_me",
+        "summary": "Current user",
+        "description": "Returns the authenticated user (requires valid JWT in Authorization header).",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Current user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthUserDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (missing or invalid token)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/games/search": {
+      "get": {
+        "operationId": "GamesController_search",
+        "summary": "Search games",
+        "description": "Searches the local catalog by name. If no results, tries external provider (e.g. BGG) and persists results. externalAvailable indicates if external was used.",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Search query (game name)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameSearchResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Games"
+        ]
+      }
+    },
+    "/games/{id}": {
+      "get": {
+        "operationId": "GamesController_getOne",
+        "summary": "Get game by ID",
+        "description": "Returns a single game by UUID. Returns 404 if not found.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Game UUID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Game",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Games"
+        ]
+      }
+    },
+    "/games": {
+      "post": {
+        "operationId": "GamesController_create",
+        "summary": "Create game (trusted users)",
+        "description": "Creates a new game in the catalog. Requires JWT and trusted-user role.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGameDto"
+              },
+              "examples": {
+                "default": {
+                  "summary": "New game",
+                  "value": {
+                    "name": "Catan",
+                    "year": 1995,
+                    "minPlayers": 3,
+                    "maxPlayers": 4,
+                    "playTime": 90
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Game created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (not a trusted user)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Games"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/me/owned/{gameId}": {
+      "post": {
+        "operationId": "MeController_addOwned",
+        "summary": "Add game to owned",
+        "description": "Marks a game as owned by the current user.",
+        "parameters": [
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "description": "Game UUID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Game added to owned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameWrapperDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Me"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "MeController_removeOwned",
+        "summary": "Remove game from owned",
+        "description": "Removes the game from the current user’s owned list.",
+        "parameters": [
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "description": "Game UUID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Removed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Me"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/me/owned": {
+      "get": {
+        "operationId": "MeController_listOwned",
+        "summary": "List owned games",
+        "description": "Returns the current user’s owned games, newest first.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Owned games",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GamesListResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Me"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/me/wishlist/{gameId}": {
+      "post": {
+        "operationId": "MeController_addWishlist",
+        "summary": "Add game to wishlist",
+        "description": "Marks a game as wishlist for the current user.",
+        "parameters": [
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "description": "Game UUID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Game added to wishlist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameWrapperDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Me"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "MeController_removeWishlist",
+        "summary": "Remove game from wishlist",
+        "description": "Removes the game from the current user’s wishlist.",
+        "parameters": [
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "description": "Game UUID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Removed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Me"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/me/wishlist": {
+      "get": {
+        "operationId": "MeController_listWishlist",
+        "summary": "List wishlist games",
+        "description": "Returns the current user’s wishlist games, newest first.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Wishlist games",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GamesListResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Me"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/me/plays": {
+      "post": {
+        "operationId": "MeController_createPlayLog",
+        "summary": "Create play log",
+        "description": "Records a play of a game for the current user.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePlayLogDto"
+              },
+              "examples": {
+                "default": {
+                  "summary": "Play entry",
+                  "value": {
+                    "gameId": "123e4567-e89b-12d3-a456-426614174000",
+                    "playedAt": "2025-02-25T14:00:00.000Z",
+                    "durationMinutes": 90,
+                    "playersCount": 4,
+                    "notes": "First play"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Play log created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayLogResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Me"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "MeController_listPlays",
+        "summary": "List play logs",
+        "description": "Returns the current user’s play logs, latest first (limit 50).",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Play logs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayLogListResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Me"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/me/plays/{id}": {
+      "delete": {
+        "operationId": "MeController_deletePlayLog",
+        "summary": "Delete play log",
+        "description": "Deletes a play log by ID. Only the owner can delete.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Play log UUID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Play log not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Me"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/me/follow/{username}": {
+      "post": {
+        "operationId": "MeController_follow",
+        "summary": "Follow user",
+        "description": "Follows the given username. Cannot follow yourself.",
+        "parameters": [
+          {
+            "name": "username",
+            "required": true,
+            "in": "path",
+            "description": "Username",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Following",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Cannot follow yourself",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Me"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "MeController_unfollow",
+        "summary": "Unfollow user",
+        "description": "Stops following the given username.",
+        "parameters": [
+          {
+            "name": "username",
+            "required": true,
+            "in": "path",
+            "description": "Username",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Unfollowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Me"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/me/following": {
+      "get": {
+        "operationId": "MeController_listFollowing",
+        "summary": "List following",
+        "description": "Returns users the current user follows.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Following list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FollowingListResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Me"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/me/followers": {
+      "get": {
+        "operationId": "MeController_listFollowers",
+        "summary": "List followers",
+        "description": "Returns users that follow the current user.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Followers list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FollowingListResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Me"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/me/profile": {
+      "patch": {
+        "operationId": "MeController_updateProfile",
+        "summary": "Update profile",
+        "description": "Updates the current user profile (displayName, bio, avatarUrl). Username is immutable. Set avatarUrl from POST /me/photo response.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileDto"
+              },
+              "examples": {
+                "default": {
+                  "summary": "Profile fields",
+                  "value": {
+                    "displayName": "John",
+                    "bio": "Board game enthusiast.",
+                    "avatarUrl": "/uploads/abc-123.jpg"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateProfileResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Me"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/me/photo": {
+      "post": {
+        "operationId": "MeController_uploadPhoto",
+        "summary": "Upload profile photo",
+        "description": "Uploads an image as the current user avatar. Returns URL to use in PATCH /me/profile avatarUrl.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Image file (e.g. JPEG, PNG)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Photo uploaded; use returned url in PATCH /me/profile avatarUrl",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadPhotoResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid file (e.g. not an image or no file)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Me"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/search": {
+      "get": {
+        "operationId": "SearchController_search",
+        "summary": "Global search",
+        "description": "Search both games and users by query. When authenticated, excludes current user from results and includes follow flags.",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Search query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Games and users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GlobalSearchResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Search"
+        ]
+      }
+    },
+    "/users/{id}/follow": {
+      "post": {
+        "operationId": "UsersController_followById",
+        "summary": "Follow user by ID",
+        "description": "Current user follows the user with the given ID. Returns 204 on success.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "User UUID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Following"
+          },
+          "400": {
+            "description": "Cannot follow yourself",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "UsersController_unfollowById",
+        "summary": "Unfollow user by ID",
+        "description": "Current user stops following the user with the given ID. Returns 204 on success.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "User UUID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Unfollowed"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/users/{username}/owned": {
+      "get": {
+        "operationId": "UsersController_getPublicOwned",
+        "summary": "Get user collection",
+        "description": "Returns the viewed user’s owned games (collection) by username. Public endpoint.",
+        "parameters": [
+          {
+            "name": "username",
+            "required": true,
+            "in": "path",
+            "description": "Username",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Owned games",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GamesListResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/{username}/wishlist": {
+      "get": {
+        "operationId": "UsersController_getPublicWishlist",
+        "summary": "Get user wanted list",
+        "description": "Returns the viewed user’s wishlist (wanted) games by username. Public endpoint.",
+        "parameters": [
+          {
+            "name": "username",
+            "required": true,
+            "in": "path",
+            "description": "Username",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wishlist games",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GamesListResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/{username}": {
+      "get": {
+        "operationId": "UsersController_getPublicProfile",
+        "summary": "Get public profile",
+        "description": "Returns public profile for the given username (id, username, followersCount, followingCount).",
+        "parameters": [
+          {
+            "name": "username",
+            "required": true,
+            "in": "path",
+            "description": "Username",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Public profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicProfileDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "BG Hub API",
+    "description": "Board game collection, wishlist, play logs and social features.",
+    "version": "0.0.2",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "Health",
+      "description": "Liveness and readiness"
+    },
+    {
+      "name": "Auth",
+      "description": "Signup, login and current user"
+    },
+    {
+      "name": "Games",
+      "description": "Game catalog and search"
+    },
+    {
+      "name": "Me",
+      "description": "Current user's owned, wishlist, plays and follow graph (requires JWT)"
+    },
+    {
+      "name": "Users",
+      "description": "Public user profiles and viewed user's collection/wishlist"
+    },
+    {
+      "name": "Search",
+      "description": "Global search (games and users)"
+    }
+  ],
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local development"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "HealthResponseDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Service status",
+            "example": "ok"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "SignupDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User email",
+            "format": "email",
+            "example": "user@example.com"
+          },
+          "username": {
+            "type": "string",
+            "description": "Unique username",
+            "example": "johndoe"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password (min 8 characters)",
+            "example": "secret123",
+            "minLength": 8
+          }
+        },
+        "required": [
+          "email",
+          "username",
+          "password"
+        ]
+      },
+      "AuthUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User UUID",
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "email": {
+            "type": "string",
+            "description": "User email",
+            "example": "user@example.com"
+          },
+          "username": {
+            "type": "string",
+            "description": "Unique username",
+            "example": "johndoe"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "username"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User email",
+            "format": "email",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password",
+            "example": "secret123",
+            "minLength": 8
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "LoginResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "JWT access token for Authorization header",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        },
+        "required": [
+          "accessToken"
+        ]
+      },
+      "GameDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Game UUID",
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "name": {
+            "type": "string",
+            "description": "Game name",
+            "example": "Catan"
+          },
+          "externalId": {
+            "type": "string",
+            "description": "External provider ID (e.g. BGG)",
+            "example": "13"
+          },
+          "apiRef": {
+            "type": "string",
+            "description": "External API reference",
+            "example": "bgg"
+          },
+          "imageUrl": {
+            "type": "object",
+            "description": "Cover image URL",
+            "nullable": true
+          },
+          "year": {
+            "type": "object",
+            "description": "Year published",
+            "nullable": true,
+            "example": 1995
+          },
+          "minPlayers": {
+            "type": "object",
+            "description": "Minimum number of players",
+            "nullable": true,
+            "example": 3
+          },
+          "maxPlayers": {
+            "type": "object",
+            "description": "Maximum number of players",
+            "nullable": true,
+            "example": 4
+          },
+          "playTime": {
+            "type": "object",
+            "description": "Playing time in minutes",
+            "nullable": true,
+            "example": 90
+          },
+          "complexityWeight": {
+            "type": "object",
+            "description": "Complexity/weight (e.g. BGG)",
+            "nullable": true
+          },
+          "categories": {
+            "description": "Category names",
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "mechanics": {
+            "description": "Mechanic names",
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "object",
+            "description": "Game description",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "externalId",
+          "apiRef",
+          "imageUrl",
+          "year",
+          "minPlayers",
+          "maxPlayers",
+          "playTime",
+          "complexityWeight",
+          "categories",
+          "mechanics",
+          "description"
+        ]
+      },
+      "GameSearchResponseDto": {
+        "type": "object",
+        "properties": {
+          "games": {
+            "description": "Matching games",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameDto"
+            }
+          },
+          "externalAvailable": {
+            "type": "boolean",
+            "description": "Whether external provider (e.g. BGG) was available for this search",
+            "example": true
+          }
+        },
+        "required": [
+          "games",
+          "externalAvailable"
+        ]
+      },
+      "CreateGameDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Game name",
+            "example": "Catan"
+          },
+          "year": {
+            "type": "number",
+            "description": "Year published",
+            "example": 1995,
+            "minimum": 1
+          },
+          "minPlayers": {
+            "type": "number",
+            "description": "Minimum number of players",
+            "minimum": 1
+          },
+          "maxPlayers": {
+            "type": "number",
+            "description": "Maximum number of players",
+            "minimum": 1
+          },
+          "playTime": {
+            "type": "number",
+            "description": "Playing time in minutes",
+            "minimum": 1
+          },
+          "complexityWeight": {
+            "type": "number",
+            "description": "Weight/complexity (e.g. BGG weight)",
+            "minimum": 0
+          },
+          "categories": {
+            "description": "Category names",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "mechanics": {
+            "description": "Mechanic names",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string",
+            "description": "Game description"
+          },
+          "imageUrl": {
+            "type": "string",
+            "description": "Cover image URL"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "GameWrapperDto": {
+        "type": "object",
+        "properties": {
+          "game": {
+            "description": "Game",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GameDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "game"
+        ]
+      },
+      "SuccessResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Operation succeeded",
+            "example": true
+          }
+        },
+        "required": [
+          "success"
+        ]
+      },
+      "GamesListResponseDto": {
+        "type": "object",
+        "properties": {
+          "games": {
+            "description": "List of games",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameDto"
+            }
+          }
+        },
+        "required": [
+          "games"
+        ]
+      },
+      "CreatePlayLogDto": {
+        "type": "object",
+        "properties": {
+          "gameId": {
+            "type": "string",
+            "description": "UUID of the game played",
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "playedAt": {
+            "type": "string",
+            "description": "When the game was played (ISO 8601)",
+            "format": "date-time",
+            "example": "2025-02-25T14:00:00.000Z"
+          },
+          "durationMinutes": {
+            "type": "number",
+            "description": "Duration in minutes",
+            "minimum": 1
+          },
+          "playersCount": {
+            "type": "number",
+            "description": "Number of players",
+            "minimum": 1
+          },
+          "notes": {
+            "type": "string",
+            "description": "Free-text notes"
+          }
+        },
+        "required": [
+          "gameId",
+          "playedAt"
+        ]
+      },
+      "PlayLogResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Play log UUID",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Owner user UUID",
+            "format": "uuid"
+          },
+          "gameId": {
+            "type": "string",
+            "description": "Game UUID",
+            "format": "uuid"
+          },
+          "playedAt": {
+            "type": "string",
+            "description": "When the game was played (ISO 8601)",
+            "format": "date-time"
+          },
+          "durationMinutes": {
+            "type": "object",
+            "description": "Duration in minutes",
+            "nullable": true
+          },
+          "playersCount": {
+            "type": "object",
+            "description": "Number of players",
+            "nullable": true
+          },
+          "notes": {
+            "type": "object",
+            "description": "Free-text notes",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Record creation time (ISO 8601)",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Record last update (ISO 8601)",
+            "format": "date-time"
+          },
+          "game": {
+            "description": "Game details",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GameDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "gameId",
+          "playedAt",
+          "durationMinutes",
+          "playersCount",
+          "notes",
+          "createdAt",
+          "updatedAt",
+          "game"
+        ]
+      },
+      "PlayLogListResponseDto": {
+        "type": "object",
+        "properties": {
+          "plays": {
+            "description": "List of play logs",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlayLogResponseDto"
+            }
+          }
+        },
+        "required": [
+          "plays"
+        ]
+      },
+      "UserBasicDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User UUID",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "description": "User email",
+            "example": "user@example.com"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username",
+            "example": "johndoe"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "username"
+        ]
+      },
+      "FollowingListResponseDto": {
+        "type": "object",
+        "properties": {
+          "users": {
+            "description": "List of users",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserBasicDto"
+            }
+          }
+        },
+        "required": [
+          "users"
+        ]
+      },
+      "UpdateProfileDto": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "description": "Display name",
+            "example": "John",
+            "maxLength": 100
+          },
+          "bio": {
+            "type": "string",
+            "description": "Short bio",
+            "example": "Board game enthusiast.",
+            "maxLength": 500
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "Avatar image URL (e.g. from photo upload)",
+            "example": "/uploads/abc.jpg"
+          }
+        }
+      },
+      "UpdateProfileResponseDto": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "description": "Display name",
+            "example": "John"
+          },
+          "bio": {
+            "type": "string",
+            "description": "Short bio",
+            "example": "Board game enthusiast."
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "Avatar image URL",
+            "example": "/uploads/abc-123.jpg"
+          }
+        }
+      },
+      "UploadPhotoResponseDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the uploaded image (use in profile avatarUrl)",
+            "example": "/uploads/abc-123.jpg"
+          }
+        },
+        "required": [
+          "url"
+        ]
+      },
+      "SearchUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User UUID",
+            "format": "uuid"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username",
+            "example": "johndoe"
+          },
+          "displayName": {
+            "type": "object",
+            "description": "Display name",
+            "nullable": true
+          },
+          "avatarUrl": {
+            "type": "object",
+            "description": "Avatar URL",
+            "nullable": true
+          },
+          "followsYou": {
+            "type": "boolean",
+            "description": "True if this user follows the current user"
+          },
+          "isFollowing": {
+            "type": "boolean",
+            "description": "True if the current user follows this user"
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "displayName",
+          "avatarUrl",
+          "followsYou",
+          "isFollowing"
+        ]
+      },
+      "GlobalSearchResponseDto": {
+        "type": "object",
+        "properties": {
+          "games": {
+            "description": "Matching games",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameDto"
+            }
+          },
+          "users": {
+            "description": "Matching users (excludes current user when authenticated)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SearchUserDto"
+            }
+          }
+        },
+        "required": [
+          "games",
+          "users"
+        ]
+      },
+      "PublicProfileDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User UUID",
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username",
+            "example": "johndoe"
+          },
+          "followersCount": {
+            "type": "number",
+            "description": "Number of followers",
+            "example": 42
+          },
+          "followingCount": {
+            "type": "number",
+            "description": "Number of users this user follows",
+            "example": 10
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Display name",
+            "example": "John"
+          },
+          "bio": {
+            "type": "string",
+            "description": "Short bio",
+            "example": "Board game enthusiast."
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "Avatar image URL",
+            "example": "https://example.com/avatar.jpg"
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "followersCount",
+          "followingCount"
+        ]
+      },
+      "ApiErrorDto": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "number",
+            "description": "HTTP status code",
+            "example": 404
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message",
+            "example": "Resource not found"
+          }
+        },
+        "required": [
+          "statusCode",
+          "message"
+        ]
+      }
+    }
+  }
+}

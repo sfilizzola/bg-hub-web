@@ -41,7 +41,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('BG Hub API')
     .setDescription('Board game collection, wishlist, play logs and social features.')
-    .setVersion('1.0')
+    .setVersion('0.0.2')
     .addServer('http://localhost:3000', 'Local development')
     .addTag('Health', 'Liveness and readiness')
     .addTag('Auth', 'Signup, login and current user')

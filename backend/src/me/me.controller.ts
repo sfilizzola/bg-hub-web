@@ -46,6 +46,8 @@ import { PlayLogResponseDto } from './dto/play-log-response.dto';
 import { PlayLogListResponseDto } from './dto/play-log-list-response.dto';
 import { FollowingListResponseDto } from './dto/following-list-response.dto';
 import { SuccessResponseDto } from './dto/success-response.dto';
+import { UpdateProfileResponseDto } from './dto/update-profile-response.dto';
+import { UploadPhotoResponseDto } from './dto/upload-photo-response.dto';
 
 const API_ERROR = { $ref: '#/components/schemas/ApiErrorDto' };
 const gameIdParam = (): { name: string; required: boolean; description: string; schema: object; example: string } =>
@@ -239,9 +241,18 @@ export class MeController {
   }
 
   @Patch('profile')
-  @ApiOperation({ summary: 'Update profile', description: 'Updates the current user profile (displayName, bio, avatarUrl). Username is immutable.' })
-  @ApiBody({ type: UpdateProfileDto })
-  @ApiResponse({ status: 200, description: 'Profile updated', schema: { type: 'object', properties: { displayName: { type: 'string' }, bio: { type: 'string' }, avatarUrl: { type: 'string' } } } })
+  @ApiOperation({ summary: 'Update profile', description: 'Updates the current user profile (displayName, bio, avatarUrl). Username is immutable. Set avatarUrl from POST /me/photo response.' })
+  @ApiBody({
+    type: UpdateProfileDto,
+    examples: {
+      default: {
+        summary: 'Profile fields',
+        value: { displayName: 'John', bio: 'Board game enthusiast.', avatarUrl: '/uploads/abc-123.jpg' },
+      },
+    },
+  })
+  @ApiResponse({ status: 200, description: 'Profile updated', type: UpdateProfileResponseDto })
+  @ApiResponse({ status: 400, description: 'Validation failed', schema: API_ERROR })
   @ApiResponse({ status: 401, description: 'Unauthorized', schema: API_ERROR })
   @ApiResponse({ status: 500, description: 'Internal server error', schema: API_ERROR })
   async updateProfile(@Request() req: AuthRequest, @Body() body: UpdateProfileDto) {
@@ -272,9 +283,15 @@ export class MeController {
     }),
   )
   @ApiConsumes('multipart/form-data')
-  @ApiBody({ schema: { type: 'object', properties: { file: { type: 'string', format: 'binary' } } } })
-  @ApiResponse({ status: 201, description: 'Photo uploaded', schema: { type: 'object', properties: { url: { type: 'string' } } } })
-  @ApiResponse({ status: 400, description: 'Invalid file (e.g. not an image)', schema: API_ERROR })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['file'],
+      properties: { file: { type: 'string', format: 'binary', description: 'Image file (e.g. JPEG, PNG)' } },
+    },
+  })
+  @ApiResponse({ status: 201, description: 'Photo uploaded; use returned url in PATCH /me/profile avatarUrl', type: UploadPhotoResponseDto })
+  @ApiResponse({ status: 400, description: 'Invalid file (e.g. not an image or no file)', schema: API_ERROR })
   @ApiResponse({ status: 401, description: 'Unauthorized', schema: API_ERROR })
   @ApiResponse({ status: 500, description: 'Internal server error', schema: API_ERROR })
   async uploadPhoto(@Request() req: AuthRequest, @UploadedFile() file: MulterFile | undefined) {

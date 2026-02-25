@@ -1,44 +1,45 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Game } from '../game.entity';
 
+/** Game catalog item (owned, wishlist, search, or single game). */
 export class GameDto {
-  @ApiProperty()
+  @ApiProperty({ description: 'Game UUID', format: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000' })
   id!: string;
 
-  @ApiProperty({ example: 'Catan' })
+  @ApiProperty({ description: 'Game name', example: 'Catan' })
   name!: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: 'External provider ID (e.g. BGG)', example: '13' })
   externalId!: string;
 
-  @ApiProperty({ example: 'bgg' })
+  @ApiProperty({ description: 'External API reference', example: 'bgg' })
   apiRef!: string;
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ description: 'Cover image URL', nullable: true })
   imageUrl!: string | null;
 
-  @ApiProperty({ nullable: true, example: 1995 })
+  @ApiProperty({ description: 'Year published', nullable: true, example: 1995 })
   year!: number | null;
 
-  @ApiProperty({ nullable: true, example: 3 })
+  @ApiProperty({ description: 'Minimum number of players', nullable: true, example: 3 })
   minPlayers!: number | null;
 
-  @ApiProperty({ nullable: true, example: 4 })
+  @ApiProperty({ description: 'Maximum number of players', nullable: true, example: 4 })
   maxPlayers!: number | null;
 
-  @ApiProperty({ nullable: true, example: 90 })
+  @ApiProperty({ description: 'Playing time in minutes', nullable: true, example: 90 })
   playTime!: number | null;
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ description: 'Complexity/weight (e.g. BGG)', nullable: true })
   complexityWeight!: number | null;
 
-  @ApiProperty({ nullable: true, type: [String] })
+  @ApiProperty({ description: 'Category names', nullable: true, type: [String] })
   categories!: string[] | null;
 
-  @ApiProperty({ nullable: true, type: [String] })
+  @ApiProperty({ description: 'Mechanic names', nullable: true, type: [String] })
   mechanics!: string[] | null;
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ description: 'Game description', nullable: true })
   description!: string | null;
 
   constructor(game: Game) {

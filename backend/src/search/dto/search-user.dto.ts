@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+/** User result in global search (includes follow flags when authenticated). */
 export class SearchUserDto {
-  @ApiProperty({ description: 'User UUID' })
+  @ApiProperty({ description: 'User UUID', format: 'uuid' })
   id!: string;
 
   @ApiProperty({ description: 'Username', example: 'johndoe' })

@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GamesService } from './games.service';
 import { GameDto } from './dto/game.dto';
 import { CreateGameDto } from './dto/create-game.dto';
@@ -57,6 +57,7 @@ export class GamesController {
   }
 
   @UseGuards(JwtAuthGuard, TrustedUserHidesEndpointGuard)
+  @ApiBearerAuth('bearer')
   @Post()
   @ApiOperation({
     summary: 'Create game (trusted users)',

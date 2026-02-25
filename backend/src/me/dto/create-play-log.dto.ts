@@ -9,11 +9,11 @@ import {
 } from 'class-validator';
 
 export class CreatePlayLogDto {
-  @ApiProperty({ description: 'UUID of the game played', example: '123e4567-e89b-12d3-a456-426614174000' })
+  @ApiProperty({ description: 'UUID of the game played', format: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000' })
   @IsUUID()
   gameId!: string;
 
-  @ApiProperty({ description: 'When the game was played (ISO 8601)', example: '2025-02-25T14:00:00.000Z' })
+  @ApiProperty({ description: 'When the game was played (ISO 8601)', format: 'date-time', example: '2025-02-25T14:00:00.000Z' })
   @IsISO8601()
   playedAt!: string;
 

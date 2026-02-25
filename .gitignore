@@ -12,6 +12,9 @@ dist
 dist-ssr
 .env
 .DS_Store
+
+# Backend uploads (user-generated)
+backend/uploads/
 *.local
 
 # Editor directories and files

@@ -3,33 +3,33 @@ import { GameDto } from '../../games/dto/game.dto';
 
 /** Single play log with embedded game. */
 export class PlayLogResponseDto {
-  @ApiProperty()
+  @ApiProperty({ description: 'Play log UUID', format: 'uuid' })
   id!: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: 'Owner user UUID', format: 'uuid' })
   userId!: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: 'Game UUID', format: 'uuid' })
   gameId!: string;
 
-  @ApiProperty({ description: 'When the game was played (ISO 8601)' })
+  @ApiProperty({ description: 'When the game was played (ISO 8601)', format: 'date-time' })
   playedAt!: string;
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ description: 'Duration in minutes', nullable: true })
   durationMinutes!: number | null;
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ description: 'Number of players', nullable: true })
   playersCount!: number | null;
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ description: 'Free-text notes', nullable: true })
   notes!: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ description: 'Record creation time (ISO 8601)', format: 'date-time' })
   createdAt!: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: 'Record last update (ISO 8601)', format: 'date-time' })
   updatedAt!: string;
 
-  @ApiProperty({ type: () => GameDto })
+  @ApiProperty({ description: 'Game details', type: () => GameDto })
   game!: GameDto;
 }

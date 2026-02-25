@@ -1,73 +1,67 @@
-# React + TypeScript + Vite
+# BG Hub
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web app for tracking your board game collection, wishlist, and play history—and seeing what friends own, want, and play.
 
-Currently, two official plugins are available:
+## Summary
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**BG Hub** lets you:
 
-## React Compiler
+- **Owned** — Record which games you own.
+- **Wishlist** — Track games you want.
+- **Plays** — Log play sessions (free-text results in MVP) and optionally tag other registered users.
+- **Profiles** — Public profile at `/u/:username` with lists and counts; private profiles require approved follow requests.
+- **Discovery** — Search games (local DB first, then external providers like BoardGameGeek); add games to owned/wishlist and create play logs from search.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The app uses a **left sidebar** for navigation (Search, Owned, Wishlist, Plays, Following, Followers) and **profile lists as tabs** on user pages. The MVP feed is text-only, newest-first, with load-more pagination; feed events are: Owned add, Wishlist add, and PlayLog create.
 
-## Expanding the ESLint configuration
+## Why this project
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+The goal is a single place to manage your board game library and see what others in your circle own, want, and play—without the noise of likes, comments, or manual game entry in the first version. By focusing on **owned / wishlist / plays** and **following** with optional privacy, the MVP stays scoped while still being useful for personal tracking and light social discovery.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Tech stack
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+| Layer    | Choice                |
+| -------- | --------------------- |
+| Backend  | NestJS, PostgreSQL, TypeORM |
+| Auth     | Email + password, JWT |
+| Frontend | React, Vite, TypeScript |
+| UI       | MUI (Material UI)     |
+| API docs | OpenAPI + Scalar UI   |
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+External game data: search hits the local DB first; if a game isn’t found, the backend can query an external provider (e.g. BGG), persist it with `externalId` and `apiRef`, and return it. If the provider is down or over quota, search falls back to local-only.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Project structure
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **Root** — Frontend (React + Vite + MUI). Run with `npm run dev` (default: http://localhost:5173).
+- **`backend/`** — NestJS API. Run with `npm run start:dev` (default: http://localhost:3000). See `backend/README.md` for OpenAPI/Scalar docs and env.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Getting started
+
+### Backend
+
+1. From `backend/` copy `.env.example` to `.env` and set `DATABASE_*` and `JWT_SECRET`.
+2. Run migrations: `npm run migration:run` (from `backend/`).
+3. Start API: `npm run start:dev`.
+
+### Frontend
+
+1. From project root copy `.env.example` to `.env` and set `VITE_API_BASE_URL` (e.g. `http://localhost:3000`).
+2. Install and run: `npm install && npm run dev`.
+
+### Optional: game providers
+
+To enable BoardGameGeek (BGG) when local search has no match, set in `backend/.env`:
+
+- `GAME_PROVIDERS_ENABLED` (e.g. `BGG` if you add that provider key).
+- `BGG_BASE_URL` and `BGG_BEARER_TOKEN` if required by the BGG integration.
+
+See `backend/.env.example` for the full list.
+
+## MVP scope (current)
+
+- **In:** Owned, Wishlist, PlayLog (free-text result), follow/followers, private profiles (approve follow to see full profile), feed (text, newest-first, load-more), tagged players as registered users only, game search with external provider fallback.
+- **Out for MVP:** Likes/comments, blocking, notifications, guest players, manual game creation.
+
+## License
+
+Private / unlicensed unless stated otherwise.

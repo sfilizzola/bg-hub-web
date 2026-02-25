@@ -2,12 +2,12 @@ import { ApiProperty } from '@nestjs/swagger';
 
 /** Minimal user info (e.g. in following/followers list). */
 export class UserBasicDto {
-  @ApiProperty()
+  @ApiProperty({ description: 'User UUID', format: 'uuid' })
   id!: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: 'User email', example: 'user@example.com' })
   email!: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: 'Username', example: 'johndoe' })
   username!: string;
 }

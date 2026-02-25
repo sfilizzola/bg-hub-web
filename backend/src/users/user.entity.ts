@@ -15,6 +15,9 @@ export class User {
   @Column({ name: 'password_hash', type: 'varchar' })
   passwordHash!: string;
 
+  @Column({ name: 'trusted_user', type: 'boolean', default: false })
+  trustedUser!: boolean;
+
   @Column({ name: 'created_at', type: 'timestamptz', default: () => 'now()' })
   createdAt!: Date;
 

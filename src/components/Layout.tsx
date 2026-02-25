@@ -45,6 +45,16 @@ export function Layout() {
                       Plays
                     </Link>
                   </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/me/following">
+                      Following
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/me/followers">
+                      Followers
+                    </Link>
+                  </li>
                 </ul>
                 <ul className="navbar-nav">
                   <li className="nav-item">

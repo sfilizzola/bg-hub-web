@@ -8,8 +8,10 @@ import { Game } from './games/game.entity';
 import { GamesModule } from './games/games.module';
 import { UserOwnedGame } from './users/user-owned-game.entity';
 import { UserWishlistGame } from './users/user-wishlist-game.entity';
+import { UserFollow } from './users/user-follow.entity';
 import { PlayLog } from './plays/play-log.entity';
 import { MeModule } from './me/me.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -24,17 +26,18 @@ import { MeModule } from './me/me.module';
         username: process.env.DATABASE_USER,
         password: process.env.DATABASE_PASSWORD,
         database: process.env.DATABASE_NAME,
-        entities: [User, Game, UserOwnedGame, UserWishlistGame, PlayLog],
+        entities: [User, Game, UserOwnedGame, UserWishlistGame, UserFollow, PlayLog],
         autoLoadEntities: false,
         synchronize: false,
         retryAttempts: 1,
         retryDelay: 500,
       }),
     }),
-    TypeOrmModule.forFeature([User, Game, UserOwnedGame, UserWishlistGame, PlayLog]),
+    TypeOrmModule.forFeature([User, Game, UserOwnedGame, UserWishlistGame, UserFollow, PlayLog]),
     AuthModule,
     GamesModule,
     MeModule,
+    UsersModule,
   ],
   controllers: [HealthController],
 })

@@ -2,6 +2,17 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ApiErrorDto } from './common/dto/api-error.dto';
+
+const SCALAR_HTML = `<!DOCTYPE html>
+<html>
+<head><title>BG Hub API</title></head>
+<body>
+  <script id="api-reference" data-url="/openapi.json"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+</body>
+</html>`;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +29,32 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  const config = new DocumentBuilder()
+    .setTitle('BG Hub API')
+    .setDescription('Board game collection, wishlist, play logs and social features.')
+    .setVersion('1.0')
+    .addServer('http://localhost:3000', 'Local development')
+    .addTag('Health', 'Liveness and readiness')
+    .addTag('Auth', 'Signup, login and current user')
+    .addTag('Games', 'Game catalog and search')
+    .addTag('Me', 'Current user’s owned, wishlist, plays and follow graph (requires JWT)')
+    .addTag('Users', 'Public user profiles')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config, {
+    extraModels: [ApiErrorDto],
+  });
+  const httpAdapter = app.getHttpAdapter();
+  httpAdapter.get('/openapi.json', (_req: unknown, res: unknown) =>
+    (res as { json: (body: unknown) => void }).json(document),
+  );
+  httpAdapter.get('/docs', (_req: unknown, res: unknown) => {
+    const r = res as { setHeader: (n: string, v: string) => void; send: (body: string) => void };
+    r.setHeader('Content-Type', 'text/html');
+    r.send(SCALAR_HTML);
+  });
+
   const port = process.env.PORT || 3000;
   await app.listen(port);
 }

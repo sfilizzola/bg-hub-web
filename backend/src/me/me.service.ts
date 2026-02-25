@@ -1,10 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Game } from '../games/game.entity';
 import { GameDto } from '../games/dto/game.dto';
+import { User } from '../users/user.entity';
 import { UserOwnedGame } from '../users/user-owned-game.entity';
 import { UserWishlistGame } from '../users/user-wishlist-game.entity';
+import { UserFollow } from '../users/user-follow.entity';
 import { PlayLog } from '../plays/play-log.entity';
 import { CreatePlayLogDto } from './dto/create-play-log.dto';
 
@@ -13,10 +15,14 @@ export class MeService {
   constructor(
     @InjectRepository(Game)
     private readonly gamesRepository: Repository<Game>,
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
     @InjectRepository(UserOwnedGame)
     private readonly ownedRepository: Repository<UserOwnedGame>,
     @InjectRepository(UserWishlistGame)
     private readonly wishlistRepository: Repository<UserWishlistGame>,
+    @InjectRepository(UserFollow)
+    private readonly userFollowRepository: Repository<UserFollow>,
     @InjectRepository(PlayLog)
     private readonly playLogsRepository: Repository<PlayLog>,
   ) {}
@@ -155,6 +161,65 @@ export class MeService {
     }
     await this.playLogsRepository.delete({ id });
     return { success: true };
+  }
+
+  async follow(followerId: string, username: string): Promise<{ success: true }> {
+    const target = await this.usersRepository.findOne({ where: { username } });
+    if (!target) {
+      throw new NotFoundException({ message: 'User not found' });
+    }
+    if (target.id === followerId) {
+      throw new BadRequestException({ message: 'Cannot follow yourself' });
+    }
+    let link = await this.userFollowRepository.findOne({
+      where: { followerId, followingId: target.id },
+    });
+    if (!link) {
+      link = this.userFollowRepository.create({
+        followerId,
+        followingId: target.id,
+      });
+      await this.userFollowRepository.save(link);
+    }
+    return { success: true };
+  }
+
+  async unfollow(followerId: string, username: string): Promise<{ success: true }> {
+    const target = await this.usersRepository.findOne({ where: { username } });
+    if (!target) {
+      throw new NotFoundException({ message: 'User not found' });
+    }
+    await this.userFollowRepository.delete({
+      followerId,
+      followingId: target.id,
+    });
+    return { success: true };
+  }
+
+  async listFollowing(userId: string): Promise<{ users: Array<{ id: string; email: string; username: string }> }> {
+    const links = await this.userFollowRepository.find({
+      where: { followerId: userId },
+      relations: ['following'],
+    });
+    const users = links.map((link) => ({
+      id: link.following.id,
+      email: link.following.email,
+      username: link.following.username,
+    }));
+    return { users };
+  }
+
+  async listFollowers(userId: string): Promise<{ users: Array<{ id: string; email: string; username: string }> }> {
+    const links = await this.userFollowRepository.find({
+      where: { followingId: userId },
+      relations: ['follower'],
+    });
+    const users = links.map((link) => ({
+      id: link.follower.id,
+      email: link.follower.email,
+      username: link.follower.username,
+    }));
+    return { users };
   }
 }
 

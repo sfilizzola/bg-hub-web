@@ -58,3 +58,25 @@ export async function createPlay(body: {
 export async function deletePlay(id: string): Promise<{ success: boolean }> {
   return apiFetch<{ success: boolean }>(`/me/plays/${id}`, { method: "DELETE" });
 }
+
+export type FollowUser = { id: string; email: string; username: string };
+
+export async function followUser(username: string): Promise<{ success: boolean }> {
+  return apiFetch<{ success: boolean }>(`/me/follow/${encodeURIComponent(username)}`, {
+    method: "POST",
+  });
+}
+
+export async function unfollowUser(username: string): Promise<{ success: boolean }> {
+  return apiFetch<{ success: boolean }>(`/me/follow/${encodeURIComponent(username)}`, {
+    method: "DELETE",
+  });
+}
+
+export async function getFollowing(): Promise<{ users: FollowUser[] }> {
+  return apiFetch<{ users: FollowUser[] }>("/me/following");
+}
+
+export async function getFollowers(): Promise<{ users: FollowUser[] }> {
+  return apiFetch<{ users: FollowUser[] }>("/me/followers");
+}

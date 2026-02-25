@@ -9,6 +9,9 @@ import { OwnedPage } from "./pages/OwnedPage";
 import { WishlistPage } from "./pages/WishlistPage";
 import { PlaysPage } from "./pages/PlaysPage";
 import { GameDetailsPage } from "./pages/GameDetailsPage";
+import { PublicProfilePage } from "./pages/PublicProfilePage";
+import { FollowingPage } from "./pages/FollowingPage";
+import { FollowersPage } from "./pages/FollowersPage";
 
 function App() {
   return (
@@ -19,6 +22,7 @@ function App() {
             <Route index element={<Navigate to="/search" replace />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="signup" element={<SignupPage />} />
+            <Route path="u/:username" element={<PublicProfilePage />} />
             <Route
               path="search"
               element={
@@ -56,6 +60,22 @@ function App() {
               element={
                 <ProtectedRoute>
                   <PlaysPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="me/following"
+              element={
+                <ProtectedRoute>
+                  <FollowingPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="me/followers"
+              element={
+                <ProtectedRoute>
+                  <FollowersPage />
                 </ProtectedRoute>
               }
             />

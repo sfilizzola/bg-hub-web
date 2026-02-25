@@ -7,9 +7,10 @@ import { BggGameProvider } from './bgg.provider';
 import { GameProviderRegistry } from './game-provider.registry';
 import { ExternalGameMapper } from './external-game.mapper';
 import { GameUpsertService } from './game-upsert.service';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Game])],
+  imports: [TypeOrmModule.forFeature([Game]), AuthModule],
   controllers: [GamesController],
   providers: [
     GamesService,

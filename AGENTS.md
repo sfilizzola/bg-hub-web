@@ -151,3 +151,24 @@ Requirements:
   - GET returns array of play logs with embedded Game DTO
 
 Add migration for the table and indexes (userId, playedAt).
+
+## Step 6 — Web MVP (React) wired to Backend
+
+Goal:
+Create a minimal usable web UI that consumes the existing backend.
+
+Pages:
+- /login (email + password)
+- /signup (email + username + password)
+- /search (search games, show results)
+- /me/owned (list + add/remove owned from search results)
+- /me/wishlist (list + add/remove wishlist from search results)
+- /me/plays (list plays + create play)
+
+Requirements:
+- Store JWT in localStorage (MVP) and attach Authorization header
+- Create an API client wrapper
+- Show simple loading + error states
+- Keep styling minimal (plain CSS or tailwind if already present)
+- Use React Router
+- No SSR needed

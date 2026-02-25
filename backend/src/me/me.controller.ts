@@ -1,6 +1,7 @@
-import { Controller, Delete, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { MeService } from './me.service';
+import { CreatePlayLogDto } from './dto/create-play-log.dto';
 
 interface AuthRequest {
   user: {
@@ -47,6 +48,22 @@ export class MeController {
   async listWishlist(@Request() req: AuthRequest) {
     const games = await this.meService.listWishlist(req.user.id);
     return { games };
+  }
+
+  @Post('plays')
+  async createPlayLog(@Request() req: AuthRequest, @Body() body: CreatePlayLogDto) {
+    return this.meService.createPlayLog(req.user.id, body);
+  }
+
+  @Get('plays')
+  async listPlays(@Request() req: AuthRequest) {
+    const plays = await this.meService.listPlays(req.user.id);
+    return { plays };
+  }
+
+  @Delete('plays/:id')
+  async deletePlayLog(@Request() req: AuthRequest, @Param('id') id: string) {
+    return this.meService.deletePlayLog(req.user.id, id);
   }
 }
 

@@ -5,6 +5,8 @@ import { Game } from '../games/game.entity';
 import { GameDto } from '../games/dto/game.dto';
 import { UserOwnedGame } from '../users/user-owned-game.entity';
 import { UserWishlistGame } from '../users/user-wishlist-game.entity';
+import { PlayLog } from '../plays/play-log.entity';
+import { CreatePlayLogDto } from './dto/create-play-log.dto';
 
 @Injectable()
 export class MeService {
@@ -15,6 +17,8 @@ export class MeService {
     private readonly ownedRepository: Repository<UserOwnedGame>,
     @InjectRepository(UserWishlistGame)
     private readonly wishlistRepository: Repository<UserWishlistGame>,
+    @InjectRepository(PlayLog)
+    private readonly playLogsRepository: Repository<PlayLog>,
   ) {}
 
   private async getGameOrThrow(gameId: string): Promise<Game> {
@@ -93,6 +97,64 @@ export class MeService {
       order: { createdAt: 'DESC' },
     });
     return links.map((link) => new GameDto(link.game));
+  }
+
+  async createPlayLog(userId: string, dto: CreatePlayLogDto) {
+    const game = await this.getGameOrThrow(dto.gameId);
+    const playLog = this.playLogsRepository.create({
+      userId,
+      gameId: dto.gameId,
+      playedAt: new Date(dto.playedAt),
+      durationMinutes: dto.durationMinutes ?? null,
+      playersCount: dto.playersCount ?? null,
+      notes: dto.notes ?? null,
+      game,
+    });
+    const saved = await this.playLogsRepository.save(playLog);
+    return {
+      id: saved.id,
+      userId: saved.userId,
+      gameId: saved.gameId,
+      playedAt: saved.playedAt,
+      durationMinutes: saved.durationMinutes,
+      playersCount: saved.playersCount,
+      notes: saved.notes,
+      createdAt: saved.createdAt,
+      updatedAt: saved.updatedAt,
+      game: new GameDto(game),
+    };
+  }
+
+  async listPlays(userId: string) {
+    const playLogs = await this.playLogsRepository.find({
+      where: { userId },
+      relations: ['game'],
+      order: { playedAt: 'DESC' },
+      take: 50,
+    });
+    return playLogs.map((log) => ({
+      id: log.id,
+      userId: log.userId,
+      gameId: log.gameId,
+      playedAt: log.playedAt,
+      durationMinutes: log.durationMinutes,
+      playersCount: log.playersCount,
+      notes: log.notes,
+      createdAt: log.createdAt,
+      updatedAt: log.updatedAt,
+      game: new GameDto(log.game),
+    }));
+  }
+
+  async deletePlayLog(userId: string, id: string) {
+    const playLog = await this.playLogsRepository.findOne({
+      where: { id, userId },
+    });
+    if (!playLog) {
+      throw new NotFoundException({ message: 'Play log not found' });
+    }
+    await this.playLogsRepository.delete({ id });
+    return { success: true };
   }
 }
 

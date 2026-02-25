@@ -5,6 +5,7 @@ import { User } from './users/user.entity';
 import { Game } from './games/game.entity';
 import { UserOwnedGame } from './users/user-owned-game.entity';
 import { UserWishlistGame } from './users/user-wishlist-game.entity';
+import { PlayLog } from './plays/play-log.entity';
 
 dotenv.config();
 
@@ -15,7 +16,7 @@ export default new DataSource({
   username: process.env.DATABASE_USER,
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,
-  entities: [User, Game, UserOwnedGame, UserWishlistGame],
+  entities: [User, Game, UserOwnedGame, UserWishlistGame, PlayLog],
   migrations: [__dirname + '/migrations/*{.ts,.js}'],
 });
 

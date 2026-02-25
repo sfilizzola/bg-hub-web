@@ -40,6 +40,7 @@ async function bootstrap() {
     .addTag('Games', 'Game catalog and search')
     .addTag('Me', 'Current user’s owned, wishlist, plays and follow graph (requires JWT)')
     .addTag('Users', 'Public user profiles')
+    .addTag('Search', 'Global search (games and users)')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config, {

@@ -37,7 +37,7 @@ export function PlaysPage() {
     load();
   }, []);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault();
     if (!gameId.trim()) return;
     setSubmitting(true);
@@ -83,11 +83,7 @@ export function PlaysPage() {
       </p>
       {error && <p className="error">{error}</p>}
 
-      {!showForm ? (
-        <button type="button" onClick={() => setShowForm(true)}>
-          Log a play
-        </button>
-      ) : (
+      {showForm ? (
         <form onSubmit={handleSubmit} style={{ marginBottom: "1rem" }}>
           <div>
             <label htmlFor="gameId">Game ID (from search)</label>
@@ -145,6 +141,10 @@ export function PlaysPage() {
             Cancel
           </button>
         </form>
+      ) : (
+        <button type="button" onClick={() => setShowForm(true)}>
+          Log a play
+        </button>
       )}
 
       <ul style={{ listStyle: "none", padding: 0 }}>

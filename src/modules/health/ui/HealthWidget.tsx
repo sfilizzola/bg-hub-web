@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { HealthStatus } from "../domain/HealthStatus";
 import { getHealthStatus } from "../application/getHealthStatus";
-import { useAppContainer } from "../../../app/providers/AppContainerProvider";
+import { useAppContainer } from "../../../app/providers/useAppContainer";
 
 export function HealthWidget() {
   const container = useAppContainer();

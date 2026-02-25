@@ -8,6 +8,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { OptionalJwtAuthGuard } from './optional-jwt-auth.guard';
 import { TrustedUserHidesEndpointGuard } from './trusted-user-hides-endpoint.guard';
 
 @Module({
@@ -26,9 +27,9 @@ import { TrustedUserHidesEndpointGuard } from './trusted-user-hides-endpoint.gua
     }),
     TypeOrmModule.forFeature([User]),
   ],
-  providers: [AuthService, JwtStrategy, JwtAuthGuard, TrustedUserHidesEndpointGuard],
+  providers: [AuthService, JwtStrategy, JwtAuthGuard, OptionalJwtAuthGuard, TrustedUserHidesEndpointGuard],
   controllers: [AuthController],
-  exports: [JwtAuthGuard, TrustedUserHidesEndpointGuard],
+  exports: [JwtAuthGuard, OptionalJwtAuthGuard, TrustedUserHidesEndpointGuard],
 })
 export class AuthModule {}
 

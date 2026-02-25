@@ -13,6 +13,7 @@ import { MeService } from './me.service';
   imports: [TypeOrmModule.forFeature([Game, User, UserOwnedGame, UserWishlistGame, UserFollow, PlayLog])],
   controllers: [MeController],
   providers: [MeService],
+  exports: [MeService],
 })
 export class MeModule {}
 

@@ -1,20 +1,12 @@
-import React, { createContext, useContext, useMemo } from "react";
-import type { AppContainer } from "../di/AppContainer";
+import React, { useMemo } from "react";
 import { createAppContainer } from "../di/createAppContainer";
+import { AppContainerContext } from "./AppContainerContext";
 
-const AppContainerContext = createContext<AppContainer | null>(null);
-
-export function AppContainerProvider({ children }: { children: React.ReactNode }) {
+export function AppContainerProvider({ children }: Readonly<{ children: React.ReactNode }>) {
   const container = useMemo(() => createAppContainer(), []);
   return (
     <AppContainerContext.Provider value={container}>
       {children}
     </AppContainerContext.Provider>
   );
-}
-
-export function useAppContainer(): AppContainer {
-  const ctx = useContext(AppContainerContext);
-  if (!ctx) throw new Error("AppContainerProvider missing");
-  return ctx;
 }

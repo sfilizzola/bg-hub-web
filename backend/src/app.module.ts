@@ -11,6 +11,7 @@ import { UserWishlistGame } from './users/user-wishlist-game.entity';
 import { UserFollow } from './users/user-follow.entity';
 import { PlayLog } from './plays/play-log.entity';
 import { MeModule } from './me/me.module';
+import { SearchModule } from './search/search.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -22,7 +23,7 @@ import { UsersModule } from './users/users.module';
       useFactory: () => ({
         type: 'postgres',
         host: process.env.DATABASE_HOST,
-        port: parseInt(process.env.DATABASE_PORT ?? '5432', 10),
+        port: Number.parseInt(process.env.DATABASE_PORT ?? '5432', 10),
         username: process.env.DATABASE_USER,
         password: process.env.DATABASE_PASSWORD,
         database: process.env.DATABASE_NAME,
@@ -37,6 +38,7 @@ import { UsersModule } from './users/users.module';
     AuthModule,
     GamesModule,
     MeModule,
+    SearchModule,
     UsersModule,
   ],
   controllers: [HealthController],

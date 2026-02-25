@@ -9,10 +9,11 @@ export function FollowingPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    setLoading(true);
-    setError("");
     getFollowing()
-      .then((res) => setUsers(res.users))
+      .then((res) => {
+        setUsers(res.users);
+        setError("");
+      })
       .catch((err) =>
         setError(err instanceof Error ? err.message : "Failed to load")
       )

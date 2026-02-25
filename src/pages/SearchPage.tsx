@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { searchGames } from "../api/games";
-import { addOwned, addWishlist } from "../api/me";
+import { search } from "../api/search";
+import { addOwned, addWishlist, followUserById, unfollowUserById } from "../api/me";
 import type { GameDto } from "../api/games";
+import type { SearchUserDto } from "../api/search";
 
 function GameCard({
   game,
@@ -39,13 +40,13 @@ function GameCard({
           </p>
         )}
         <div className="mb-2">
-          {categories.map((c) => (
-            <span key={c} className="badge bg-secondary me-1 mb-1">
+          {categories.map((c, i) => (
+            <span key={`cat-${i}-${c}`} className="badge bg-secondary me-1 mb-1">
               {c}
             </span>
           ))}
-          {mechanics.map((m) => (
-            <span key={m} className="badge bg-light text-dark me-1 mb-1">
+          {mechanics.map((m, i) => (
+            <span key={`mech-${i}-${m}`} className="badge bg-light text-dark me-1 mb-1">
               {m}
             </span>
           ))}
@@ -76,23 +77,89 @@ function GameCard({
   );
 }
 
+function UserCard({
+  user,
+  acting,
+  onFollowToggle,
+}: Readonly<{
+  user: SearchUserDto;
+  acting: boolean;
+  onFollowToggle: () => void;
+}>) {
+  const displayName = user.displayName ?? user.username;
+  let followButtonText = "Follow";
+  if (acting) followButtonText = "…";
+  else if (user.isFollowing) followButtonText = "Unfollow";
+
+  return (
+    <div className="card h-100">
+      <div className="card-body d-flex flex-column">
+        <div className="d-flex align-items-center gap-2 mb-2">
+          {user.avatarUrl ? (
+            <img
+              src={user.avatarUrl}
+              alt=""
+              className="rounded-circle"
+              width={40}
+              height={40}
+              style={{ objectFit: "cover" }}
+            />
+          ) : (
+            <div
+              className="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white"
+              style={{ width: 40, height: 40, fontSize: "1rem" }}
+              aria-hidden
+            >
+              {user.username.charAt(0).toUpperCase()}
+            </div>
+          )}
+          <div className="flex-grow-1 min-width-0">
+            <h5 className="card-title mb-0 text-truncate">{displayName}</h5>
+            <p className="card-text text-body-secondary small mb-0">@{user.username}</p>
+          </div>
+        </div>
+        {user.followsYou && (
+          <span className="badge bg-light text-dark border mb-2 align-self-start">Follows you</span>
+        )}
+        <div className="mt-auto pt-2">
+          <Link to={`/u/${user.username}`} className="btn btn-outline-secondary btn-sm me-1">
+            Profile
+          </Link>
+          <button
+            type="button"
+            className={user.isFollowing ? "btn btn-outline-secondary btn-sm" : "btn btn-primary btn-sm"}
+            disabled={acting}
+            onClick={onFollowToggle}
+          >
+            {followButtonText}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function SearchPage() {
   const [q, setQ] = useState("");
   const [games, setGames] = useState<GameDto[]>([]);
+  const [users, setUsers] = useState<SearchUserDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [acting, setActing] = useState<Record<string, string>>({});
+  const [actingFollow, setActingFollow] = useState<Record<string, boolean>>({});
 
-  async function handleSearch(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSearch(e: { preventDefault(): void }) {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
-      const res = await searchGames(q);
+      const res = await search(q);
       setGames(res.games);
+      setUsers(res.users);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Search failed");
       setGames([]);
+      setUsers([]);
     } finally {
       setLoading(false);
     }
@@ -105,7 +172,7 @@ export function SearchPage() {
       if (key === "owned") await addOwned(gameId);
       else await addWishlist(gameId);
     } catch {
-      // show or ignore
+      // User feedback via acting state; ignore network errors
     } finally {
       setActing((a) => {
         const next = { ...a };
@@ -114,6 +181,36 @@ export function SearchPage() {
       });
     }
   }
+
+  async function handleFollowToggle(user: SearchUserDto) {
+    const id = user.id;
+    if (actingFollow[id]) return;
+    const wasFollowing = user.isFollowing;
+    setActingFollow((a) => ({ ...a, [id]: true }));
+    setUsers((prev) =>
+      prev.map((u) => (u.id === id ? { ...u, isFollowing: !u.isFollowing } : u))
+    );
+    try {
+      if (wasFollowing) {
+        await unfollowUserById(id);
+      } else {
+        await followUserById(id);
+      }
+    } catch {
+      setUsers((prev) =>
+        prev.map((u) => (u.id === id ? { ...u, isFollowing: wasFollowing } : u))
+      );
+    } finally {
+      setActingFollow((a) => {
+        const next = { ...a };
+        delete next[id];
+        return next;
+      });
+    }
+  }
+
+  const hasSearched = !!q && !loading;
+  const isEmpty = hasSearched && games.length === 0 && users.length === 0;
 
   return (
     <div>
@@ -125,7 +222,7 @@ export function SearchPage() {
             className="form-control"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Game name…"
+            placeholder="Games and users…"
           />
           <button
             type="submit"
@@ -141,20 +238,44 @@ export function SearchPage() {
           {error}
         </div>
       )}
-      <div className="row g-3">
-        {games.map((g) => (
-          <div key={g.id} className="col-12 col-md-6 col-lg-4">
-            <GameCard
-              game={g}
-              acting={acting[g.id]}
-              onAddOwned={() => addTo(g.id, "owned")}
-              onAddWishlist={() => addTo(g.id, "wishlist")}
-            />
+
+      {games.length > 0 && (
+        <>
+          <h2 className="h6 text-body-secondary mb-2">Games</h2>
+          <div className="row g-3 mb-4">
+            {games.map((g) => (
+              <div key={g.id} className="col-12 col-md-6 col-lg-4">
+                <GameCard
+                  game={g}
+                  acting={acting[g.id]}
+                  onAddOwned={() => addTo(g.id, "owned")}
+                  onAddWishlist={() => addTo(g.id, "wishlist")}
+                />
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      {games.length === 0 && !loading && q && !error && (
-        <p className="text-muted">No games found. Try another search.</p>
+        </>
+      )}
+
+      {users.length > 0 && (
+        <>
+          <h2 className="h6 text-body-secondary mb-2">Users</h2>
+          <div className="row g-3 mb-4">
+            {users.map((u) => (
+              <div key={u.id} className="col-12 col-md-6 col-lg-4">
+                <UserCard
+                  user={u}
+                  acting={!!actingFollow[u.id]}
+                  onFollowToggle={() => handleFollowToggle(u)}
+                />
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {isEmpty && !error && (
+        <p className="text-muted">No games or users found. Try another search.</p>
       )}
     </div>
   );

@@ -1,5 +1,5 @@
 import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryColumn } from 'typeorm';
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 
 @Entity({ name: 'users' })
 export class User {
@@ -17,6 +17,12 @@ export class User {
 
   @Column({ name: 'trusted_user', type: 'boolean', default: false })
   trustedUser!: boolean;
+
+  @Column({ name: 'display_name', type: 'varchar', nullable: true })
+  displayName!: string | null;
+
+  @Column({ name: 'avatar_url', type: 'varchar', nullable: true })
+  avatarUrl!: string | null;
 
   @Column({ name: 'created_at', type: 'timestamptz', default: () => 'now()' })
   createdAt!: Date;

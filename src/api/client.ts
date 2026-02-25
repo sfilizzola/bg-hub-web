@@ -25,12 +25,12 @@ export async function apiFetch<T>(
     ...(options.headers as Record<string, string>),
   };
   if (token) {
-    (headers as Record<string, string>)["Authorization"] = `Bearer ${token}`;
+    (headers)["Authorization"] = `Bearer ${token}`;
   }
   const res = await fetch(url, { ...options, headers });
   if (res.status === 401) {
     clearToken();
-    window.location.href = "/login";
+    globalThis.location.href = "/login";
     throw new Error("Unauthorized");
   }
   if (!res.ok) {
@@ -40,7 +40,7 @@ export async function apiFetch<T>(
       const j = JSON.parse(text) as { message?: string };
       if (j.message) message = j.message;
     } catch {
-      // use text as message
+      // Keep default message from response text
     }
     throw new Error(message || `HTTP ${res.status}`);
   }

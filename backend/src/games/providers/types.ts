@@ -20,7 +20,7 @@ export interface ExternalGame {
  * Optional richer details from getDetails (e.g. full description).
  * Can extend ExternalGame when needed.
  */
-export interface ExternalGameDetails extends ExternalGame {}
+export type ExternalGameDetails = ExternalGame;
 
 export interface GameProvider {
   id: string;

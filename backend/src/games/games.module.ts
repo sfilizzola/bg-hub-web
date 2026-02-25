@@ -19,5 +19,6 @@ import { AuthModule } from '../auth/auth.module';
     GameProviderRegistry,
     BggGameProvider,
   ],
+  exports: [GamesService],
 })
 export class GamesModule {}

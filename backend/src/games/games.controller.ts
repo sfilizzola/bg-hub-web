@@ -4,7 +4,6 @@ import { GamesService } from './games.service';
 import { GameDto } from './dto/game.dto';
 import { CreateGameDto } from './dto/create-game.dto';
 import { GameSearchResponseDto } from './dto/game-search-response.dto';
-import { GameWrapperDto } from './dto/game-wrapper.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { TrustedUserHidesEndpointGuard } from '../auth/trusted-user-hides-endpoint.guard';
 

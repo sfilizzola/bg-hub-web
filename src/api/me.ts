@@ -73,6 +73,14 @@ export async function unfollowUser(username: string): Promise<{ success: boolean
   });
 }
 
+export async function followUserById(id: string): Promise<void> {
+  await apiFetch<void>(`/users/${id}/follow`, { method: "POST" });
+}
+
+export async function unfollowUserById(id: string): Promise<void> {
+  await apiFetch<void>(`/users/${id}/follow`, { method: "DELETE" });
+}
+
 export async function getFollowing(): Promise<{ users: FollowUser[] }> {
   return apiFetch<{ users: FollowUser[] }>("/me/following");
 }

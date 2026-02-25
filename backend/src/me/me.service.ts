@@ -196,6 +196,37 @@ export class MeService {
     return { success: true };
   }
 
+  async followById(followerId: string, targetUserId: string): Promise<void> {
+    const target = await this.usersRepository.findOne({ where: { id: targetUserId } });
+    if (!target) {
+      throw new NotFoundException({ message: 'User not found' });
+    }
+    if (target.id === followerId) {
+      throw new BadRequestException({ message: 'Cannot follow yourself' });
+    }
+    const existing = await this.userFollowRepository.findOne({
+      where: { followerId, followingId: target.id },
+    });
+    if (!existing) {
+      const link = this.userFollowRepository.create({
+        followerId,
+        followingId: target.id,
+      });
+      await this.userFollowRepository.save(link);
+    }
+  }
+
+  async unfollowById(followerId: string, targetUserId: string): Promise<void> {
+    const target = await this.usersRepository.findOne({ where: { id: targetUserId } });
+    if (!target) {
+      throw new NotFoundException({ message: 'User not found' });
+    }
+    await this.userFollowRepository.delete({
+      followerId,
+      followingId: target.id,
+    });
+  }
+
   async listFollowing(userId: string): Promise<{ users: Array<{ id: string; email: string; username: string }> }> {
     const links = await this.userFollowRepository.find({
       where: { followerId: userId },

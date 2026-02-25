@@ -3,7 +3,12 @@ import { useParams } from "react-router-dom";
 import { getPublicProfile } from "../api/users";
 import { followUser, unfollowUser, getFollowing } from "../api/me";
 import type { PublicProfile } from "../api/users";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/useAuth";
+
+function getFollowButtonLabel(followInFlight: boolean, isFollowing: boolean): string {
+  if (followInFlight) return "…";
+  return isFollowing ? "Unfollow" : "Follow";
+}
 
 export function PublicProfilePage() {
   const { username } = useParams<{ username: string }>();
@@ -19,11 +24,10 @@ export function PublicProfilePage() {
 
   useEffect(() => {
     if (!username) return;
-    setLoading(true);
-    setError("");
     getPublicProfile(username)
       .then((p) => {
         setProfile(p);
+        setError("");
       })
       .catch((err) => {
         setError(err instanceof Error ? err.message : "Failed to load profile");
@@ -33,7 +37,7 @@ export function PublicProfilePage() {
 
   useEffect(() => {
     if (!user || !username || isSelf) {
-      setFollowLoaded(true);
+      Promise.resolve().then(() => setFollowLoaded(true));
       return;
     }
     getFollowing()
@@ -98,7 +102,7 @@ export function PublicProfilePage() {
           disabled={followInFlight}
           onClick={handleFollowToggle}
         >
-          {followInFlight ? "…" : isFollowing ? "Unfollow" : "Follow"}
+          {getFollowButtonLabel(followInFlight, isFollowing)}
         </button>
       )}
     </div>

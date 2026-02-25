@@ -12,11 +12,15 @@ export function GameDetailsPage() {
   const [acting, setActing] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id) return;
-    setLoading(true);
-    setError("");
+    if (!id) {
+      setLoading(false);
+      return;
+    }
     getGame(id)
-      .then(setGame)
+      .then((gameData) => {
+        setGame(gameData);
+        setError("");
+      })
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load"))
       .finally(() => setLoading(false));
   }, [id]);
@@ -28,7 +32,7 @@ export function GameDetailsPage() {
       if (key === "owned") await addOwned(game.id);
       else await addWishlist(game.id);
     } catch {
-      // ignore
+      // Ignore add owned/wishlist errors
     } finally {
       setActing(null);
     }
@@ -89,16 +93,16 @@ export function GameDetailsPage() {
         <p className="text-body-secondary small mb-2">{meta.join(" · ")}</p>
       )}
       <div className="mb-3">
-        {(game.categories ?? []).map((c) => (
-          <span key={c} className="badge bg-secondary me-1 mb-1">
-            {c}
-          </span>
-        ))}
-        {(game.mechanics ?? []).map((m) => (
-          <span key={m} className="badge bg-light text-dark me-1 mb-1">
-            {m}
-          </span>
-        ))}
+        {(game.categories ?? []).map((c, i) => (
+            <span key={`cat-${i}-${c}`} className="badge bg-secondary me-1 mb-1">
+              {c}
+            </span>
+          ))}
+        {(game.mechanics ?? []).map((m, i) => (
+            <span key={`mech-${i}-${m}`} className="badge bg-light text-dark me-1 mb-1">
+              {m}
+            </span>
+          ))}
       </div>
       {game.description && (
         <div

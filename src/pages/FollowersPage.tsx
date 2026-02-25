@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { getFollowers } from "../api/me";
 import type { FollowUser } from "../api/me";
+import { UserCard } from "../components/UserCard";
+import { Box, Typography, Alert, CircularProgress, Grid } from "@mui/material";
 
 export function FollowersPage() {
   const [users, setUsers] = useState<FollowUser[]>([]);
@@ -22,39 +23,35 @@ export function FollowersPage() {
 
   if (loading) {
     return (
-      <div className="d-flex align-items-center gap-2">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading…</span>
-        </div>
-        <span>Loading followers…</span>
-      </div>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <CircularProgress size={24} />
+        <Typography>Loading followers…</Typography>
+      </Box>
     );
   }
 
   return (
-    <div>
-      <h1 className="h3 mb-3">Followers</h1>
+    <Box>
+      <Typography variant="h2" component="h1" sx={{ mb: 2 }}>
+        Followers
+      </Typography>
       {error && (
-        <div className="alert alert-danger" role="alert">
+        <Alert severity="error" sx={{ mb: 2 }}>
           {error}
-        </div>
+        </Alert>
       )}
       {!error && users.length === 0 && (
-        <div className="alert alert-secondary" role="alert">
-          You have no followers yet.
-        </div>
+        <Alert severity="info">You have no followers yet.</Alert>
       )}
       {!error && users.length > 0 && (
-        <ul className="list-group">
+        <Grid container spacing={2}>
           {users.map((u) => (
-            <li key={u.id} className="list-group-item">
-              <Link to={`/u/${u.username}`} className="fw-semibold text-decoration-none">
-                {u.username}
-              </Link>
-            </li>
+            <Grid item key={u.id} xs={12} sm={6} md={4}>
+              <UserCard user={u} />
+            </Grid>
           ))}
-        </ul>
+        </Grid>
       )}
-    </div>
+    </Box>
   );
 }

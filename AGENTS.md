@@ -17,6 +17,9 @@
 - Auth MVP: email+password+JWT
 - Frontend: web, left sidebar, profile lists as tabs
 
+## UI / layout
+- Always use MUI components for layouts: Box, Container, Grid, AppBar, Toolbar, Drawer, Typography, Button, Card, etc. Do not use raw HTML/CSS or other UI libraries (e.g. Bootstrap, Tailwind) for layout structure.
+
 ## External game API
 - Search local DB first
 - If not found, query external provider and persist locally (store `externalId` + `apiRef`)

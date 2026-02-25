@@ -1,145 +1,24 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { search } from "../api/search";
 import { addOwned, addWishlist, followUserById, unfollowUserById } from "../api/me";
 import type { GameDto } from "../api/games";
 import type { SearchUserDto } from "../api/search";
-
-function GameCard({
-  game,
-  acting,
-  onAddOwned,
-  onAddWishlist,
-}: Readonly<{
-  game: GameDto;
-  acting: string | undefined;
-  onAddOwned: () => void;
-  onAddWishlist: () => void;
-}>) {
-  const categories = (game.categories ?? []).slice(0, 4);
-  const mechanics = (game.mechanics ?? []).slice(0, 4);
-  const meta: string[] = [];
-  if (game.year != null) meta.push(String(game.year));
-  if (game.minPlayers != null && game.maxPlayers != null) {
-    meta.push(`${game.minPlayers}-${game.maxPlayers} players`);
-  } else if (game.minPlayers != null) meta.push(`${game.minPlayers}+ players`);
-  else if (game.maxPlayers != null) meta.push(`up to ${game.maxPlayers} players`);
-  if (game.playTime != null) meta.push(`${game.playTime} min`);
-
-  return (
-    <div className="card h-100">
-      <div className="card-body d-flex flex-column">
-        <h5 className="card-title">
-          <Link to={`/games/${game.id}`} className="text-decoration-none text-dark">
-            {game.name}
-          </Link>
-        </h5>
-        {meta.length > 0 && (
-          <p className="card-text text-body-secondary small mb-2">
-            {meta.join(" · ")}
-          </p>
-        )}
-        <div className="mb-2">
-          {categories.map((c, i) => (
-            <span key={`cat-${i}-${c}`} className="badge bg-secondary me-1 mb-1">
-              {c}
-            </span>
-          ))}
-          {mechanics.map((m, i) => (
-            <span key={`mech-${i}-${m}`} className="badge bg-light text-dark me-1 mb-1">
-              {m}
-            </span>
-          ))}
-        </div>
-        <div className="mt-auto pt-2 d-flex flex-wrap gap-1">
-          <Link to={`/games/${game.id}`} className="btn btn-outline-secondary btn-sm">
-            Details
-          </Link>
-          <button
-            type="button"
-            className="btn btn-primary btn-sm"
-            disabled={!!acting}
-            onClick={onAddOwned}
-          >
-            {acting === "owned" ? "…" : "Add to Owned"}
-          </button>
-          <button
-            type="button"
-            className="btn btn-outline-primary btn-sm"
-            disabled={!!acting}
-            onClick={onAddWishlist}
-          >
-            {acting === "wishlist" ? "…" : "Add to Wishlist"}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function UserCard({
-  user,
-  acting,
-  onFollowToggle,
-}: Readonly<{
-  user: SearchUserDto;
-  acting: boolean;
-  onFollowToggle: () => void;
-}>) {
-  const displayName = user.displayName ?? user.username;
-  let followButtonText = "Follow";
-  if (acting) followButtonText = "…";
-  else if (user.isFollowing) followButtonText = "Unfollow";
-
-  return (
-    <div className="card h-100">
-      <div className="card-body d-flex flex-column">
-        <div className="d-flex align-items-center gap-2 mb-2">
-          {user.avatarUrl ? (
-            <img
-              src={user.avatarUrl}
-              alt=""
-              className="rounded-circle"
-              width={40}
-              height={40}
-              style={{ objectFit: "cover" }}
-            />
-          ) : (
-            <div
-              className="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white"
-              style={{ width: 40, height: 40, fontSize: "1rem" }}
-              aria-hidden
-            >
-              {user.username.charAt(0).toUpperCase()}
-            </div>
-          )}
-          <div className="flex-grow-1 min-width-0">
-            <h5 className="card-title mb-0 text-truncate">{displayName}</h5>
-            <p className="card-text text-body-secondary small mb-0">@{user.username}</p>
-          </div>
-        </div>
-        {user.followsYou && (
-          <span className="badge bg-light text-dark border mb-2 align-self-start">Follows you</span>
-        )}
-        <div className="mt-auto pt-2">
-          <Link to={`/u/${user.username}`} className="btn btn-outline-secondary btn-sm me-1">
-            Profile
-          </Link>
-          <button
-            type="button"
-            className={user.isFollowing ? "btn btn-outline-secondary btn-sm" : "btn btn-primary btn-sm"}
-            disabled={acting}
-            onClick={onFollowToggle}
-          >
-            {followButtonText}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
+import { GameCard } from "../components/GameCard";
+import { UserCard } from "../components/UserCard";
+import { useAuth } from "../contexts/useAuth";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Alert,
+  Grid,
+  Container,
+  Stack,
+} from "@mui/material";
 
 export function SearchPage() {
+  const { user } = useAuth();
   const [q, setQ] = useState("");
   const [games, setGames] = useState<GameDto[]>([]);
   const [users, setUsers] = useState<SearchUserDto[]>([]);
@@ -211,72 +90,120 @@ export function SearchPage() {
 
   const hasSearched = !!q && !loading;
   const isEmpty = hasSearched && games.length === 0 && users.length === 0;
+  const isEmptyQuery = q.trim() === "";
+
+  const searchForm = (
+    <Box
+      component="form"
+      onSubmit={handleSearch}
+      sx={{ display: "flex", gap: 1, flexWrap: "wrap", width: "100%", maxWidth: 420 }}
+    >
+      <TextField
+        type="search"
+        placeholder="Games and users…"
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        size="small"
+        sx={{ minWidth: 220, flex: 1 }}
+      />
+      <Button type="submit" variant="contained" disabled={loading}>
+        {loading ? "Searching…" : "Search"}
+      </Button>
+    </Box>
+  );
+
+  if (isEmptyQuery) {
+    return (
+      <Container maxWidth="sm">
+        <Box
+          sx={{
+            minHeight: { xs: "50vh", md: "60vh" },
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            py: 4,
+          }}
+        >
+          <Stack alignItems="center" spacing={3} sx={{ width: "100%" }}>
+            <Typography
+              variant="h4"
+              component="h1"
+              textAlign="center"
+              sx={{
+                fontWeight: 600,
+                typography: { xs: "h5", md: "h4" },
+              }}
+            >
+              {user
+                ? `Welcome to BG Hub, ${user.username}`
+                : "Welcome to BG Hub"}
+            </Typography>
+            {searchForm}
+          </Stack>
+        </Box>
+      </Container>
+    );
+  }
 
   return (
-    <div>
-      <h1 className="h3 mb-3">Search</h1>
-      <form onSubmit={handleSearch} className="mb-4">
-        <div className="input-group">
-          <input
-            type="search"
-            className="form-control"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Games and users…"
-          />
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={loading}
-          >
-            {loading ? "Searching…" : "Search"}
-          </button>
-        </div>
-      </form>
+    <Box>
+      <Typography variant="h2" component="h1" sx={{ mb: 2 }}>
+        Search
+      </Typography>
+      <Box sx={{ mb: 3 }}>{searchForm}</Box>
       {error && (
-        <div className="alert alert-danger" role="alert">
+        <Alert severity="error" sx={{ mb: 2 }}>
           {error}
-        </div>
+        </Alert>
       )}
 
       {games.length > 0 && (
-        <>
-          <h2 className="h6 text-body-secondary mb-2">Games</h2>
-          <div className="row g-3 mb-4">
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+            Games
+          </Typography>
+          <Grid container spacing={2}>
             {games.map((g) => (
-              <div key={g.id} className="col-12 col-md-6 col-lg-4">
+              <Grid item key={g.id} xs={12} sm={6} md={4}>
                 <GameCard
                   game={g}
+                  variant="search"
                   acting={acting[g.id]}
                   onAddOwned={() => addTo(g.id, "owned")}
                   onAddWishlist={() => addTo(g.id, "wishlist")}
                 />
-              </div>
+              </Grid>
             ))}
-          </div>
-        </>
+          </Grid>
+        </Box>
       )}
 
       {users.length > 0 && (
-        <>
-          <h2 className="h6 text-body-secondary mb-2">Users</h2>
-          <div className="row g-3 mb-4">
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+            Users
+          </Typography>
+          <Grid container spacing={2}>
             {users.map((u) => (
-              <div key={u.id} className="col-12 col-md-6 col-lg-4">
+              <Grid item key={u.id} xs={12} sm={6} md={4}>
                 <UserCard
                   user={u}
+                  showActions
                   acting={!!actingFollow[u.id]}
                   onFollowToggle={() => handleFollowToggle(u)}
                 />
-              </div>
+              </Grid>
             ))}
-          </div>
-        </>
+          </Grid>
+        </Box>
       )}
 
       {isEmpty && !error && (
-        <p className="text-muted">No games or users found. Try another search.</p>
+        <Typography color="text.secondary">
+          No games or users found. Try another search.
+        </Typography>
       )}
-    </div>
+    </Box>
   );
 }

@@ -2,17 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getWishlist, removeWishlist } from "../api/me";
 import type { GameDto } from "../api/games";
-
-function gameMeta(g: GameDto): string {
-  const parts: string[] = [];
-  if (g.year != null) parts.push(String(g.year));
-  if (g.minPlayers != null && g.maxPlayers != null) {
-    parts.push(`${g.minPlayers}-${g.maxPlayers} players`);
-  } else if (g.minPlayers != null) parts.push(`${g.minPlayers}+ players`);
-  else if (g.maxPlayers != null) parts.push(`up to ${g.maxPlayers} players`);
-  if (g.playTime != null) parts.push(`${g.playTime} min`);
-  return parts.join(" · ");
-}
+import { GameCard } from "../components/GameCard";
+import { Box, Typography, Alert, Button, CircularProgress, Grid } from "@mui/material";
 
 export function WishlistPage() {
   const [games, setGames] = useState<GameDto[]>([]);
@@ -52,64 +43,44 @@ export function WishlistPage() {
 
   if (loading) {
     return (
-      <div className="d-flex align-items-center gap-2">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading…</span>
-        </div>
-        <span>Loading wishlist…</span>
-      </div>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <CircularProgress size={24} />
+        <Typography>Loading wishlist…</Typography>
+      </Box>
     );
   }
 
   return (
-    <div>
-      <h1 className="h3 mb-3">Wishlist</h1>
+    <Box>
+      <Typography variant="h2" component="h1" sx={{ mb: 2 }}>
+        Wishlist
+      </Typography>
       {error && (
-        <div className="alert alert-danger" role="alert">
+        <Alert severity="error" sx={{ mb: 2 }}>
           {error}
-        </div>
+        </Alert>
       )}
       {games.length === 0 && !error ? (
-        <div className="alert alert-secondary" role="alert">
-          <p className="mb-2">No wishlist games yet.</p>
-          <Link to="/search" className="btn btn-secondary btn-sm">
+        <Alert severity="info" sx={{ mb: 2 }}>
+          <Typography sx={{ mb: 1 }}>No wishlist games yet.</Typography>
+          <Button component={Link} to="/search" variant="contained" size="small">
             Search games
-          </Link>
-        </div>
+          </Button>
+        </Alert>
       ) : (
-        <ul className="list-group">
+        <Grid container spacing={2}>
           {games.map((g) => (
-            <li
-              key={g.id}
-              className="list-group-item d-flex justify-content-between align-items-start"
-            >
-              <div>
-                <Link to={`/games/${g.id}`} className="fw-semibold text-decoration-none">
-                  {g.name}
-                </Link>
-                {gameMeta(g) && (
-                  <small className="text-body-secondary d-block">
-                    {gameMeta(g)}
-                  </small>
-                )}
-              </div>
-              <div className="d-flex align-items-center gap-1">
-                <Link to={`/games/${g.id}`} className="btn btn-outline-secondary btn-sm">
-                  Details
-                </Link>
-                <button
-                type="button"
-                className="btn btn-outline-danger btn-sm"
-                disabled={removing === g.id}
-                onClick={() => handleRemove(g.id)}
-              >
-                {removing === g.id ? "…" : "Remove"}
-              </button>
-              </div>
-            </li>
+            <Grid item key={g.id} xs={12} sm={6} md={4}>
+              <GameCard
+                game={g}
+                variant="list"
+                removing={removing === g.id}
+                onRemove={() => handleRemove(g.id)}
+              />
+            </Grid>
           ))}
-        </ul>
+        </Grid>
       )}
-    </div>
+    </Box>
   );
 }

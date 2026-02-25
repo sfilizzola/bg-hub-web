@@ -101,3 +101,53 @@ Requirements:
   - Implement a first provider using BoardGameGeek XML API2:
     - search endpoint (by query) then fetch details via `thing?stats=1`
     - parse XML into our fields as best-effort
+
+## Step 4 — My Games (Owned + Wishlist)
+
+Goal:
+Authenticated users can mark games as Owned and/or Wishlist, and list them.
+
+Requirements:
+- Create join tables/entities:
+  - UserOwnedGame (userId, gameId, createdAt)
+  - UserWishlistGame (userId, gameId, createdAt)
+  - unique constraint (userId, gameId) for each
+- Endpoints (all protected):
+  - POST `/me/owned/:gameId` (adds owned)
+  - DELETE `/me/owned/:gameId` (removes owned)
+  - GET `/me/owned` (list owned games)
+  - POST `/me/wishlist/:gameId`
+  - DELETE `/me/wishlist/:gameId`
+  - GET `/me/wishlist`
+- Validate `gameId` exists, return 404 if not.
+- Return Game DTOs in list endpoints.
+- Add migrations.
+
+## Step 5 — Play Logs (MVP)
+
+Goal:
+Authenticated users can record plays of a game and list them.
+
+Requirements:
+- Create `PlayLog` entity/table:
+  - id (uuid)
+  - userId (fk)
+  - gameId (fk)
+  - playedAt (timestamp, required)
+  - durationMinutes (int, nullable)
+  - playersCount (int, nullable)
+  - notes (text, nullable)
+  - createdAt, updatedAt
+- Endpoints (all protected):
+  - POST `/me/plays` body: { gameId, playedAt, durationMinutes?, playersCount?, notes? }
+  - GET `/me/plays` (list latest first, limit 50)
+  - DELETE `/me/plays/:id`
+- Validation:
+  - gameId must exist
+  - playedAt must be valid ISO date-time
+  - durationMinutes and playersCount must be positive if provided
+- Response:
+  - POST returns created play log + embedded Game DTO
+  - GET returns array of play logs with embedded Game DTO
+
+Add migration for the table and indexes (userId, playedAt).

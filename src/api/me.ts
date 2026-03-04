@@ -88,3 +88,45 @@ export async function getFollowing(): Promise<{ users: FollowUser[] }> {
 export async function getFollowers(): Promise<{ users: FollowUser[] }> {
   return apiFetch<{ users: FollowUser[] }>("/me/followers");
 }
+
+// Feed (matches backend FeedResponseDto / FeedItemDto)
+export type FeedItemActorDto = {
+  id: string;
+  username: string;
+  displayName: string | null;
+  imageUrl: string | null;
+};
+
+export type FeedItemGameDto = {
+  id: string;
+  name: string;
+  imageUrl: string | null;
+};
+
+export type FeedItemDto = {
+  id: string;
+  type: string;
+  createdAt: string;
+  actor: FeedItemActorDto;
+  targetUser?: FeedItemActorDto;
+  game?: FeedItemGameDto;
+  playLogId?: string;
+  text: string;
+};
+
+export type FeedResponseDto = {
+  items: FeedItemDto[];
+  nextCursor?: string | null;
+};
+
+export async function getFeed(params?: {
+  limit?: number;
+  cursor?: string;
+}): Promise<FeedResponseDto> {
+  const search = new URLSearchParams();
+  if (params?.limit != null) search.set("limit", String(params.limit));
+  if (params?.cursor) search.set("cursor", params.cursor);
+  const qs = search.toString();
+  const path = qs ? `/me/feed?${qs}` : "/me/feed";
+  return apiFetch<FeedResponseDto>(path);
+}

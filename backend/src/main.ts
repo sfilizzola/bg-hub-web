@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ApiErrorDto } from './common/dto/api-error.dto';
+import { FeedResponseDto } from './me/dto/feed-response.dto';
 import { join } from 'node:path';
 import { existsSync, mkdirSync } from 'node:fs';
 import express from 'express';
@@ -52,7 +53,7 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config, {
-    extraModels: [ApiErrorDto],
+    extraModels: [ApiErrorDto, FeedResponseDto],
   });
   const httpAdapter = app.getHttpAdapter();
   httpAdapter.get('/openapi.json', (_req: unknown, res: unknown) =>

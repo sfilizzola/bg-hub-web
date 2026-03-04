@@ -8,6 +8,8 @@ import { UserOwnedGame } from '../users/user-owned-game.entity';
 import { UserWishlistGame } from '../users/user-wishlist-game.entity';
 import { UserFollow } from '../users/user-follow.entity';
 import { PlayLog } from '../plays/play-log.entity';
+import { FeedService } from '../feed/feed.service';
+import { FeedEventType } from '../feed/feed-event-type.enum';
 import { CreatePlayLogDto } from './dto/create-play-log.dto';
 
 @Injectable()
@@ -25,6 +27,8 @@ export class MeService {
     private readonly userFollowRepository: Repository<UserFollow>,
     @InjectRepository(PlayLog)
     private readonly playLogsRepository: Repository<PlayLog>,
+    /** Injected by Nest from FeedModule (no @InjectRepository: that is only for TypeORM Repository<T>). */
+    private readonly feedService: FeedService,
   ) {}
 
   private async getGameOrThrow(gameId: string): Promise<Game> {
@@ -50,6 +54,11 @@ export class MeService {
         game,
       });
       link = await this.ownedRepository.save(link);
+      await this.feedService.emitListOrPlayLogEvent({
+        type: FeedEventType.ADDED_TO_COLLECTION,
+        actorUserId: userId,
+        gameId,
+      });
     }
 
     return new GameDto(link.game);
@@ -85,6 +94,11 @@ export class MeService {
         game,
       });
       link = await this.wishlistRepository.save(link);
+      await this.feedService.emitListOrPlayLogEvent({
+        type: FeedEventType.ADDED_TO_WISHLIST,
+        actorUserId: userId,
+        gameId,
+      });
     }
 
     return new GameDto(link.game);
@@ -117,6 +131,12 @@ export class MeService {
       game,
     });
     const saved = await this.playLogsRepository.save(playLog);
+    await this.feedService.emitListOrPlayLogEvent({
+      type: FeedEventType.PLAYLOG_CREATED,
+      actorUserId: userId,
+      gameId: dto.gameId,
+      playLogId: saved.id,
+    });
     return {
       id: saved.id,
       userId: saved.userId,
@@ -180,6 +200,7 @@ export class MeService {
         followingId: target.id,
       });
       await this.userFollowRepository.save(link);
+      await this.feedService.emitFollowEvents(followerId, target.id);
     }
     return { success: true };
   }
@@ -213,6 +234,7 @@ export class MeService {
         followingId: target.id,
       });
       await this.userFollowRepository.save(link);
+      await this.feedService.emitFollowEvents(followerId, target.id);
     }
   }
 

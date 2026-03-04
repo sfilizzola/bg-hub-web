@@ -27,6 +27,7 @@ function BrandIcon() {
 
 const navLinks = [
   { to: "/search", label: "Search" },
+  { to: "/me/feed", label: "Feed" },
   { to: "/me/owned", label: "Owned" },
   { to: "/me/wishlist", label: "Wishlist" },
   { to: "/me/plays", label: "Plays" },

@@ -228,7 +228,7 @@ export function SearchPage() {
           </Typography>
           <Grid container spacing={2}>
             {games.map((g) => (
-              <Grid item key={g.id} xs={12} sm={6} md={4} sx={{ minWidth: 0 }}>
+              <Grid key={g.id} size={{ xs: 12, sm: 6, md: 4 }} sx={{ minWidth: 0 }}>
                 <Box sx={{ width: "100%", minWidth: 0 }}>
                   <GameCard
                   game={g}
@@ -255,7 +255,7 @@ export function SearchPage() {
           </Typography>
           <Grid container spacing={2}>
             {users.map((u) => (
-              <Grid item key={u.id} xs={12} sm={6} md={4}>
+              <Grid key={u.id} size={{ xs: 12, sm: 6, md: 4 }}>
                 <UserCard
                   user={u}
                   showActions

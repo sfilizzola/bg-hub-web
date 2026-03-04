@@ -1217,6 +1217,78 @@
         ]
       }
     },
+    "/me/feed": {
+      "get": {
+        "operationId": "MeController_getFeed",
+        "summary": "Get feed",
+        "description": "Returns the current user's feed: follow events, list activity (wishlist/collection), and play log activity. Text-only, newest first. Cursor-based pagination.",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Max number of items to return",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20,
+              "example": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "cursor",
+            "required": false,
+            "in": "query",
+            "description": "Cursor for pagination (opaque string from previous response nextCursor)",
+            "schema": {
+              "example": "2025-03-04T12:00:00.000Z:123e4567-e89b-12d3-a456-426614174000",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Feed items and next cursor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Me"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
     "/me/profile": {
       "patch": {
         "operationId": "MeController_updateProfile",
@@ -2235,6 +2307,149 @@
         },
         "required": [
           "users"
+        ]
+      },
+      "FeedItemActorDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User UUID",
+            "format": "uuid"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username",
+            "example": "johndoe"
+          },
+          "displayName": {
+            "type": "object",
+            "description": "Display name",
+            "nullable": true
+          },
+          "imageUrl": {
+            "type": "object",
+            "description": "Avatar URL",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "displayName",
+          "imageUrl"
+        ]
+      },
+      "FeedItemGameDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Game UUID",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "Game name",
+            "example": "Catan"
+          },
+          "imageUrl": {
+            "type": "object",
+            "description": "Cover image URL",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "imageUrl"
+        ]
+      },
+      "FeedItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Feed event UUID",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "description": "Event type",
+            "enum": [
+              "FOLLOWED_YOU",
+              "YOU_FOLLOWED",
+              "ADDED_TO_WISHLIST",
+              "ADDED_TO_COLLECTION",
+              "PLAYLOG_CREATED"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "When the event occurred (ISO 8601)",
+            "format": "date-time"
+          },
+          "actor": {
+            "description": "User who performed the action",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FeedItemActorDto"
+              }
+            ]
+          },
+          "targetUser": {
+            "description": "Target user (e.g. for follow events)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FeedItemActorDto"
+              }
+            ]
+          },
+          "game": {
+            "description": "Game (for list/playlog events)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FeedItemGameDto"
+              }
+            ]
+          },
+          "playLogId": {
+            "type": "string",
+            "description": "Play log ID (for PLAYLOG_CREATED)",
+            "format": "uuid"
+          },
+          "text": {
+            "type": "string",
+            "description": "Pre-formatted text for display (e.g. \"Alice added Catan to wishlist\")",
+            "example": "alice added Catan to wishlist"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "createdAt",
+          "actor",
+          "text"
+        ]
+      },
+      "FeedResponseDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "description": "Feed items, newest first",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FeedItemDto"
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "description": "Cursor for next page; omit when no more pages. Use as ?cursor= for next results.",
+            "example": "2025-03-04T12:00:00.000Z:123e4567-e89b-12d3-a456-426614174000"
+          }
+        },
+        "required": [
+          "items"
         ]
       },
       "UpdateProfileDto": {

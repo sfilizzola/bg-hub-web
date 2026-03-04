@@ -10,6 +10,7 @@ import { UserOwnedGame } from './users/user-owned-game.entity';
 import { UserWishlistGame } from './users/user-wishlist-game.entity';
 import { UserFollow } from './users/user-follow.entity';
 import { PlayLog } from './plays/play-log.entity';
+import { FeedEvent } from './feed/feed-event.entity';
 import { MeModule } from './me/me.module';
 import { SearchModule } from './search/search.module';
 import { UsersModule } from './users/users.module';
@@ -27,14 +28,14 @@ import { UsersModule } from './users/users.module';
         username: process.env.DATABASE_USER,
         password: process.env.DATABASE_PASSWORD,
         database: process.env.DATABASE_NAME,
-        entities: [User, Game, UserOwnedGame, UserWishlistGame, UserFollow, PlayLog],
+        entities: [User, Game, UserOwnedGame, UserWishlistGame, UserFollow, PlayLog, FeedEvent],
         autoLoadEntities: false,
         synchronize: false,
         retryAttempts: 1,
         retryDelay: 500,
       }),
     }),
-    TypeOrmModule.forFeature([User, Game, UserOwnedGame, UserWishlistGame, UserFollow, PlayLog]),
+    TypeOrmModule.forFeature([User, Game, UserOwnedGame, UserWishlistGame, UserFollow, PlayLog, FeedEvent]),
     AuthModule,
     GamesModule,
     MeModule,

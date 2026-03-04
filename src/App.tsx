@@ -12,6 +12,8 @@ import { GameDetailsPage } from "./pages/GameDetailsPage";
 import { PublicProfilePage } from "./pages/PublicProfilePage";
 import { FollowingPage } from "./pages/FollowingPage";
 import { FollowersPage } from "./pages/FollowersPage";
+import { FeedPage } from "./pages/FeedPage";
+import { IndexRedirect } from "./components/IndexRedirect";
 
 function App() {
   return (
@@ -19,7 +21,7 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/" element={<Layout />}>
-            <Route index element={<Navigate to="/search" replace />} />
+            <Route index element={<IndexRedirect />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="signup" element={<SignupPage />} />
             <Route path="u/:username" element={<PublicProfilePage />} />
@@ -52,6 +54,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <WishlistPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="me/feed"
+              element={
+                <ProtectedRoute>
+                  <FeedPage />
                 </ProtectedRoute>
               }
             />

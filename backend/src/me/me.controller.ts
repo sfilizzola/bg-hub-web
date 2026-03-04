@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Request,
   UploadedFile,
   UseGuards,
@@ -37,8 +38,11 @@ function multerDiskStorage(options: {
   return multer.diskStorage(options);
 }
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { FeedService } from '../feed/feed.service';
 import { MeService } from './me.service';
 import { CreatePlayLogDto } from './dto/create-play-log.dto';
+import { FeedQueryDto } from './dto/feed-query.dto';
+import { FeedResponseDto } from './dto/feed-response.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { GameWrapperDto } from '../games/dto/game-wrapper.dto';
 import { GamesListResponseDto } from './dto/games-list-response.dto';
@@ -84,7 +88,10 @@ interface AuthRequest {
 @UseGuards(JwtAuthGuard)
 @Controller('me')
 export class MeController {
-  constructor(private readonly meService: MeService) {}
+  constructor(
+    private readonly meService: MeService,
+    private readonly feedService: FeedService,
+  ) {}
 
   @Post('owned/:gameId')
   @ApiOperation({ summary: 'Add game to owned', description: 'Marks a game as owned by the current user.' })
@@ -238,6 +245,21 @@ export class MeController {
   @ApiResponse({ status: 500, description: 'Internal server error', schema: API_ERROR })
   async listFollowers(@Request() req: AuthRequest) {
     return this.meService.listFollowers(req.user.id);
+  }
+
+  @Get('feed')
+  @ApiOperation({
+    summary: 'Get feed',
+    description:
+      'Returns the current user\'s feed: follow events, list activity (wishlist/collection), and play log activity. Text-only, newest first. Cursor-based pagination.',
+  })
+  @ApiResponse({ status: 200, description: 'Feed items and next cursor', type: FeedResponseDto })
+  @ApiResponse({ status: 401, description: 'Unauthorized', schema: API_ERROR })
+  @ApiResponse({ status: 500, description: 'Internal server error', schema: API_ERROR })
+  async getFeed(@Request() req: AuthRequest, @Query() query: FeedQueryDto) {
+    const limit = query.limit ?? 20;
+    const result = await this.feedService.getFeedForUser(req.user.id, limit, query.cursor);
+    return { items: result.items, nextCursor: result.nextCursor };
   }
 
   @Patch('profile')

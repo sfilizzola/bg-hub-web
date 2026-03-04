@@ -46,7 +46,7 @@ export function FollowingPage() {
       {!error && users.length > 0 && (
         <Grid container spacing={2}>
           {users.map((u) => (
-            <Grid item key={u.id} xs={12} sm={6} md={4}>
+            <Grid key={u.id} size={{ xs: 12, sm: 6, md: 4 }}>
               <UserCard user={u} />
             </Grid>
           ))}

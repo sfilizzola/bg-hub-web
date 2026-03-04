@@ -223,7 +223,7 @@ export function GameDetailsPage() {
           <Typography color="text.primary">…</Typography>
         </Breadcrumbs>
         <Grid container spacing={3}>
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Skeleton variant="rounded" height={280} />
             <Stack direction="row" spacing={1} sx={{ mt: 2 }} flexWrap="wrap" useFlexGap>
               <Skeleton variant="rounded" width={80} height={24} />
@@ -231,7 +231,7 @@ export function GameDetailsPage() {
               <Skeleton variant="rounded" width={60} height={24} />
             </Stack>
           </Grid>
-          <Grid item xs={12} md={8}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <Skeleton variant="text" width="70%" height={48} />
             <Skeleton variant="text" width="50%" height={24} sx={{ mt: 1 }} />
             <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
@@ -284,7 +284,7 @@ export function GameDetailsPage() {
 
       <Grid container spacing={3}>
         {/* Left: image + quick facts */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Stack spacing={2}>
             {game.imageUrl ? (
               <Card variant="outlined" sx={{ overflow: "hidden" }}>
@@ -330,7 +330,7 @@ export function GameDetailsPage() {
         </Grid>
 
         {/* Right: title, actions, tabs */}
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Typography variant="h2" component="h1" fontWeight={600} sx={{ mb: 1 }}>
             {game.name}
           </Typography>

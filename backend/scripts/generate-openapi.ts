@@ -13,6 +13,7 @@ import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { AppModule } from '../src/app.module';
 import { ApiErrorDto } from '../src/common/dto/api-error.dto';
+import { FeedResponseDto } from '../src/me/dto/feed-response.dto';
 
 async function generate() {
   const app = await NestFactory.create(AppModule, { logger: false });
@@ -30,7 +31,7 @@ async function generate() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config, {
-    extraModels: [ApiErrorDto],
+    extraModels: [ApiErrorDto, FeedResponseDto],
   });
   const outPath = join(__dirname, '..', 'openapi.json');
   writeFileSync(outPath, JSON.stringify(document, null, 2), 'utf-8');

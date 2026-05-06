@@ -1,7 +1,23 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import { createPlay, deletePlay, getPlays } from "../api/me";
 import type { PlayLogDto } from "../api/me";
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  TextField,
+  Alert,
+  Card,
+  CardContent,
+  CardActions,
+  Divider,
+  Stack,
+  Link,
+  CircularProgress,
+} from "@mui/material";
+import { tokens } from "@/theme";
 
 export function PlaysPage() {
   const [plays, setPlays] = useState<PlayLogDto[]>([]);
@@ -74,103 +90,182 @@ export function PlaysPage() {
     }
   }
 
-  if (loading) return <p className="loading">Loading plays…</p>;
+  if (loading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
-    <div>
-      <h1>My Plays</h1>
-      <p>
-        <Link to="/search">Search games</Link> to find a game ID, then log a play below.
-      </p>
-      {error && <p className="error">{error}</p>}
+    <Container maxWidth="md" sx={{ py: 4 }}>
+      <Stack spacing={3}>
+        {/* Header */}
+        <Box>
+          <Typography variant="h1" sx={{ mb: 1 }}>
+            My Plays
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            <Link component={RouterLink} to="/search" underline="hover">
+              Search games
+            </Link>
+            {" "}to find a game ID, then log a play below.
+          </Typography>
+        </Box>
 
-      {showForm ? (
-        <form onSubmit={handleSubmit} style={{ marginBottom: "1rem" }}>
-          <div>
-            <label htmlFor="gameId">Game ID (from search)</label>
-            <input
-              id="gameId"
-              type="text"
-              value={gameId}
-              onChange={(e) => setGameId(e.target.value)}
-              placeholder="uuid"
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="playedAt">Played at</label>
-            <input
-              id="playedAt"
-              type="datetime-local"
-              value={playedAt}
-              onChange={(e) => setPlayedAt(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="duration">Duration (minutes)</label>
-            <input
-              id="duration"
-              type="number"
-              min={1}
-              value={durationMinutes}
-              onChange={(e) => setDurationMinutes(e.target.value)}
-            />
-          </div>
-          <div>
-            <label htmlFor="players">Players count</label>
-            <input
-              id="players"
-              type="number"
-              min={1}
-              value={playersCount}
-              onChange={(e) => setPlayersCount(e.target.value)}
-            />
-          </div>
-          <div>
-            <label htmlFor="notes">Notes</label>
-            <textarea
-              id="notes"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-            />
-          </div>
-          <button type="submit" disabled={submitting}>
-            {submitting ? "Saving…" : "Save play"}
-          </button>
-          <button type="button" onClick={() => setShowForm(false)}>
-            Cancel
-          </button>
-        </form>
-      ) : (
-        <button type="button" onClick={() => setShowForm(true)}>
-          Log a play
-        </button>
-      )}
+        {/* Error Alert */}
+        {error && (
+          <Alert severity="error" onClose={() => setError("")}>
+            {error}
+          </Alert>
+        )}
 
-      <ul style={{ listStyle: "none", padding: 0 }}>
-        {plays.map((p) => (
-          <li key={p.id} style={{ marginBottom: "0.75rem" }}>
-            <strong>{p.game.name}</strong>
-            {p.game.year != null && ` (${p.game.year})`}
-            <br />
-            <small>
-              {new Date(p.playedAt).toLocaleString()}
-              {p.durationMinutes != null && ` · ${p.durationMinutes} min`}
-              {p.playersCount != null && ` · ${p.playersCount} players`}
-            </small>
-            {p.notes && <p style={{ margin: "0.25rem 0 0", fontSize: "0.9rem" }}>{p.notes}</p>}
-            <button
-              type="button"
-              disabled={deletingId === p.id}
-              onClick={() => handleDelete(p.id)}
-              style={{ marginTop: "0.25rem" }}
-            >
-              {deletingId === p.id ? "…" : "Delete"}
-            </button>
-          </li>
-        ))}
-      </ul>
-      {plays.length === 0 && !error && showForm === false && <p>No plays yet.</p>}
-    </div>
+        {/* Create Play Form */}
+        {showForm ? (
+          <Card>
+            <CardContent>
+              <Stack component="form" onSubmit={handleSubmit} spacing={2}>
+                <Typography variant="h3">Log a play</Typography>
+
+                <TextField
+                  id="gameId"
+                  label="Game ID (from search)"
+                  type="text"
+                  value={gameId}
+                  onChange={(e) => setGameId(e.target.value)}
+                  placeholder="uuid"
+                  required
+                  fullWidth
+                  size="small"
+                />
+
+                <TextField
+                  id="playedAt"
+                  label="Played at"
+                  type="datetime-local"
+                  value={playedAt}
+                  onChange={(e) => setPlayedAt(e.target.value)}
+                  required
+                  fullWidth
+                  size="small"
+                  InputLabelProps={{ shrink: true }}
+                />
+
+                <TextField
+                  id="duration"
+                  label="Duration (minutes)"
+                  type="number"
+                  inputProps={{ min: 1 }}
+                  value={durationMinutes}
+                  onChange={(e) => setDurationMinutes(e.target.value)}
+                  fullWidth
+                  size="small"
+                />
+
+                <TextField
+                  id="players"
+                  label="Players count"
+                  type="number"
+                  inputProps={{ min: 1 }}
+                  value={playersCount}
+                  onChange={(e) => setPlayersCount(e.target.value)}
+                  fullWidth
+                  size="small"
+                />
+
+                <TextField
+                  id="notes"
+                  label="Notes"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  multiline
+                  rows={3}
+                  fullWidth
+                  size="small"
+                />
+
+                <Stack direction="row" spacing={1} justifyContent="flex-end">
+                  <Button
+                    type="button"
+                    variant="text"
+                    onClick={() => setShowForm(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    disabled={submitting}
+                  >
+                    {submitting ? "Saving…" : "Save play"}
+                  </Button>
+                </Stack>
+              </Stack>
+            </CardContent>
+          </Card>
+        ) : (
+          <Button
+            variant="contained"
+            onClick={() => setShowForm(true)}
+          >
+            Log a play
+          </Button>
+        )}
+
+        {/* Plays List */}
+        {plays.length > 0 ? (
+          <Stack spacing={2}>
+            {plays.map((p) => (
+              <Card key={p.id}>
+                <CardContent>
+                  <Typography variant="h3" sx={{ mb: 1 }}>
+                    {p.game.name}
+                    {p.game.year != null && ` (${p.game.year})`}
+                  </Typography>
+
+                  <Typography variant="caption" color="text.secondary">
+                    {new Date(p.playedAt).toLocaleString()}
+                    {p.durationMinutes != null && ` · ${p.durationMinutes} min`}
+                    {p.playersCount != null && ` · ${p.playersCount} players`}
+                  </Typography>
+
+                  {p.notes && (
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                      {p.notes}
+                    </Typography>
+                  )}
+                </CardContent>
+
+                <Divider />
+
+                <CardActions>
+                  <Button
+                    size="small"
+                    color="error"
+                    onClick={() => handleDelete(p.id)}
+                    disabled={deletingId === p.id}
+                  >
+                    {deletingId === p.id ? (
+                      <CircularProgress size={16} />
+                    ) : (
+                      "Delete"
+                    )}
+                  </Button>
+                </CardActions>
+              </Card>
+            ))}
+          </Stack>
+        ) : (
+          !error && (
+            <Box sx={{ textAlign: "center", py: 4 }}>
+              <Typography variant="body1" color="text.secondary">
+                No plays yet. {!showForm && "Log your first play above."}
+              </Typography>
+            </Box>
+          )
+        )}
+      </Stack>
+    </Container>
   );
 }

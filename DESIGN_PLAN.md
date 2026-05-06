@@ -2,7 +2,7 @@
 
 > A step-by-step guide to align the entire project with the design system.
 > 
-> **Status:** Phase 1 IN PROGRESS
+> **Status:** Phase 2 IN PROGRESS
 > Last updated: 2026-05-06
 
 ---
@@ -127,38 +127,39 @@ The design system (`design-system/`) and MUI theme (`src/theme.ts`) exist but ar
 ## Phase 2: Rewrite pages with raw HTML
 
 ### Step 2.1: Rewrite `src/pages/SignupPage.tsx`
-- [ ] Replace all raw HTML with MUI components
-- [ ] Mirror structure from `LoginPage.tsx`:
-  - `<Box sx={{ ... }}>` container (centered, full height)
-  - `<Paper sx={{ ... }}>` card
-  - `<Typography variant="h2">` heading ("Sign up")
-  - `<TextField label="Email" ... />` email input
-  - `<TextField label="Username" ... />` username input
-  - `<TextField label="Password" type="password" ... />` password input
-  - `<Button variant="contained">` submit button
-  - "Already have an account?" link → `<Link component={RouterLink} to="/login">`
-  - Error alert (if any): `<Alert severity="error">`
-- [ ] Use `theme.spacing()` for all padding/margin
-- [ ] Use `tokens.*` for colors (no hardcoded hex)
+- [x] Replace all raw HTML with MUI components
+- [x] Mirror structure from `LoginPage.tsx`:
+  - [x] `<Box sx={{ ... }}>` container (centered, full height)
+  - [x] `<Paper sx={{ ... }}>` card
+  - [x] `<Typography variant="h5">` heading ("Create account")
+  - [x] `<TextField label="Email" ... />` email input
+  - [x] `<TextField label="Username" ... />` username input
+  - [x] `<TextField label="Password" type="password" ... />` password input
+  - [x] `<Button variant="contained">` submit button
+  - [x] "Already have an account?" link → `<Link component={RouterLink} to="/login">`
+  - [x] Error alert (if any): `<Alert severity="error">`
+- [x] Use MUI theme spacing for all padding/margin
+- [x] Use MUI theme colors (no hardcoded hex)
 
 ### Step 2.2: Rewrite `src/pages/PlaysPage.tsx`
-- [ ] Replace all raw HTML with MUI
-- [ ] Structure:
-  - Page title: `<Typography variant="h1">`
-  - List of plays: `<List>` component
-  - Each play row: `<ListItem>` with game title, date, players, notes (or consider a `<PlayCard>` sub-component)
-  - Create/edit dialog: `<Dialog>` with form fields (`<TextField>` for date, players, notes, game select)
-  - Buttons: `<Button variant="contained">` for create/submit, `contained color="error"` for delete
-  - Empty state: `<Box>` with centered text
-- [ ] Use theme spacing and tokens throughout
-- [ ] No raw `style={{}}` objects
+- [x] Replace all raw HTML with MUI
+- [x] Structure:
+  - [x] Page title: `<Typography variant="h1">`
+  - [x] List of plays: `<Stack>` with `<Card>` components
+  - [x] Each play row: `<Card>` with game title, date, players, notes
+  - [x] Create form: `<Card>` with `<Stack component="form">`
+  - [x] Buttons: `<Button variant="contained">` for create/submit, `color="error"` for delete
+  - [x] Loading state: `<CircularProgress>`
+  - [x] Empty state: `<Box>` with centered text
+- [x] Use theme spacing and tokens throughout
+- [x] No raw `style={{}}` objects
 
 **Checklist for Phase 2 complete:**
-- [ ] SignupPage and PlaysPage use MUI exclusively
-- [ ] No raw HTML tags (`<div>`, `<h1>`, `<input>`, `<button>`)
-- [ ] All text in `<Typography variant=...>`
-- [ ] All colors from tokens
-- [ ] All spacing from `theme.spacing()`
+- [x] SignupPage and PlaysPage use MUI exclusively
+- [x] No raw HTML tags (`<div>`, `<h1>`, `<input>`, `<button>`)
+- [x] All text in `<Typography variant=...>`
+- [x] All colors from MUI theme
+- [x] All spacing via MUI sx props
 
 ---
 

@@ -25,7 +25,7 @@ import { followUser, unfollowUser, getFollowing, getOwned, getWishlist } from ".
 import type { PublicProfile } from "../api/users";
 import type { GameDto } from "../api/games";
 import { useAuth } from "../contexts/useAuth";
-import { CompactGameCard } from "../components/CompactGameCard";
+import { GameCard } from "../components/bg";
 import { API_BASE_URL } from "../config/env";
 
 function getFollowButtonLabel(followInFlight: boolean, isFollowing: boolean): string {
@@ -486,7 +486,20 @@ export function PublicProfilePage() {
             <Stack component="ul" sx={{ listStyle: "none", m: 0, p: 0 }} spacing={0}>
               {collectionGames.map((game) => (
                 <Box component="li" key={game.id}>
-                  <CompactGameCard game={game} />
+                  <GameCard
+                    title={game.name}
+                    year={game.year}
+                    imageUrl={game.imageUrl}
+                    players={
+                      game.minPlayers && game.maxPlayers
+                        ? `${game.minPlayers}–${game.maxPlayers}`
+                        : game.minPlayers
+                          ? `${game.minPlayers}+`
+                          : null
+                    }
+                    playTime={game.playTime}
+                    status="none"
+                  />
                 </Box>
               ))}
             </Stack>
@@ -514,7 +527,20 @@ export function PublicProfilePage() {
             <Stack component="ul" sx={{ listStyle: "none", m: 0, p: 0 }} spacing={0}>
               {wantedGames.map((game) => (
                 <Box component="li" key={game.id}>
-                  <CompactGameCard game={game} />
+                  <GameCard
+                    title={game.name}
+                    year={game.year}
+                    imageUrl={game.imageUrl}
+                    players={
+                      game.minPlayers && game.maxPlayers
+                        ? `${game.minPlayers}–${game.maxPlayers}`
+                        : game.minPlayers
+                          ? `${game.minPlayers}+`
+                          : null
+                    }
+                    playTime={game.playTime}
+                    status="none"
+                  />
                 </Box>
               ))}
             </Stack>

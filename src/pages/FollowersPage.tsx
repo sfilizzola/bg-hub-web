@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getFollowers } from "../api/me";
 import type { FollowUser } from "../api/me";
-import { UserCard } from "../components/UserCard";
+import { UserCard } from "../components/bg";
 import { Box, Typography, Alert, CircularProgress, Grid } from "@mui/material";
 
 export function FollowersPage() {
@@ -47,7 +47,11 @@ export function FollowersPage() {
         <Grid container spacing={2}>
           {users.map((u) => (
             <Grid key={u.id} size={{ xs: 12, sm: 6, md: 4 }}>
-              <UserCard user={u} />
+              <UserCard
+                name={u.username}
+                handle={u.username}
+                stats={{ owned: 0, wishlist: 0, plays: 0 }}
+              />
             </Grid>
           ))}
         </Grid>

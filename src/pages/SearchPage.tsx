@@ -13,8 +13,7 @@ import {
   unfollowUserById,
 } from "../api/me";
 import type { GameSearchItemDto, SearchUserDto } from "../api/search";
-import { GameCard } from "../components/GameCard";
-import { UserCard } from "../components/UserCard";
+import { GameCard, UserCard } from "../components/bg";
 import { useAuth } from "../contexts/useAuth";
 import {
   Box,
@@ -312,6 +311,10 @@ export function SearchPage() {
                   {games.map((g) => {
                     const stableKey = g.id ?? `bgg-${g.bggId ?? 0}`;
                     const isLocal = g.source === "LOCAL" && g.id;
+                    const ownedByUser = !!isLocal && ownedIds.includes(g.id!);
+                    const wishedByUser = !!isLocal && wishlistIds.includes(g.id!);
+                    const status: "none" | "owned" | "wishlist" = ownedByUser ? "owned" : wishedByUser ? "wishlist" : "none";
+
                     return (
                       <ListItem
                         key={stableKey}
@@ -325,18 +328,14 @@ export function SearchPage() {
                       >
                         <Box sx={{ width: "100%", minWidth: 0 }}>
                           <GameCard
-                            game={g}
-                            variant="search"
-                            compact
-                            inCollection={!!isLocal && ownedIds.includes(g.id!)}
-                            inWishlist={!!isLocal && wishlistIds.includes(g.id!)}
-                            acting={isLocal ? acting[g.id!] : undefined}
-                            onAddOwned={user && isLocal ? () => addTo(g.id!, "owned") : undefined}
-                            onAddWishlist={user && isLocal ? () => addTo(g.id!, "wishlist") : undefined}
-                            onRemoveOwned={user && isLocal && ownedIds.includes(g.id!) ? () => removeFrom(g.id!, "owned") : undefined}
-                            onRemoveWishlist={user && isLocal && wishlistIds.includes(g.id!) ? () => removeFrom(g.id!, "wishlist") : undefined}
-                            onBggGameClick={g.source === "BGG" ? handleBggGameClick : undefined}
-                            importingBggId={importingBggId}
+                            title={g.name}
+                            year={g.year ?? undefined}
+                            imageUrl={g.imageUrl ?? undefined}
+                            status={isLocal ? status : "none"}
+                            onAddOwned={user && isLocal && status === "none" ? () => addTo(g.id!, "owned") : undefined}
+                            onAddWishlist={user && isLocal && status === "none" ? () => addTo(g.id!, "wishlist") : undefined}
+                            onRemove={user && isLocal && status !== "none" ? () => removeFrom(g.id!, status) : undefined}
+                            removing={isLocal ? acting[g.id!] === "removeOwned" || acting[g.id!] === "removeWishlist" : false}
                           />
                         </Box>
                       </ListItem>
@@ -388,10 +387,13 @@ export function SearchPage() {
                     >
                       <Box sx={{ width: "100%", p: 0.5 }}>
                         <UserCard
-                          user={u}
-                          showActions
-                          acting={!!actingFollow[u.id]}
-                          onFollowToggle={() => handleFollowToggle(u)}
+                          name={u.displayName || u.username}
+                          handle={u.username}
+                          avatarUrl={u.avatarUrl ?? undefined}
+                          stats={{ owned: 0, wishlist: 0, plays: 0 }}
+                          isFollowing={u.isFollowing}
+                          followsYou={u.followsYou}
+                          onFollow={() => handleFollowToggle(u)}
                         />
                       </Box>
                     </ListItem>

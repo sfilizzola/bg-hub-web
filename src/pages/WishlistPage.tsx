@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getWishlist, removeWishlist } from "../api/me";
 import type { GameDto } from "../api/games";
-import { GameCard } from "../components/GameCard";
+import { GameCard } from "../components/bg";
 import { Box, Typography, Alert, Button, CircularProgress, Grid } from "@mui/material";
 
 export function WishlistPage() {
@@ -71,14 +71,23 @@ export function WishlistPage() {
         <Grid container spacing={2}>
           {games.map((g) => (
             <Grid key={g.id} size={{ xs: 12, sm: 6, md: 4 }} sx={{ minWidth: 0 }}>
-              <Box sx={{ width: "100%", minWidth: 0 }}>
-                <GameCard
-                  game={g}
-                  variant="list"
-                  removing={removing === g.id}
-                  onRemove={() => handleRemove(g.id)}
-                />
-              </Box>
+              <GameCard
+                title={g.name}
+                year={g.year}
+                imageUrl={g.imageUrl}
+                players={
+                  g.minPlayers && g.maxPlayers
+                    ? `${g.minPlayers}–${g.maxPlayers}`
+                    : g.minPlayers
+                      ? `${g.minPlayers}+`
+                      : null
+                }
+                playTime={g.playTime}
+                tags={g.categories}
+                status="wishlist"
+                onRemove={() => handleRemove(g.id)}
+                removing={removing === g.id}
+              />
             </Grid>
           ))}
         </Grid>

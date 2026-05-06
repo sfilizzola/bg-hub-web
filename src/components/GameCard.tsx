@@ -361,7 +361,7 @@ export function GameCard({
           <Typography
             component="button"
             type="button"
-            variant="h6"
+            variant="h3"
             onClick={isImporting ? undefined : handleBggClick}
             disabled={!!isImporting}
             sx={{
@@ -389,7 +389,7 @@ export function GameCard({
           <Typography
             component={Link}
             to={`/games/${(game as GameDto).id}`}
-            variant="h6"
+            variant="h3"
             sx={{
               fontWeight: 600,
               textDecoration: "none",
@@ -407,7 +407,7 @@ export function GameCard({
           </Typography>
         )}
         {meta.length > 0 && (
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25, mb: 0.5 }} fontSize="0.8125rem">
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25, mb: 0.5 }}>
             {meta.join(" · ")}
           </Typography>
         )}
@@ -423,7 +423,6 @@ export function GameCard({
               overflow: "hidden",
               textOverflow: "ellipsis",
             }}
-            fontSize="0.8125rem"
           >
             {shortDescription}
           </Typography>

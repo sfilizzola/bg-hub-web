@@ -2,7 +2,7 @@
 
 > A step-by-step guide to align the entire project with the design system.
 > 
-> **Status:** Phase 2 IN PROGRESS
+> **Status:** Phase 3 COMPLETE
 > Last updated: 2026-05-06
 
 ---
@@ -166,62 +166,51 @@ The design system (`design-system/`) and MUI theme (`src/theme.ts`) exist but ar
 ## Phase 3: Fix pages with design violations
 
 ### Step 3.1: Fix `src/pages/FeedPage.tsx`
-- [ ] **Remove inline feed rendering:**
-  - Delete `FeedItemContent` component entirely
-  - Delete manual `<List>`, `<ListItem>`, `<ListItemAvatar>`, `<Avatar>`, `<Divider>` structure
-  - Replace render loop with `<FeedItem>` from `components/bg`
-- [ ] **Import:** `import { FeedItem } from "../components/bg";`
-- [ ] **Map `FeedItemDto` → `<FeedItem>` props:**
-  ```tsx
-  <FeedItem
-    kind={item.type === "PLAYLOG_CREATED" ? "play" : item.type === "ADDED_TO_COLLECTION" ? "owned" : "wishlist"}
-    actor={{
-      username: item.actor.username,
-      displayName: item.actor.displayName,
-      imageUrl: item.actor.imageUrl,
-      // avatarColor: generated or fetched
-    }}
-    time={formatRelativeTime(item.createdAt)}
-    exactTime={item.createdAt}
-    game={item.game ? { title: item.game.name, score: /* if exists */ } : undefined}
-    note={/* playlog notes if exists */}
-  />
-  ```
-- [ ] **Remove all `style={{}}` bypasses:**
-  - Remove `style={{ fontWeight: 600, color: "inherit" }}` from all `<Link>` tags (8 instances)
-  - Use `<Link component={RouterLink} sx={{ fontWeight: 600 }}>`  instead
-- [ ] **Remove bespoke sizing:**
-  - Delete `sx={{ width: 36, height: 36 }}` on Avatar (let `<FeedItem>` size it)
+- [x] **Remove inline feed rendering:**
+  - [x] Delete `FeedItemContent` component entirely
+  - [x] Delete manual `<List>`, `<ListItem>`, `<ListItemAvatar>`, `<Avatar>`, `<Divider>` structure
+  - [x] Replace render loop with `<FeedItem>` from `components/bg`
+- [x] **Import:** `import { FeedItem } from "../components/bg";`
+- [x] **Map `FeedItemDto` → `<FeedItem>` props:**
+  - [x] Map type to kind (PLAYLOG_CREATED→play, ADDED_TO_COLLECTION→owned, etc.)
+  - [x] Map actor fields correctly
+  - [x] Map game info
+  - [x] Add time formatting and navigation callbacks
+- [x] **Remove all `style={{}}` bypasses:**
+  - [x] Removed all raw `style={{ fontWeight: 600, color: "inherit" }}` from `<Link>` tags
+  - [x] Use navigation callbacks instead of raw links
+- [x] **Remove bespoke sizing:**
+  - [x] Removed `sx={{ width: 36, height: 36 }}` on Avatar (now handled by `<FeedItem>`)
 
 ### Step 3.2: Fix `src/pages/GameDetailsPage.tsx`
-- [ ] **Replace `action.hover` with `surface.s3`** (2 occurrences):
-  - Line 297: `bgcolor: "action.hover"` → `bgcolor: "surface.s3"`
-  - Line 311: `bgcolor: "action.hover"` → `bgcolor: "surface.s3"`
-- [ ] **Remove `fontFamily` override** (line 379):
-  - Delete `sx={{ fontFamily: "inherit" }}` on `<Typography>`
-- [ ] **Fix double border on Tabs:**
-  - Remove wrapping `<Box sx={{ borderBottom: 1, borderColor: "divider" }}>` around `<Tabs>` (MuiTabs already adds border)
-- [ ] **Remove redundant fontWeight** (line 334):
-  - Remove `fontWeight={600}` from `<Typography variant="h2">` (theme already sets it)
+- [x] **Replace `action.hover` with `surface.s3`** (2 occurrences):
+  - [x] Line 298: `bgcolor: "action.hover"` → `bgcolor: "surface.s3"`
+  - [x] Line 376: `bgcolor: "action.hover"` → `bgcolor: "surface.s3"`
+- [x] **Remove `fontFamily` override**:
+  - [x] Removed `sx={{ fontFamily: "inherit" }}` on `<Typography>`
+- [x] **Fix double border on Tabs:**
+  - [x] Removed wrapping `<Box sx={{ borderBottom: 1, borderColor: "divider" }}>` around `<Tabs>`
+- [x] **Remove redundant fontWeight**:
+  - [x] Removed `fontWeight={600}` from `<Typography variant="h2">` (theme already sets it)
 
 ### Step 3.3: Fix `src/components/Layout.tsx`
-- [ ] Line 25: Change `fontSize: 28` on `<SportsEsports>` icon
-  - Replace with: `sx={{ fontSize: "1.75rem" }}` or wrap in `<Box sx={{ fontSize: "inherit" }}>` container
+- [x] Line 25: Changed `fontSize: 28` on `<SportsEsports>` icon
+  - [x] Replaced with: `sx={{ fontSize: "1.75rem" }}`
 
 ### Step 3.4: Fix old `src/components/GameCard.tsx` (temporary)
 > ⚠️ This will be deleted in Phase 5. Fix violations now in case other code references it.
-- [ ] **Replace `variant="h6"` with `variant="h3"`** (lines 364, 392)
-  - `h6` theme = uppercase label (too small)
-  - `h3` theme = card title (correct size/weight)
-- [ ] **Remove `fontSize="0.8125rem"`** from 3 `<Typography>` tags (lines 279, 410, 426)
-  - These override `body2` which is already 13px (0.8125rem at default root)
+- [x] **Replace `variant="h6"` with `variant="h3"`** (lines 364, 392)
+  - [x] Changed: `h6` (uppercase label) → `h3` (card title)
+- [x] **Remove `fontSize="0.8125rem"`** from 3 `<Typography>` tags
+  - [x] Removed: body2 already has correct size
 
 **Checklist for Phase 3 complete:**
-- [ ] FeedPage renders all feed items via `<FeedItem>` composite
-- [ ] No raw `style={{}}` on `<Link>` tags
-- [ ] GameDetailsPage uses `surface.s3`, no `action.hover`
-- [ ] No double borders, redundant fontWeights, or fontFamily overrides
-- [ ] Layout icon displays at correct size
+- [x] FeedPage renders all feed items via `<FeedItem>` composite
+- [x] No raw `style={{}}` on `<Link>` tags (uses navigation callbacks instead)
+- [x] GameDetailsPage uses `surface.s3`, no `action.hover`
+- [x] No double borders, redundant fontWeights, or fontFamily overrides
+- [x] Layout icon displays at correct size (1.75rem)
+- [x] Old GameCard.tsx fixed: variant h3, no fontSize overrides
 
 ---
 

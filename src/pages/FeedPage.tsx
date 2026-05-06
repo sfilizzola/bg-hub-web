@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { getFeed } from "../api/me";
 import type { FeedItemDto } from "../api/me";
 import {
@@ -8,14 +8,8 @@ import {
   Alert,
   Button,
   CircularProgress,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Avatar,
-  Divider,
-  Tooltip,
 } from "@mui/material";
+import { FeedItem } from "../components/bg";
 
 /** Format ISO date string as relative time (e.g. "2 hours ago"). */
 function formatRelativeTime(isoString: string): string {
@@ -32,102 +26,6 @@ function formatRelativeTime(isoString: string): string {
   if (diffDays === 1) return "Yesterday";
   if (diffDays < 7) return `${diffDays} days ago`;
   return date.toLocaleDateString(undefined, { dateStyle: "medium" });
-}
-
-/** Format ISO date for tooltip (exact date/time). */
-function formatExactTime(isoString: string): string {
-  return new Date(isoString).toLocaleString(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-}
-
-/** Render feed item text with actor, targetUser, and game as links. */
-function FeedItemContent({ item }: Readonly<{ item: FeedItemDto }>) {
-  const { type, actor, targetUser, game, text } = item;
-  const actorDisplay = actor.displayName ?? actor.username;
-  const targetDisplay = targetUser ? (targetUser.displayName ?? targetUser.username) : null;
-  const gameName = game?.name ?? null;
-
-  // Build content with links; fallback to plain text if we don't handle the type
-  const content = (() => {
-    switch (type) {
-      case "FOLLOWED_YOU":
-        return (
-          <>
-            <Link to={`/u/${actor.username}`} style={{ fontWeight: 600, color: "inherit" }}>
-              {actorDisplay}
-            </Link>
-            {" followed you"}
-          </>
-        );
-      case "YOU_FOLLOWED":
-        return targetUser ? (
-          <>
-            {"You followed "}
-            <Link to={`/u/${targetUser.username}`} style={{ fontWeight: 600, color: "inherit" }}>
-              {targetDisplay}
-            </Link>
-          </>
-        ) : (
-          <>You followed someone</>
-        );
-      case "ADDED_TO_WISHLIST":
-        return (
-          <>
-            <Link to={`/u/${actor.username}`} style={{ fontWeight: 600, color: "inherit" }}>
-              {actorDisplay}
-            </Link>
-            {" added "}
-            {game?.id ? (
-              <Link to={`/games/${game.id}`} style={{ fontWeight: 600, color: "inherit" }}>
-                {gameName}
-              </Link>
-            ) : (
-              gameName ?? "a game"
-            )}
-            {" to wishlist"}
-          </>
-        );
-      case "ADDED_TO_COLLECTION":
-        return (
-          <>
-            <Link to={`/u/${actor.username}`} style={{ fontWeight: 600, color: "inherit" }}>
-              {actorDisplay}
-            </Link>
-            {" added "}
-            {game?.id ? (
-              <Link to={`/games/${game.id}`} style={{ fontWeight: 600, color: "inherit" }}>
-                {gameName}
-              </Link>
-            ) : (
-              gameName ?? "a game"
-            )}
-            {" to collection"}
-          </>
-        );
-      case "PLAYLOG_CREATED":
-        return (
-          <>
-            <Link to={`/u/${actor.username}`} style={{ fontWeight: 600, color: "inherit" }}>
-              {actorDisplay}
-            </Link>
-            {" logged a play of "}
-            {game?.id ? (
-              <Link to={`/games/${game.id}`} style={{ fontWeight: 600, color: "inherit" }}>
-                {gameName}
-              </Link>
-            ) : (
-              gameName ?? "a game"
-            )}
-          </>
-        );
-      default:
-        return text;
-    }
-  })();
-
-  return <Typography component="span" variant="body1">{content}</Typography>;
 }
 
 export function FeedPage() {
@@ -180,6 +78,8 @@ export function FeedPage() {
     );
   }
 
+  const navigate = useNavigate();
+
   return (
     <Box>
       <Typography variant="h2" component="h1" sx={{ mb: 2 }}>
@@ -202,10 +102,10 @@ export function FeedPage() {
         <Alert severity="info" sx={{ mb: 2 }}>
           <Typography sx={{ mb: 1 }}>No activity yet.</Typography>
           <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-            <Button component={Link} to="/search" variant="contained" size="small">
+            <Button component="a" href="/search" variant="contained" size="small" onClick={(e) => { e.preventDefault(); navigate("/search"); }}>
               Search games
             </Button>
-            <Button component={Link} to="/me/following" variant="outlined" size="small">
+            <Button component="a" href="/me/following" variant="outlined" size="small" onClick={(e) => { e.preventDefault(); navigate("/me/following"); }}>
               Find people
             </Button>
           </Box>
@@ -213,44 +113,57 @@ export function FeedPage() {
       )}
       {!error && items.length > 0 && (
         <>
-          <List disablePadding sx={{ bgcolor: "background.paper", borderRadius: 1 }}>
-            {items.map((item, index) => (
-              <Box key={item.id}>
-                {index > 0 && <Divider component="li" />}
-                <ListItem alignItems="flex-start" sx={{ py: 1.5 }}>
-                  <ListItemAvatar sx={{ minWidth: 44 }}>
-                    <Avatar
-                      src={item.actor.imageUrl ?? undefined}
-                      sx={{ width: 36, height: 36 }}
-                      component={Link}
-                      to={`/u/${item.actor.username}`}
-                    >
-                      {(item.actor.displayName ?? item.actor.username).charAt(0).toUpperCase()}
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={<FeedItemContent item={item} />}
-                    secondary={
-                      <Tooltip title={formatExactTime(item.createdAt)} placement="top">
-                        <Typography
-                          component="span"
-                          variant="caption"
-                          color="text.secondary"
-                          sx={{ cursor: "default" }}
-                        >
-                          {formatRelativeTime(item.createdAt)}
-                        </Typography>
-                      </Tooltip>
-                    }
-                    primaryTypographyProps={{ component: "span" }}
-                    secondaryTypographyProps={{ component: "span", display: "block", sx: { mt: 0.25 } }}
-                  />
-                </ListItem>
-              </Box>
-            ))}
-          </List>
+          <Box sx={{ borderRadius: 1, overflow: "hidden" }}>
+            {items.map((item) => {
+              const actorName = item.actor.displayName ?? item.actor.username;
+              const gameName = item.game?.name ?? null;
+              const relativeTime = formatRelativeTime(item.createdAt);
+
+              // Map FeedItemDto.type to FeedItem kind
+              let kind: "play" | "owned" | "wishlist" | "follow" = "follow";
+              switch (item.type) {
+                case "PLAYLOG_CREATED":
+                  kind = "play";
+                  break;
+                case "ADDED_TO_COLLECTION":
+                  kind = "owned";
+                  break;
+                case "ADDED_TO_WISHLIST":
+                  kind = "wishlist";
+                  break;
+                case "FOLLOWED_YOU":
+                  kind = "follow";
+                  break;
+                default:
+                  kind = "follow";
+              }
+
+              return (
+                <FeedItem
+                  key={item.id}
+                  kind={kind}
+                  actor={{
+                    username: item.actor.username,
+                    displayName: item.actor.displayName,
+                    imageUrl: item.actor.imageUrl ?? undefined,
+                  }}
+                  time={relativeTime}
+                  exactTime={item.createdAt}
+                  game={
+                    gameName
+                      ? {
+                          title: gameName,
+                        }
+                      : undefined
+                  }
+                  onClickGame={() => item.game?.id && navigate(`/games/${item.game.id}`)}
+                  onClickActor={() => navigate(`/u/${item.actor.username}`)}
+                />
+              );
+            })}
+          </Box>
           {nextCursor && (
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
               <Button
                 variant="outlined"
                 onClick={handleLoadMore}

@@ -22,7 +22,7 @@ import { useAuth } from "../contexts/useAuth";
 
 /** Placeholder branding icon for the app. Replace with a custom logo when available. */
 function BrandIcon() {
-  return <SportsEsports sx={{ fontSize: 28 }} />;
+  return <SportsEsports sx={{ fontSize: "1.75rem" }} />;
 }
 
 const navLinks = [

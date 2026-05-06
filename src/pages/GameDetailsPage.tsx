@@ -295,7 +295,7 @@ export function GameDetailsPage() {
                   sx={{
                     maxHeight: 280,
                     objectFit: "contain",
-                    bgcolor: "action.hover",
+                    bgcolor: "surface.s3",
                   }}
                 />
               </Card>
@@ -307,7 +307,7 @@ export function GameDetailsPage() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  bgcolor: "action.hover",
+                  bgcolor: "surface.s3",
                 }}
               >
                 <Typography color="text.secondary">No image</Typography>
@@ -331,7 +331,7 @@ export function GameDetailsPage() {
 
         {/* Right: title, actions, tabs */}
         <Grid size={{ xs: 12, md: 8 }}>
-          <Typography variant="h2" component="h1" fontWeight={600} sx={{ mb: 1 }}>
+          <Typography variant="h2" component="h1" sx={{ mb: 1 }}>
             {game.name}
           </Typography>
 
@@ -353,14 +353,12 @@ export function GameDetailsPage() {
 
           <Divider sx={{ my: 2 }} />
 
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <Tabs value={tab} onChange={(_, v) => setTab(v)}>
-              <Tab label="Details" />
-              <Tab label="Expansions" />
-              <Tab label="Plays" />
-              <Tab label="Notes" />
-            </Tabs>
-          </Box>
+          <Tabs value={tab} onChange={(_, v) => setTab(v)}>
+            <Tab label="Details" />
+            <Tab label="Expansions" />
+            <Tab label="Plays" />
+            <Tab label="Notes" />
+          </Tabs>
 
           <TabPanel value={tab} index={0}>
             <Typography variant="subtitle2" color="text.secondary" gutterBottom>
@@ -373,10 +371,10 @@ export function GameDetailsPage() {
                   p: 2,
                   whiteSpace: "pre-wrap",
                   maxWidth: "60ch",
-                  bgcolor: "action.hover",
+                  bgcolor: "surface.s3",
                 }}
               >
-                <Typography variant="body2" component="pre" sx={{ fontFamily: "inherit" }}>
+                <Typography variant="body2" component="pre">
                   {game.description}
                 </Typography>
               </Paper>

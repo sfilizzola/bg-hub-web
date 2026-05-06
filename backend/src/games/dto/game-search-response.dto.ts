@@ -1,12 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { GameDto } from './game.dto';
+import { GameSearchItemDto } from './game-search-item.dto';
 
 export class GameSearchResponseDto {
-  @ApiProperty({ type: [GameDto], description: 'Matching games' })
-  games!: GameDto[];
+  @ApiProperty({
+    type: [GameSearchItemDto],
+    description: 'Matching games from local DB and/or BGG (merged). source indicates LOCAL or BGG.',
+  })
+  games!: GameSearchItemDto[];
 
   @ApiProperty({
-    description: 'Whether external provider (e.g. BGG) was available for this search',
+    description: 'Whether BGG was available for this search',
     example: true,
   })
   externalAvailable!: boolean;

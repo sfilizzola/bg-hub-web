@@ -29,3 +29,8 @@ export async function searchGames(q: string): Promise<SearchGamesResponse> {
 export async function getGame(id: string): Promise<GameDto> {
   return apiFetch<GameDto>(`/games/${id}`);
 }
+
+/** Get game by BGG ID: returns from DB if present, else fetches from BGG, saves, and returns. */
+export async function getByBggId(bggId: number): Promise<GameDto> {
+  return apiFetch<GameDto>(`/games/by-bgg-id/${bggId}`);
+}

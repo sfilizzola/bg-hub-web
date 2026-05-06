@@ -27,10 +27,29 @@ export class SearchController {
     description: 'Search query',
     schema: { type: 'string' },
   })
+  @ApiQuery({
+    name: 'gamesLimit',
+    required: false,
+    description: 'Max number of game results to return',
+    schema: { type: 'integer', default: 20 },
+  })
+  @ApiQuery({
+    name: 'gamesOffset',
+    required: false,
+    description: 'Offset for game results (for load more)',
+    schema: { type: 'integer', default: 0 },
+  })
   @ApiResponse({ status: 200, description: 'Games and users', type: GlobalSearchResponseDto })
   @ApiResponse({ status: 500, description: 'Internal server error', schema: API_ERROR })
-  async search(@Query('q') q: string, @Request() req: RequestWithOptionalUser) {
+  async search(
+    @Query('q') q: string,
+    @Query('gamesLimit') gamesLimit: string | undefined,
+    @Query('gamesOffset') gamesOffset: string | undefined,
+    @Request() req: RequestWithOptionalUser,
+  ) {
     const currentUserId = req.user?.id;
-    return this.searchService.search(q ?? '', currentUserId);
+    const limit = gamesLimit != null ? Math.min(100, Math.max(1, parseInt(gamesLimit, 10) || 20)) : 20;
+    const offset = gamesOffset != null ? Math.max(0, parseInt(gamesOffset, 10) || 0) : 0;
+    return this.searchService.search(q ?? '', currentUserId, { gamesLimit: limit, gamesOffset: offset });
   }
 }

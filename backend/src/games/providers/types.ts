@@ -25,7 +25,7 @@ export type ExternalGameDetails = ExternalGame;
 export interface GameProvider {
   id: string;
   search(query: string): Promise<ExternalGame[]>;
-  getDetails?(externalId: string): Promise<ExternalGameDetails>;
+  getDetails?(externalId: string): Promise<ExternalGameDetails | undefined>;
   /** Whether this provider can be used (env/config present, not rate-limited, etc.) */
   isAvailable(): boolean | Promise<boolean>;
 }

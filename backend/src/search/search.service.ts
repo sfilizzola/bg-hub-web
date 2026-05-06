@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-import { GameDto } from '../games/dto/game.dto';
+import type { GameSearchItemDto } from '../games/dto/game-search-item.dto';
 import { GamesService } from '../games/games.service';
 import { User } from '../users/user.entity';
 import { UserFollow } from '../users/user-follow.entity';
 import { SearchUserDto } from './dto/search-user.dto';
 
-const GAMES_LIMIT = 10;
 const USERS_LIMIT = 10;
+const DEFAULT_GAMES_LIMIT = 20;
 
 @Injectable()
 export class SearchService {
@@ -20,24 +20,36 @@ export class SearchService {
     private readonly userFollowRepository: Repository<UserFollow>,
   ) {}
 
-  async search(query: string, currentUserId?: string): Promise<{ games: GameDto[]; users: SearchUserDto[] }> {
+  async search(
+    query: string,
+    currentUserId?: string,
+    options?: { gamesLimit?: number; gamesOffset?: number },
+  ): Promise<{ games: GameSearchItemDto[]; users: SearchUserDto[]; hasMoreGames?: boolean }> {
     const trimmed = query.trim();
+    const gamesLimit = options?.gamesLimit ?? DEFAULT_GAMES_LIMIT;
+    const gamesOffset = options?.gamesOffset ?? 0;
 
-    const [games, users] = await Promise.all([
-      this.searchGames(trimmed),
+    const [gamesResult, users] = await Promise.all([
+      this.searchGames(trimmed, gamesLimit, gamesOffset),
       this.searchUsers(trimmed, currentUserId),
     ]);
 
-    return { games, users };
+    return {
+      games: gamesResult.games,
+      users,
+      hasMoreGames: gamesResult.hasMoreGames,
+    };
   }
 
-  private async searchGames(trimmed: string): Promise<GameDto[]> {
+  private async searchGames(
+    trimmed: string,
+    limit: number,
+    offset: number,
+  ): Promise<{ games: GameSearchItemDto[]; hasMoreGames: boolean }> {
     if (!trimmed) {
-      return [];
+      return { games: [], hasMoreGames: false };
     }
-    const result = await this.gamesService.search(trimmed);
-    const games = result.games.slice(0, GAMES_LIMIT).map((g) => new GameDto(g));
-    return games;
+    return this.gamesService.search(trimmed, limit, offset);
   }
 
   private async searchUsers(trimmed: string, currentUserId?: string): Promise<SearchUserDto[]> {

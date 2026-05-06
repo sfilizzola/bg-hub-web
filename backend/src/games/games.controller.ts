@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GamesService } from './games.service';
 import { GameDto } from './dto/game.dto';
@@ -17,7 +17,7 @@ export class GamesController {
   @Get('search')
   @ApiOperation({
     summary: 'Search games',
-    description: 'Searches the local catalog by name. If no results, tries external provider (e.g. BGG) and persists results. externalAvailable indicates if external was used.',
+    description: 'Searches local DB and BGG; merges results. Does not import BGG games. Each item has source LOCAL or BGG.',
   })
   @ApiQuery({
     name: 'q',
@@ -26,14 +26,34 @@ export class GamesController {
     schema: { type: 'string' },
     example: 'Catan',
   })
-  @ApiResponse({ status: 200, description: 'Search results', type: GameSearchResponseDto })
+  @ApiResponse({ status: 200, description: 'Search results (local + BGG merged)', type: GameSearchResponseDto })
   @ApiResponse({ status: 500, description: 'Internal server error', schema: API_ERROR })
   async search(@Query('q') q = '') {
-    const result = await this.gamesService.search(q);
-    return {
-      games: result.games.map((g) => new GameDto(g)),
-      externalAvailable: result.externalAvailable,
-    };
+    return this.gamesService.search(q);
+  }
+
+  @Get('by-bgg-id/:bggId')
+  @ApiOperation({
+    summary: 'Get game by BGG ID',
+    description: 'Returns game from local DB if already imported; otherwise fetches from BGG, saves, and returns.',
+  })
+  @ApiParam({
+    name: 'bggId',
+    required: true,
+    description: 'BoardGameGeek ID',
+    schema: { type: 'integer' },
+    example: 13,
+  })
+  @ApiResponse({ status: 200, description: 'Game', type: GameDto })
+  @ApiResponse({ status: 404, description: 'Game not found', schema: API_ERROR })
+  @ApiResponse({ status: 500, description: 'Internal server error', schema: API_ERROR })
+  async getByBggId(@Param('bggId') bggId: string) {
+    const id = Number(bggId);
+    if (!Number.isInteger(id) || id < 1) {
+      throw new BadRequestException({ message: 'Invalid bggId' });
+    }
+    const game = await this.gamesService.getByBggId(id);
+    return new GameDto(game);
   }
 
   @Get(':id')

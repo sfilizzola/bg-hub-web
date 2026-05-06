@@ -1,0 +1,1596 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>BG Hub — Design System</title>
+<meta name="viewport" content="width=1280" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   BG Hub — Design System styles
+   Cozy tabletop, warm dark mode.
+   ============================================================ */
+
+:root {
+  /* surfaces */
+  --s-base:#0f0e0c;
+  --s-1:#1a1612;
+  --s-2:#241d18;
+  --s-3:#322820;
+  --s-4:#41342a;
+  --s-edge:#5b4a3c;
+
+  /* ink */
+  --ink-100:#f6efe1;
+  --ink-80:#dccfb6;
+  --ink-60:#a89881;
+  --ink-40:#7a6c5a;
+  --ink-20:#544a3e;
+
+  /* accents */
+  --amber-200:#fbe7c0;
+  --amber-300:#f7d290;
+  --amber-400:#f4be5d;
+  --amber-500:#f0a830;
+  --amber-600:#a47828;
+  --amber-700:#6b4a1c;
+  --amber-900:#3a2810;
+
+  --emerald-200:#cfe7d8;
+  --emerald-300:#9bcfae;
+  --emerald-400:#6cb185;
+  --emerald-500:#3f8a5a;
+  --emerald-600:#2e6b48;
+  --emerald-700:#1f4f37;
+  --emerald-900:#0f2a1d;
+
+  --rust-200:#f3cdc0;
+  --rust-300:#e8a795;
+  --rust-400:#d97f6a;
+  --rust-500:#c2553d;
+  --rust-600:#a4422e;
+  --rust-700:#7a2f1f;
+  --rust-900:#3a1810;
+
+  /* radii */
+  --r-sm:4px; --r-md:8px; --r-lg:14px; --r-xl:22px;
+
+  /* type */
+  --f-display: 'Bricolage Grotesque', 'Public Sans', system-ui, sans-serif;
+  --f-ui: 'Public Sans', system-ui, sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* shadows */
+  --e1: 0 1px 0 rgba(255,200,140,.04), 0 2px 6px rgba(0,0,0,.35);
+  --e2: 0 1px 0 rgba(255,200,140,.06), 0 6px 18px rgba(0,0,0,.45);
+  --e3: 0 1px 0 rgba(255,200,140,.08), 0 14px 38px rgba(0,0,0,.55);
+  --e4: 0 1px 0 rgba(255,200,140,.10), 0 28px 64px rgba(0,0,0,.65);
+}
+
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; }
+body {
+  font-family: var(--f-ui);
+  background: var(--s-base);
+  color: var(--ink-80);
+  /* Subtle paper grain */
+  background-image:
+    radial-gradient(1200px 600px at 20% -200px, rgba(240,168,48,.06), transparent 60%),
+    radial-gradient(900px 500px at 110% 10%, rgba(63,138,90,.05), transparent 60%);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01", "cv11";
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+/* ===== Page header ===== */
+.page-header {
+  border-bottom: 1px solid var(--s-edge);
+  background: linear-gradient(180deg, var(--s-1), var(--s-base));
+}
+.ph-inner {
+  max-width: 1240px; margin: 0 auto; padding: 28px 48px 32px;
+  display:flex; align-items:flex-end; justify-content:space-between; gap:32px; flex-wrap:wrap;
+}
+.ph-logo { display:flex; align-items:center; gap:14px; }
+.ph-brand {
+  font-family: var(--f-display); font-weight:700; font-size:30px; color: var(--ink-100);
+  letter-spacing:-0.02em;
+}
+.ph-sub { font-size:12px; color: var(--ink-40); letter-spacing:0.08em; text-transform:uppercase; }
+.ph-meta { color: var(--ink-60); font-size:15px; max-width:520px; line-height:1.5; }
+
+/* ===== Section scaffolding ===== */
+.ds { max-width:1240px; margin:0 auto; padding: 56px 48px 80px; }
+.ds-section { padding: 56px 0; border-top: 1px solid var(--s-2); }
+.ds-section:first-of-type { border-top: 0; padding-top: 24px; }
+
+.ds-eyebrow { font-size:12px; color: var(--amber-500); letter-spacing:0.16em; text-transform:uppercase; font-weight:600; }
+.ds-h {
+  font-family: var(--f-display); font-weight:700; font-size:48px; line-height:1.05; letter-spacing:-0.02em;
+  color: var(--ink-100); margin: 12px 0 12px;
+}
+.ds-h4 { font-family: var(--f-display); font-weight:600; font-size:18px; color: var(--ink-100); margin: 0 0 14px; }
+.ds-p { color: var(--ink-60); margin: 0 0 18px; max-width: 720px; }
+.ds-lede { color: var(--ink-80); font-size:18px; max-width:760px; line-height:1.55; }
+
+.ds-section-title {
+  font-family: var(--f-display); font-weight:700; font-size:30px; letter-spacing:-0.02em;
+  color: var(--ink-100); margin: 0 0 28px; display:flex; align-items:baseline; gap:14px;
+}
+.ds-section-title .num {
+  font-family: var(--f-mono); font-size:13px; color: var(--amber-500);
+  background: var(--s-2); padding: 4px 8px; border-radius:6px; border:1px solid var(--s-3);
+  letter-spacing: 0.04em;
+}
+
+.ds-block { background: var(--s-1); border:1px solid var(--s-3); border-radius: var(--r-lg); padding:28px; margin-bottom:20px; }
+.ds-block.two-col { display:grid; grid-template-columns: 1fr 1fr; gap:36px; }
+
+/* ===== Color swatches ===== */
+.swatch-row { display:grid; grid-template-columns: repeat(6,1fr); gap:14px; }
+.swatch-row.tight { grid-template-columns: repeat(3, 1fr); gap:18px; }
+.swatch { display:flex; flex-direction:column; gap:6px; }
+.swatch.big { padding: 12px; background: var(--s-2); border-radius: var(--r-md); border:1px solid var(--s-3); }
+.sw-chip { width:100%; aspect-ratio: 3/2; border-radius: var(--r-md); border:1px solid rgba(255,255,255,.04); }
+.sw-name { font-size:13px; color: var(--ink-100); font-weight:600; margin-top:4px; }
+.sw-hex { font-family: var(--f-mono); font-size:12px; color: var(--ink-60); }
+.sw-role { font-size:12px; color: var(--ink-40); }
+
+.ramp { background: var(--s-2); border:1px solid var(--s-3); border-radius: var(--r-md); padding:14px; }
+.ramp-label { font-size:13px; font-weight:600; color: var(--ink-100); margin-bottom:8px; }
+.ramp-row { display:grid; grid-template-columns: repeat(7,1fr); height: 48px; border-radius: var(--r-sm); overflow:hidden; border:1px solid var(--s-3); }
+.ramp-row > div { display:flex; align-items:flex-end; justify-content:flex-start; padding:4px; }
+.ramp-row > div span { font-family: var(--f-mono); font-size:10px; color: var(--ink-100); opacity:.85; }
+.ramp-row > div:nth-child(-n+3) span { color: var(--ink-100); }
+
+.sem-row { display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; }
+.sem-pill { background: var(--bg); color: var(--ink); padding: 12px 14px; border-radius: var(--r-md); border:1px solid rgba(0,0,0,.3); font-weight:500; font-size:14px; }
+
+/* ===== Type ===== */
+.type-grid { display:flex; flex-direction: column; gap:18px; }
+.type-row { display:grid; grid-template-columns: 220px 1fr; gap:24px; align-items:baseline; padding-bottom:14px; border-bottom:1px dashed var(--s-3); }
+.type-row:last-child { border-bottom:0; }
+.type-spec { font-size:13px; color: var(--ink-60); }
+.type-spec code { display:block; font-family: var(--f-mono); font-size:12px; color: var(--ink-40); margin-top:4px; }
+.type-sample { color: var(--ink-100); }
+
+/* ===== Spacing ===== */
+.space-row { display:flex; flex-direction:column; gap:8px; }
+.space-item { display:flex; align-items:center; gap:14px; font-family:var(--f-mono); font-size:12px; color: var(--ink-60); }
+.space-bar { height: 14px; background: linear-gradient(90deg, var(--amber-500), var(--amber-600)); border-radius:3px; }
+
+/* ===== Radius ===== */
+.radius-row { display:flex; gap:18px; flex-wrap:wrap; }
+.radius-item { text-align:center; font-size:12px; color: var(--ink-60); }
+.r-box { width: 70px; height: 70px; background: var(--s-3); border:1px solid var(--s-4); margin: 0 auto 8px; }
+.radius-item em { color: var(--ink-40); font-style:normal; display:block; margin-top:2px; }
+
+/* ===== Elevation ===== */
+.elev-row { display:grid; grid-template-columns: repeat(5,1fr); gap:24px; }
+.elev-item { background: var(--s-2); border:1px solid var(--s-3); border-radius: var(--r-md); aspect-ratio: 4/3; display:flex; align-items:flex-end; padding:10px; font-family:var(--f-mono); font-size:11px; color: var(--ink-60); }
+
+/* ===== Motifs ===== */
+.motif-grid { display:grid; grid-template-columns: repeat(8,1fr); gap:12px; }
+.motif {
+  background: var(--s-2); border:1px solid var(--s-3); border-radius: var(--r-md);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+  padding: 18px 10px; color: var(--ink-60); font-size: 12px;
+}
+
+/* ===== Buttons ===== */
+.btn-row { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-start; }
+.btn {
+  font-family: var(--f-ui); font-weight:600; font-size:14px;
+  padding: 10px 16px; border-radius: var(--r-md);
+  border: 1px solid transparent; cursor:pointer;
+  display:inline-flex; align-items:center; gap:8px; line-height:1;
+  transition: transform .08s ease, box-shadow .15s ease, background .15s ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn-sm { padding: 7px 12px; font-size:13px; border-radius: 6px; }
+.btn-lg { padding: 14px 22px; font-size:16px; border-radius: 10px; }
+.btn-icon { width:40px; height:40px; padding:0; justify-content:center; font-size:18px; }
+.btn-block { width:100%; justify-content:center; }
+
+.btn-primary { background: var(--amber-500); color: #1a1410; border-color: var(--amber-600); box-shadow: inset 0 -2px 0 rgba(0,0,0,.18), 0 1px 0 rgba(255,210,140,.25), var(--e1); }
+.btn-primary:hover, .btn-primary.is-hover { background: var(--amber-400); }
+.btn-primary:active, .btn-primary.is-pressed { background: var(--amber-600); box-shadow: inset 0 2px 0 rgba(0,0,0,.18); }
+.btn-primary.is-focus { outline: 2px solid var(--amber-300); outline-offset: 2px; }
+.btn-primary[disabled] { background: var(--s-3); color: var(--ink-40); border-color: var(--s-3); cursor:not-allowed; box-shadow:none; }
+
+.btn-secondary { background: var(--emerald-700); color: var(--emerald-200); border-color: var(--emerald-600); }
+.btn-secondary:hover { background: var(--emerald-600); color: var(--ink-100); }
+
+.btn-ghost { background: transparent; color: var(--ink-80); }
+.btn-ghost:hover { background: var(--s-3); color: var(--ink-100); }
+
+.btn-outline { background: transparent; color: var(--ink-100); border: 1px solid var(--s-edge); }
+.btn-outline:hover { background: var(--s-2); border-color: var(--ink-40); }
+
+.btn-danger { background: var(--rust-700); color: var(--rust-200); border-color: var(--rust-600); }
+.btn-danger:hover { background: var(--rust-600); color: var(--ink-100); }
+
+.spinner { width:12px; height:12px; border:2px solid rgba(0,0,0,.25); border-top-color:#1a1410; border-radius:50%; animation: spin 0.8s linear infinite; display:inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== Inputs ===== */
+.input-grid { display:grid; grid-template-columns: 1fr 1fr; gap:18px 28px; }
+.field { display:flex; flex-direction:column; gap:6px; }
+.field-row { display:grid; grid-template-columns: 1fr 1fr; gap:14px; }
+.field-label { font-size:12px; color: var(--ink-60); font-weight:600; text-transform:uppercase; letter-spacing:0.06em; }
+.input {
+  background: var(--s-3); color: var(--ink-100);
+  border: 1px solid var(--s-4); border-radius: var(--r-md);
+  padding: 10px 14px; font-family: var(--f-ui); font-size:15px;
+  outline: none; transition: border-color .15s, box-shadow .15s;
+}
+.input:focus, .input:focus-within { border-color: var(--amber-500); box-shadow: 0 0 0 3px rgba(240,168,48,.15); }
+.input.is-error { border-color: var(--rust-500); box-shadow: 0 0 0 3px rgba(194,85,61,.18); }
+.field-error { color: var(--rust-400); font-size:12px; }
+.field-hint { color: var(--ink-40); font-size:12px; }
+.input-with-icon { display:flex; align-items:center; gap:10px; padding: 8px 12px; color: var(--ink-60); }
+.input-with-icon input { background: transparent; border:0; outline:0; color: var(--ink-100); flex:1; font-size:15px; font-family:var(--f-ui); }
+textarea.input { resize:vertical; min-height: 60px; line-height:1.45; }
+
+.seg { background: var(--s-3); border:1px solid var(--s-4); border-radius: 999px; padding:3px; display:inline-flex; gap:2px; align-self:flex-start; }
+.seg-btn { background: transparent; border:0; color: var(--ink-60); padding: 7px 16px; border-radius: 999px; cursor:pointer; font-family:var(--f-ui); font-size:13px; font-weight:600; }
+.seg-btn.is-active { background: var(--amber-500); color:#1a1410; }
+
+.chips { display:flex; gap:8px; flex-wrap:wrap; }
+.tag-chip {
+  background: var(--s-3); border:1px solid var(--s-4);
+  padding: 5px 8px 5px 10px; border-radius: 999px; font-size:13px;
+  display:inline-flex; align-items:center; gap:8px; color: var(--ink-100);
+}
+.tag-chip button { background: transparent; border:0; color: var(--ink-40); cursor:pointer; font-size:14px; line-height:1; }
+.tag-dot { width:8px; height:8px; border-radius:50%; background: var(--amber-500); display:inline-block; }
+.tag-add {
+  background: transparent; border:1px dashed var(--s-edge); color: var(--ink-60);
+  padding: 5px 12px; border-radius: 999px; font-size:13px; cursor:pointer;
+}
+.tag-add:hover { color: var(--ink-100); border-color: var(--ink-40); }
+
+/* ===== Rating ===== */
+.rating-row { display:grid; grid-template-columns: 200px 1fr; gap:32px; align-items:center; }
+.rating-stamp { position:relative; width:140px; height:140px; }
+.rating-num {
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-family: var(--f-mono); font-weight:700; font-size:46px; color:#1a1410; letter-spacing:-0.02em;
+}
+.rating-cap { position:absolute; bottom:16px; right:0; left:0; text-align:center; font-family:var(--f-mono); font-size:11px; color:#3a2916; font-weight:600; }
+.rating-detail { display:flex; flex-direction:column; gap:14px; }
+.rating-label { font-family: var(--f-display); font-weight:600; font-size:22px; color: var(--ink-100); }
+.rating-meta { color: var(--ink-60); font-size:13px; }
+.meeple-rate { display:flex; flex-direction:column; gap:8px; }
+.mr-row { display:grid; grid-template-columns: 130px 1fr 90px; gap:14px; align-items:center; }
+.mr-label { font-size:13px; color: var(--ink-60); }
+.mr-num { font-family:var(--f-mono); font-size:13px; color: var(--ink-80); text-align:right; }
+.mr-meeples { display:inline-flex; gap:6px; }
+.mr-m {
+  width:18px; height:22px;
+  background: var(--s-edge);
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 28'><path d='M12 4 c2.8 0 5 2.2 5 5 0 1.7-.85 3.2-2.15 4.1 3.5 1.3 6 4.6 6 8.5 V25 H5.15 v-3.4 c0-3.9 2.5-7.2 6-8.5 -1.3-.9-2.15-2.4-2.15-4.1 0-2.8 2.2-5 5-5z'/></svg>") center/contain no-repeat;
+          mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 28'><path d='M12 4 c2.8 0 5 2.2 5 5 0 1.7-.85 3.2-2.15 4.1 3.5 1.3 6 4.6 6 8.5 V25 H5.15 v-3.4 c0-3.9 2.5-7.2 6-8.5 -1.3-.9-2.15-2.4-2.15-4.1 0-2.8 2.2-5 5-5z'/></svg>") center/contain no-repeat;
+}
+.mr-m.on { background: var(--amber-500); }
+
+.dist-row { background: var(--s-2); border:1px solid var(--s-3); border-radius: var(--r-md); padding:14px; }
+.dist-bar { display:grid; grid-template-columns: repeat(10, 1fr); gap:6px; align-items:end; height: 80px; }
+.dist-bar > div { background: linear-gradient(180deg, var(--amber-500), var(--amber-700)); border-radius: 3px 3px 0 0; }
+.dist-axis { display:flex; justify-content:space-between; font-family:var(--f-mono); font-size:11px; color: var(--ink-40); margin-top:6px; }
+
+/* ===== Chips & tags ===== */
+.chip-row { display:flex; gap:8px; flex-wrap:wrap; }
+.chip-row.tight { gap:6px; }
+.chip {
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:12px; font-weight:600;
+  padding: 5px 10px 5px 8px; border-radius: 999px;
+  border: 1px solid;
+  letter-spacing: 0.02em;
+}
+.chip-dot { width:7px; height:7px; border-radius:50%; }
+.chip-owned { background: rgba(63,138,90,.15); color: var(--emerald-300); border-color: var(--emerald-700); }
+.chip-owned .chip-dot { background: var(--emerald-400); }
+.chip-wish { background: rgba(194,85,61,.15); color: var(--rust-300); border-color: var(--rust-700); }
+.chip-wish .chip-dot { background: var(--rust-400); }
+.chip-played { background: rgba(240,168,48,.13); color: var(--amber-300); border-color: var(--amber-700); }
+.chip-played .chip-dot { background: var(--amber-400); }
+.chip-new { background: rgba(220,207,182,.08); color: var(--ink-100); border-color: var(--s-edge); }
+.chip-new .chip-dot { background: var(--ink-100); }
+.chip-private { background: var(--s-2); color: var(--ink-60); border-color: var(--s-edge); padding: 5px 12px; }
+
+.tag {
+  font-size:12px; color: var(--ink-80);
+  background: var(--s-2); border:1px solid var(--s-3);
+  padding: 4px 10px; border-radius: var(--r-sm);
+}
+
+/* ===== Achievement badges ===== */
+.badge-grid { display:grid; grid-template-columns: repeat(6,1fr); gap:18px; }
+.bbadge { text-align:center; }
+.bbadge svg { display:block; margin: 0 auto 10px; filter: drop-shadow(0 4px 8px rgba(0,0,0,.4)); }
+.bbadge-name { font-family: var(--f-display); font-weight:600; font-size:14px; color: var(--ink-100); }
+.bbadge-meta { font-size:12px; color: var(--ink-40); margin-top:2px; }
+.bbadge.locked { opacity: .55; }
+.bbadge.locked svg { filter: grayscale(.6) drop-shadow(0 2px 4px rgba(0,0,0,.3)); }
+
+/* ===== Avatars ===== */
+.avatar-row { display:flex; align-items:center; gap:18px; }
+.avatar { position:relative; width:40px; height:40px; border-radius:50%; overflow:hidden; flex-shrink:0; }
+.avatar > span {
+  width:100%; height:100%; display:flex; align-items:center; justify-content:center;
+  color: #1a1410; font-family: var(--f-display); font-weight:700; font-size:16px;
+  border:1px solid rgba(0,0,0,.25);
+  border-radius:50%;
+}
+.avatar-xs { width:24px; height:24px; }
+.avatar-xs > span { font-size:11px; }
+.avatar-sm { width:32px; height:32px; }
+.avatar-sm > span { font-size:13px; }
+.avatar-lg { width:56px; height:56px; }
+.avatar-lg > span { font-size:22px; }
+.avatar-xl { width:80px; height:80px; }
+.avatar-xl > span { font-size:32px; }
+.avatar .dot { position:absolute; right:2px; bottom:2px; width:14px; height:14px; border-radius:50%; background: var(--emerald-500); border: 2px solid var(--s-1); }
+.avatar-stack { display:flex; }
+.avatar-stack .avatar { margin-left: -10px; box-shadow: 0 0 0 2px var(--s-1); }
+.avatar-stack .avatar:first-child { margin-left:0; }
+.avatar-stack .more > span { background: var(--s-3); color: var(--ink-100); font-family: var(--f-mono); font-size:11px; }
+
+/* ===== Cards ===== */
+.card { background: var(--s-2); border:1px solid var(--s-3); border-radius: var(--r-lg); box-shadow: var(--e1); }
+.card-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+/* Game card */
+.game-card { display:flex; flex-direction:column; overflow:hidden; transition: transform .15s, box-shadow .15s; }
+.game-card:hover { transform: translateY(-2px); box-shadow: var(--e2); }
+.game-cover {
+  --ph: var(--s-edge);
+  position:relative; aspect-ratio: 5/3;
+  background:
+    linear-gradient(135deg, var(--s-3), var(--s-4));
+  border-bottom: 1px solid var(--s-3);
+  overflow:hidden;
+}
+.cover-placeholder {
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:8px;
+  color: var(--ink-40); font-family: var(--f-mono); font-size: 11px; letter-spacing:0.08em; text-transform:uppercase;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(255,255,255,.02) 0 8px, transparent 8px 16px);
+}
+.cover-year { position:absolute; top:10px; left:12px; font-family:var(--f-mono); font-size:11px; color: var(--ink-80); background: rgba(0,0,0,.4); padding: 3px 7px; border-radius: 4px; }
+.cover-flag { position:absolute; top:10px; right:12px; font-size:11px; font-weight:700; color: var(--emerald-200); background: var(--emerald-700); padding: 3px 8px; border-radius:4px; letter-spacing:0.04em; }
+
+.game-body { padding: 18px 18px 16px; position:relative; }
+.game-stamp {
+  position:absolute; top:-30px; right:14px; width:56px; height:56px; border-radius:50%;
+  background: radial-gradient(circle at 35% 30%, var(--amber-400), var(--amber-600));
+  border: 2px solid var(--s-1);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow: var(--e2);
+}
+.gs-num { font-family: var(--f-mono); font-weight:700; font-size:18px; color:#1a1410; }
+.game-title { font-family: var(--f-display); font-weight:700; font-size:20px; color: var(--ink-100); margin: 0 0 6px; padding-right: 60px; line-height:1.15; }
+.game-meta { font-family: var(--f-mono); font-size:12px; color: var(--ink-60); display:flex; gap:6px; margin-bottom:12px; }
+.game-actions { display:flex; gap:8px; margin-top:14px; }
+.game-card.is-owned .game-cover::after {
+  content:""; position:absolute; inset:0; background: linear-gradient(135deg, transparent 60%, rgba(63,138,90,.18));
+}
+
+/* User card */
+.user-card { padding: 0 22px 22px; overflow:hidden; }
+.uc-bg {
+  height: 64px; margin: 0 -22px 0;
+  background: linear-gradient(135deg, var(--amber-700), var(--rust-700));
+  background-image:
+    linear-gradient(135deg, var(--amber-700), var(--rust-700)),
+    repeating-linear-gradient(60deg, rgba(255,255,255,.03) 0 6px, transparent 6px 12px);
+  background-blend-mode: overlay;
+}
+.uc-top { display:flex; gap:14px; margin-top: -28px; align-items:flex-end; }
+.uc-top .avatar { box-shadow: 0 0 0 4px var(--s-2); }
+.uc-name { font-family: var(--f-display); font-weight:700; font-size:18px; color: var(--ink-100); margin-bottom:2px; }
+.uc-handle { font-size:13px; color: var(--ink-60); }
+.uc-bio { color: var(--ink-80); font-size:14px; margin: 14px 0 16px; line-height: 1.5; }
+.uc-stats { display:grid; grid-template-columns: repeat(3,1fr); gap:8px; padding: 12px 0; border-top:1px solid var(--s-3); border-bottom:1px solid var(--s-3); margin-bottom:14px; }
+.uc-stats > div { display:flex; flex-direction:column; align-items:center; gap:2px; }
+.uc-stats strong { font-family: var(--f-mono); font-size:18px; color: var(--ink-100); font-weight:700; }
+.uc-stats span { font-size:11px; color: var(--ink-40); text-transform:uppercase; letter-spacing:0.08em; }
+.uc-actions { display:flex; gap:8px; }
+.uc-actions .btn { flex:1; justify-content:center; }
+
+/* Feed card */
+.feed-card { padding: 16px 18px; }
+.feed-head { display:grid; grid-template-columns: auto 1fr auto; align-items:center; gap:12px; margin-bottom: 12px; }
+.feed-actor { color: var(--ink-100); font-size:14px; }
+.feed-actor strong { font-weight:700; }
+.feed-time { color: var(--ink-40); font-size:12px; margin-top:2px; }
+.feed-kind { font-size:11px; font-weight:700; padding: 4px 8px; border-radius: 4px; letter-spacing:0.06em; text-transform:uppercase; }
+.kind-play { background: rgba(240,168,48,.13); color: var(--amber-300); border:1px solid var(--amber-700); }
+.kind-owned { background: rgba(63,138,90,.15); color: var(--emerald-300); border:1px solid var(--emerald-700); }
+.kind-wish { background: rgba(194,85,61,.15); color: var(--rust-300); border:1px solid var(--rust-700); }
+
+.feed-body { background: var(--s-3); border-radius: var(--r-md); padding: 12px; }
+.feed-game { display:grid; grid-template-columns: auto 1fr auto; align-items:center; gap:14px; }
+.feed-cover { width:48px; height:48px; border-radius: var(--r-sm); background: linear-gradient(135deg, var(--s-4), var(--s-edge)); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.feed-title { font-family: var(--f-display); font-weight:600; font-size:16px; color: var(--ink-100); margin-bottom:2px; line-height:1.2; }
+.feed-sub { font-size:12px; color: var(--ink-60); }
+.feed-stamp {
+  width:40px; height:40px; border-radius:50%;
+  background: radial-gradient(circle at 35% 30%, var(--amber-400), var(--amber-600));
+  font-family: var(--f-mono); font-weight:700; font-size:13px; color:#1a1410;
+  display:flex; align-items:center; justify-content:center;
+  border:1px solid rgba(0,0,0,.2);
+}
+.feed-note { font-size: 14px; color: var(--ink-80); margin: 12px 0 0; padding-top:10px; border-top: 1px dashed var(--s-edge); font-style:italic; }
+.under { padding: 1px 6px; border-radius: 4px; font-size:13px; font-weight:600; }
+.under.emerald { background: rgba(63,138,90,.18); color: var(--emerald-300); }
+.under.rust { background: rgba(194,85,61,.15); color: var(--rust-300); }
+
+/* ===== Sidebar / nav ===== */
+.nav-row { display:grid; grid-template-columns: 280px 1fr; gap: 20px; align-items:flex-start; }
+.sidebar {
+  background: var(--s-1); border:1px solid var(--s-3); border-radius: var(--r-lg);
+  padding: 18px 12px 14px; display:flex; flex-direction:column; gap:14px;
+  width:280px;
+}
+.sb-brand { display:flex; align-items:center; gap:10px; padding: 4px 10px 8px; }
+.sb-brand span { font-family: var(--f-display); font-weight:700; font-size:18px; color: var(--ink-100); letter-spacing:-0.01em; }
+
+.sb-search {
+  margin: 0 4px;
+  background: var(--s-2); border:1px solid var(--s-3); border-radius: var(--r-md);
+  padding: 8px 10px; display:flex; align-items:center; gap:8px;
+  color: var(--ink-60); font-size:13px;
+}
+.sb-search kbd {
+  margin-left:auto; font-family: var(--f-mono); font-size:11px;
+  background: var(--s-3); padding: 2px 6px; border-radius: 4px; color: var(--ink-60); border:1px solid var(--s-4);
+}
+
+.sb-nav { display:flex; flex-direction:column; gap:1px; }
+.sb-section { font-size:11px; color: var(--ink-40); text-transform:uppercase; letter-spacing:0.1em; padding: 14px 12px 6px; font-weight:600; }
+.sb-item {
+  display:flex; align-items:center; gap:10px;
+  padding: 8px 12px; border-radius: var(--r-md);
+  color: var(--ink-80); font-size:14px; font-weight:500; cursor:pointer;
+  transition: background .15s, color .15s;
+}
+.sb-item:hover { background: var(--s-2); color: var(--ink-100); }
+.sb-item.is-active { background: var(--s-3); color: var(--ink-100); position:relative; }
+.sb-item.is-active::before { content:""; position:absolute; left:-1px; top:8px; bottom:8px; width:3px; background: var(--amber-500); border-radius: 0 3px 3px 0; }
+.sb-item em { margin-left:auto; font-style:normal; font-family: var(--f-mono); font-size:12px; color: var(--ink-40); }
+.sb-i { width:18px; display:inline-flex; justify-content:center; color: var(--ink-40); font-size:14px; }
+.sb-i-emerald { color: var(--emerald-400); }
+.sb-i-rust { color: var(--rust-400); }
+.sb-i-amber { color: var(--amber-400); }
+.sb-pill { background: var(--rust-500); color:#1a1410; font-family:var(--f-mono); font-size:11px; font-weight:700; padding:1px 6px; border-radius: 999px; margin-left:6px; }
+
+.sb-footer { display:flex; align-items:center; gap:10px; padding: 10px 8px 4px; margin-top:auto; border-top:1px solid var(--s-3); padding-top:14px; }
+.sb-foot-name { font-size:13px; font-weight:600; color: var(--ink-100); }
+.sb-foot-sub { font-size:11px; color: var(--ink-40); }
+
+.nav-callouts { display:flex; flex-direction:column; gap:20px; }
+.callout { background: var(--s-1); border:1px solid var(--s-3); border-radius: var(--r-lg); padding:24px; }
+
+/* tabs */
+.tabs { display:flex; gap:0; border-bottom: 1px solid var(--s-edge); }
+.tab {
+  background: transparent; border:0; cursor:pointer;
+  padding: 12px 18px; font-family: var(--f-display); font-weight:600; font-size:15px;
+  color: var(--ink-60); position:relative; display:inline-flex; gap:8px; align-items:baseline;
+}
+.tab span { font-family: var(--f-mono); font-size:12px; color: var(--ink-40); }
+.tab:hover { color: var(--ink-100); }
+.tab.is-active { color: var(--ink-100); }
+.tab.is-active::after { content:""; position:absolute; left:14px; right:14px; bottom:-1px; height:3px; background: var(--amber-500); border-radius: 3px 3px 0 0; }
+.tab.is-active span { color: var(--amber-400); }
+
+.tabs-chip { display:flex; gap:8px; flex-wrap:wrap; }
+.cchip { background: var(--s-2); border:1px solid var(--s-3); color: var(--ink-80); padding: 7px 14px; border-radius: 999px; font-size:13px; cursor:pointer; font-family: var(--f-ui); font-weight:500; }
+.cchip:hover { color: var(--ink-100); border-color: var(--s-edge); }
+.cchip.is-active { background: var(--ink-100); color: var(--s-base); border-color: var(--ink-100); font-weight:600; }
+
+.topbar { background: var(--s-1); border:1px solid var(--s-3); border-radius: var(--r-md); padding: 8px 12px; display:flex; align-items:center; gap:12px; }
+.tb-icon { background: transparent; border:0; color: var(--ink-80); width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:16px; }
+.tb-icon:hover { background: var(--s-3); }
+.tb-title { flex:1; text-align:center; font-family: var(--f-display); font-weight:600; color: var(--ink-100); font-size:15px; }
+
+.bottombar { display:grid; grid-template-columns: repeat(5,1fr); gap:0; background: var(--s-1); border:1px solid var(--s-3); border-radius: var(--r-md); padding:6px; }
+.bb { background: transparent; border:0; cursor:pointer; color: var(--ink-60); font-size:11px; display:flex; flex-direction:column; align-items:center; gap:4px; padding: 8px 6px; border-radius: 8px; }
+.bb span { font-size:18px; }
+.bb.is-active { color: var(--amber-400); }
+.bb-fab { background: var(--amber-500); color:#1a1410 !important; margin: -10px 4px -2px; border-radius: 50%; width:48px; height:48px; align-self:center; font-weight:700; box-shadow: var(--e2); }
+.bb-fab span { font-size: 22px; }
+
+/* ===== Modal / sheet ===== */
+.modal-row { display:grid; grid-template-columns: 1.4fr 1fr; gap:24px; align-items:flex-start; }
+.modal-stage {
+  background:
+    radial-gradient(circle at 50% 30%, rgba(0,0,0,.5), rgba(0,0,0,.85)),
+    repeating-linear-gradient(45deg, rgba(255,255,255,.012) 0 6px, transparent 6px 12px);
+  border-radius: var(--r-lg); border:1px solid var(--s-3);
+  padding: 28px; min-height: 420px;
+  display:flex; align-items:center; justify-content:center;
+}
+.modal {
+  width: 100%; max-width: 460px;
+  background: var(--s-1); border:1px solid var(--s-3); border-radius: var(--r-xl);
+  box-shadow: var(--e4);
+  overflow:hidden;
+}
+.modal-head { padding: 18px 22px; border-bottom: 1px solid var(--s-3); display:flex; align-items:center; justify-content:space-between; }
+.modal-head h3 { margin:0; font-family: var(--f-display); font-weight:700; font-size:20px; color: var(--ink-100); }
+.modal-head .x { background: transparent; border:0; color: var(--ink-60); font-size:22px; cursor:pointer; line-height:1; }
+.modal-body { padding: 18px 22px; display:flex; flex-direction:column; gap:14px; }
+.modal-foot { padding: 14px 22px; border-top: 1px solid var(--s-3); display:flex; justify-content:flex-end; gap:10px; background: var(--s-base); }
+.picked { display:flex; gap:12px; align-items:center; padding: 8px 10px 8px 8px; background: var(--s-3); border-radius: var(--r-md); border:1px solid var(--s-4); }
+.picked .feed-cover { width:40px; height:40px; }
+.picked > div { flex:1; }
+
+.sheet {
+  width: 100%; max-width: 360px; background: var(--s-1); border:1px solid var(--s-3);
+  border-radius: var(--r-xl); padding: 14px 18px 18px; box-shadow: var(--e4);
+  display:flex; flex-direction:column; gap:8px;
+}
+.sheet-grip { width: 40px; height:4px; background: var(--s-edge); border-radius: 999px; margin: 4px auto 8px; }
+.sheet-title { font-family: var(--f-display); font-weight:700; font-size:18px; color: var(--ink-100); margin:0; }
+.sheet-sub { color: var(--ink-60); font-size:13px; margin: 0 0 6px; }
+.sheet-row {
+  background: var(--s-2); border:1px solid var(--s-3); border-radius: var(--r-md);
+  padding: 12px 14px; display:flex; align-items:center; gap:12px; cursor:pointer;
+  color: var(--ink-100); font-size:14px; font-weight:500; text-align:left;
+}
+.sheet-row:hover { background: var(--s-3); }
+.sheet-meta { margin-left:auto; color: var(--ink-40); font-size:12px; font-weight:400; }
+
+/* ===== Empty states ===== */
+.empty-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:18px; }
+.empty {
+  background: var(--s-2); border:1px dashed var(--s-edge); border-radius: var(--r-lg);
+  padding: 28px 24px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:10px;
+}
+.empty svg { display:block; }
+.empty h4 { font-family: var(--f-display); font-weight:700; font-size:18px; color: var(--ink-100); margin: 6px 0 0; }
+.empty p { font-size:13px; color: var(--ink-60); margin: 0 0 10px; max-width: 280px; line-height:1.5; }
+
+/* ===== Logo ===== */
+.logo-grid { display:grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 16px; }
+.logo-card {
+  background: var(--s-1); border:1px solid var(--s-3); border-radius: var(--r-lg);
+  padding: 28px 22px 16px; display:flex; flex-direction:column; gap:14px; align-items:center; justify-content:space-between;
+  min-height: 200px;
+}
+.logo-card.light { background: var(--ink-100); }
+.logo-card.light .logo-meta { color: var(--ink-40); }
+.logo-art { display:flex; align-items:center; gap:14px; flex:1; justify-content:center; }
+.logo-art.big { gap:18px; }
+.wordmark {
+  font-family: var(--f-display); font-weight:700; font-size:34px;
+  color: var(--ink-100); letter-spacing: -0.025em;
+}
+.wordmark.big { font-size: 48px; }
+.wordmark em { font-style: italic; color: var(--amber-400); font-weight:600; }
+.wordmark.dark { color: #1a1410; }
+.wordmark.dark em { color: var(--amber-600); }
+.logo-meta { font-size:12px; color: var(--ink-40); text-align:center; }
+.favico { background: var(--s-3); border:1px solid var(--s-4); border-radius: var(--r-sm); padding:6px; display:inline-flex; }
+.favico.sm { padding: 4px; }
+.construction { padding: 20px 24px; }
+.con-list { padding-left: 18px; color: var(--ink-80); margin: 0; }
+.con-list li { margin: 6px 0; }
+.con-list strong { color: var(--ink-100); }
+
+/* ===== App frame (in-use) ===== */
+.app-frame {
+  display:grid; grid-template-columns: 260px 1fr; gap:0;
+  border:1px solid var(--s-edge); border-radius: var(--r-lg); overflow:hidden;
+  background: var(--s-base);
+  box-shadow: var(--e3);
+}
+.sidebar.in-frame { border:0; border-right: 1px solid var(--s-3); border-radius: 0; padding-bottom: 18px; min-height: 720px; }
+.frame-main { padding: 28px 32px 32px; }
+.frame-head { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 28px; }
+.frame-head-actions { display:flex; gap:10px; }
+.frame-grid { display:grid; grid-template-columns: 1fr 280px; gap: 24px; align-items:flex-start; }
+.frame-feed { display:flex; flex-direction:column; gap:14px; }
+.frame-side { display:flex; flex-direction:column; gap: 14px; }
+.side-card { padding: 16px 18px; }
+.side-h { font-family: var(--f-display); font-weight:600; font-size:14px; color: var(--ink-60); text-transform:uppercase; letter-spacing:0.08em; margin: 0 0 12px; }
+.side-stats { display:grid; grid-template-columns: repeat(3,1fr); gap:8px; }
+.side-stats > div { display:flex; flex-direction:column; align-items:center; gap:2px; padding: 6px 0; background: var(--s-3); border-radius: var(--r-sm); }
+.side-stats strong { font-family: var(--f-mono); font-weight:700; font-size:18px; color: var(--ink-100); }
+.side-stats span { font-size:11px; color: var(--ink-40); }
+.suggest { display:grid; grid-template-columns: auto 1fr auto; align-items:center; gap:10px; padding: 8px 0; border-bottom: 1px dashed var(--s-3); }
+.suggest:last-child { border-bottom:0; }
+.sg-name { font-size:13px; font-weight:600; color: var(--ink-100); }
+.sg-sub { font-size:11px; color: var(--ink-40); }
+.earn-row { display:flex; gap:12px; align-items:center; }
+
+/* ===== Footer ===== */
+.ds-foot {
+  border-top: 1px solid var(--s-2); padding: 28px 0 0; margin-top: 40px;
+  text-align:center; color: var(--ink-40); font-size:12px;
+}
+
+/* ===== Responsive-ish ===== */
+@media (max-width: 1100px) {
+  .swatch-row { grid-template-columns: repeat(3,1fr); }
+  .badge-grid { grid-template-columns: repeat(3,1fr); }
+  .card-grid { grid-template-columns: repeat(2,1fr); }
+  .empty-grid { grid-template-columns: 1fr; }
+  .input-grid { grid-template-columns: 1fr; }
+  .ds-block.two-col { grid-template-columns: 1fr; }
+  .modal-row { grid-template-columns: 1fr; }
+  .nav-row { grid-template-columns: 1fr; }
+  .logo-grid { grid-template-columns: 1fr 1fr; }
+  .app-frame { grid-template-columns: 1fr; }
+  .sidebar.in-frame { display:none; }
+  .frame-grid { grid-template-columns: 1fr; }
+}
+
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="ph-inner">
+    <div class="ph-logo">
+      <!-- Mark: hex with meeple silhouette -->
+      <svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true">
+        <defs>
+          <linearGradient id="hexg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#f0a830"/>
+            <stop offset="1" stop-color="#c97a1a"/>
+          </linearGradient>
+        </defs>
+        <path d="M22 2 L40 12 L40 32 L22 42 L4 32 L4 12 Z" fill="url(#hexg)" stroke="#3a2916" stroke-width="1.2"/>
+        <!-- meeple -->
+        <path d="M22 13 c2.6 0 4.6 2 4.6 4.5 0 1.6-.8 2.9-2 3.7 3.6 1.2 6 4.4 6 8.3 V32 H13.4 v-2.5 c0-3.9 2.4-7.1 6-8.3 -1.2-.8-2-2.1-2-3.7 0-2.5 2-4.5 4.6-4.5 z" fill="#1a1410"/>
+      </svg>
+      <div>
+        <div class="ph-brand">BG Hub</div>
+        <div class="ph-sub">Design System · v0.1 · May 2026</div>
+      </div>
+    </div>
+    <div class="ph-meta">A cozy tabletop language for tracking, sharing, and discovering boardgames.</div>
+  </div>
+</header>
+
+<main class="ds">
+
+  <!-- ============================================================== -->
+  <section class="ds-section">
+    <div class="ds-section-head">
+      <div class="ds-eyebrow">01 — Foundations</div>
+      <h2 class="ds-h">A warm room, after dark</h2>
+      <p class="ds-lede">BG Hub lives in dark mode by default. The surfaces are warm — felt-table greens, walnut-wood browns, candle-amber accents — never cold or clinical. Every surface should feel <em>liftable</em>, like a tile or card you could pick up.</p>
+    </div>
+  </section>
+
+  <!-- COLORS -->
+  <section class="ds-section">
+    <h3 class="ds-section-title"><span class="num">02</span> Color tokens</h3>
+
+    <div class="ds-block">
+      <h4 class="ds-h4">Surfaces — "the table"</h4>
+      <p class="ds-p">Layered warm darks. Each step is the next thing you'd place on the table.</p>
+      <div class="swatch-row">
+        <div class="swatch" style="--c:#0f0e0c"><div class="sw-chip" style="background:#0f0e0c"></div><div class="sw-name">surface/base</div><div class="sw-hex">#0F0E0C</div><div class="sw-role">app background</div></div>
+        <div class="swatch"><div class="sw-chip" style="background:#1a1612"></div><div class="sw-name">surface/1</div><div class="sw-hex">#1A1612</div><div class="sw-role">sidebar, header</div></div>
+        <div class="swatch"><div class="sw-chip" style="background:#241d18"></div><div class="sw-name">surface/2</div><div class="sw-hex">#241D18</div><div class="sw-role">card</div></div>
+        <div class="swatch"><div class="sw-chip" style="background:#322820"></div><div class="sw-name">surface/3</div><div class="sw-hex">#322820</div><div class="sw-role">card hover, input</div></div>
+        <div class="swatch"><div class="sw-chip" style="background:#41342a"></div><div class="sw-name">surface/4</div><div class="sw-hex">#41342A</div><div class="sw-role">tile, chip</div></div>
+        <div class="swatch"><div class="sw-chip" style="background:#5b4a3c"></div><div class="sw-name">wood/edge</div><div class="sw-hex">#5B4A3C</div><div class="sw-role">borders, dividers</div></div>
+      </div>
+    </div>
+
+    <div class="ds-block">
+      <h4 class="ds-h4">Ink — text on dark</h4>
+      <div class="swatch-row">
+        <div class="swatch"><div class="sw-chip" style="background:#f6efe1"></div><div class="sw-name">ink/100</div><div class="sw-hex">#F6EFE1</div><div class="sw-role">titles · headings</div></div>
+        <div class="swatch"><div class="sw-chip" style="background:#dccfb6"></div><div class="sw-name">ink/80</div><div class="sw-hex">#DCCFB6</div><div class="sw-role">body</div></div>
+        <div class="swatch"><div class="sw-chip" style="background:#a89881"></div><div class="sw-name">ink/60</div><div class="sw-hex">#A89881</div><div class="sw-role">secondary</div></div>
+        <div class="swatch"><div class="sw-chip" style="background:#7a6c5a"></div><div class="sw-name">ink/40</div><div class="sw-hex">#7A6C5A</div><div class="sw-role">tertiary, hint</div></div>
+        <div class="swatch"><div class="sw-chip" style="background:#544a3e"></div><div class="sw-name">ink/20</div><div class="sw-hex">#544A3E</div><div class="sw-role">disabled</div></div>
+      </div>
+    </div>
+
+    <div class="ds-block">
+      <h4 class="ds-h4">Accents — "the lanterns"</h4>
+      <p class="ds-p">Amber is the primary action color (warm light over the table). Emerald is the felt — used for success, "owned", and active states. Rust is for energy / wishlist heat.</p>
+      <div class="swatch-row">
+        <div class="swatch big amber"><div class="sw-chip" style="background:#f0a830"></div><div class="sw-name">amber/500 — primary</div><div class="sw-hex">#F0A830</div><div class="sw-role">CTAs · highlight</div></div>
+        <div class="swatch big emerald"><div class="sw-chip" style="background:#3f8a5a"></div><div class="sw-name">emerald/500 — felt</div><div class="sw-hex">#3F8A5A</div><div class="sw-role">owned · success</div></div>
+        <div class="swatch big rust"><div class="sw-chip" style="background:#c2553d"></div><div class="sw-name">rust/500 — heat</div><div class="sw-hex">#C2553D</div><div class="sw-role">wishlist · heat</div></div>
+      </div>
+      <div class="swatch-row tight">
+        <div class="ramp">
+          <div class="ramp-label">Amber ramp</div>
+          <div class="ramp-row">
+            <div style="background:#3a2810"><span>900</span></div>
+            <div style="background:#6b4a1c"><span>700</span></div>
+            <div style="background:#a47828"><span>600</span></div>
+            <div style="background:#f0a830;color:#1a1410"><span>500</span></div>
+            <div style="background:#f4be5d;color:#1a1410"><span>400</span></div>
+            <div style="background:#f7d290;color:#1a1410"><span>300</span></div>
+            <div style="background:#fbe7c0;color:#1a1410"><span>200</span></div>
+          </div>
+        </div>
+        <div class="ramp">
+          <div class="ramp-label">Emerald ramp</div>
+          <div class="ramp-row">
+            <div style="background:#0f2a1d"><span>900</span></div>
+            <div style="background:#1f4f37"><span>700</span></div>
+            <div style="background:#2e6b48"><span>600</span></div>
+            <div style="background:#3f8a5a;color:#0f0e0c"><span>500</span></div>
+            <div style="background:#6cb185;color:#0f0e0c"><span>400</span></div>
+            <div style="background:#9bcfae;color:#0f0e0c"><span>300</span></div>
+            <div style="background:#cfe7d8;color:#0f0e0c"><span>200</span></div>
+          </div>
+        </div>
+        <div class="ramp">
+          <div class="ramp-label">Rust ramp</div>
+          <div class="ramp-row">
+            <div style="background:#3a1810"><span>900</span></div>
+            <div style="background:#7a2f1f"><span>700</span></div>
+            <div style="background:#a4422e"><span>600</span></div>
+            <div style="background:#c2553d;color:#1a1410"><span>500</span></div>
+            <div style="background:#d97f6a;color:#1a1410"><span>400</span></div>
+            <div style="background:#e8a795;color:#1a1410"><span>300</span></div>
+            <div style="background:#f3cdc0;color:#1a1410"><span>200</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-block">
+      <h4 class="ds-h4">Semantic</h4>
+      <div class="sem-row">
+        <div class="sem-pill" style="--bg:#1f4f37;--ink:#cfe7d8">success · "Added to Owned"</div>
+        <div class="sem-pill" style="--bg:#7a2f1f;--ink:#f3cdc0">danger · "Remove from list"</div>
+        <div class="sem-pill" style="--bg:#6b4a1c;--ink:#fbe7c0">warning · "Quota low"</div>
+        <div class="sem-pill" style="--bg:#1f3a52;--ink:#bcd5ee">info · "Synced from BGG"</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TYPOGRAPHY -->
+  <section class="ds-section">
+    <h3 class="ds-section-title"><span class="num">03</span> Typography</h3>
+    <div class="ds-block">
+      <p class="ds-p">Three families. <strong>Bricolage Grotesque</strong> for display — slightly chunky, warm. <strong>Public Sans</strong> for UI and reading. <strong>JetBrains Mono</strong> for ratings, counts, and play stats.</p>
+      <div class="type-grid">
+        <div class="type-row"><div class="type-spec">Display / D1<br><code>Bricolage 64 / 700</code></div><div class="type-sample" style="font-family:'Bricolage Grotesque',serif;font-weight:700;font-size:64px;line-height:1.05;letter-spacing:-0.02em">A cozy place to log every play.</div></div>
+        <div class="type-row"><div class="type-spec">Display / D2<br><code>Bricolage 48 / 700</code></div><div class="type-sample" style="font-family:'Bricolage Grotesque',serif;font-weight:700;font-size:48px;line-height:1.08;letter-spacing:-0.02em">Friday Night Wingspan</div></div>
+        <div class="type-row"><div class="type-spec">Heading / H1<br><code>Bricolage 32 / 700</code></div><div class="type-sample" style="font-family:'Bricolage Grotesque',serif;font-weight:700;font-size:32px;line-height:1.1">Your shelf, beautifully kept</div></div>
+        <div class="type-row"><div class="type-spec">Heading / H2<br><code>Bricolage 24 / 600</code></div><div class="type-sample" style="font-family:'Bricolage Grotesque',serif;font-weight:600;font-size:24px;line-height:1.15">Recently played</div></div>
+        <div class="type-row"><div class="type-spec">Heading / H3<br><code>Public Sans 18 / 600</code></div><div class="type-sample" style="font-family:'Public Sans',sans-serif;font-weight:600;font-size:18px;line-height:1.3">Players you follow</div></div>
+        <div class="type-row"><div class="type-spec">Body / Large<br><code>Public Sans 17 / 400</code></div><div class="type-sample" style="font-family:'Public Sans',sans-serif;font-weight:400;font-size:17px;line-height:1.55">A four-player game of Ark Nova ran long but Marta's pelican strategy paid off in round seven.</div></div>
+        <div class="type-row"><div class="type-spec">Body / Default<br><code>Public Sans 15 / 400</code></div><div class="type-sample" style="font-family:'Public Sans',sans-serif;font-weight:400;font-size:15px;line-height:1.55">Logged 3 plays this week. Add a friend to compare your play history.</div></div>
+        <div class="type-row"><div class="type-spec">Caption<br><code>Public Sans 13 / 500 · uppercase</code></div><div class="type-sample" style="font-family:'Public Sans',sans-serif;font-weight:500;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:#a89881">Owned · 247 games</div></div>
+        <div class="type-row"><div class="type-spec">Numeric / Score<br><code>JetBrains Mono 56 / 700</code></div><div class="type-sample" style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:56px;color:#f0a830">8.4</div></div>
+        <div class="type-row"><div class="type-spec">Numeric / Stat<br><code>JetBrains Mono 22 / 500</code></div><div class="type-sample" style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:22px">3–5 · 90min · ★ 7.9</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPACING / RADIUS / SHADOW -->
+  <section class="ds-section">
+    <h3 class="ds-section-title"><span class="num">04</span> Spacing · Radius · Elevation</h3>
+
+    <div class="ds-block two-col">
+      <div>
+        <h4 class="ds-h4">Spacing scale (4px base)</h4>
+        <div class="space-row">
+          <div class="space-item"><div class="space-bar" style="width:4px"></div><span>2 · 4px</span></div>
+          <div class="space-item"><div class="space-bar" style="width:8px"></div><span>3 · 8px</span></div>
+          <div class="space-item"><div class="space-bar" style="width:12px"></div><span>4 · 12px</span></div>
+          <div class="space-item"><div class="space-bar" style="width:16px"></div><span>5 · 16px</span></div>
+          <div class="space-item"><div class="space-bar" style="width:24px"></div><span>6 · 24px</span></div>
+          <div class="space-item"><div class="space-bar" style="width:32px"></div><span>7 · 32px</span></div>
+          <div class="space-item"><div class="space-bar" style="width:48px"></div><span>8 · 48px</span></div>
+          <div class="space-item"><div class="space-bar" style="width:64px"></div><span>9 · 64px</span></div>
+          <div class="space-item"><div class="space-bar" style="width:96px"></div><span>10 · 96px</span></div>
+        </div>
+      </div>
+      <div>
+        <h4 class="ds-h4">Radius — like wooden tiles</h4>
+        <div class="radius-row">
+          <div class="radius-item"><div class="r-box" style="border-radius:4px"></div><span>r/sm · 4px<br><em>chips, pips</em></span></div>
+          <div class="radius-item"><div class="r-box" style="border-radius:8px"></div><span>r/md · 8px<br><em>buttons, inputs</em></span></div>
+          <div class="radius-item"><div class="r-box" style="border-radius:14px"></div><span>r/lg · 14px<br><em>cards</em></span></div>
+          <div class="radius-item"><div class="r-box" style="border-radius:22px"></div><span>r/xl · 22px<br><em>sheets, modals</em></span></div>
+          <div class="radius-item"><div class="r-box" style="border-radius:999px"></div><span>r/full · pill<br><em>tags, avatars</em></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-block">
+      <h4 class="ds-h4">Elevation — soft, like felt under wood</h4>
+      <div class="elev-row">
+        <div class="elev-item" style="box-shadow:none"><span>flat / 0</span></div>
+        <div class="elev-item" style="box-shadow:0 1px 0 rgba(255,200,140,.04), 0 2px 6px rgba(0,0,0,.35)"><span>e/1 · resting</span></div>
+        <div class="elev-item" style="box-shadow:0 1px 0 rgba(255,200,140,.06), 0 6px 18px rgba(0,0,0,.45)"><span>e/2 · lifted</span></div>
+        <div class="elev-item" style="box-shadow:0 1px 0 rgba(255,200,140,.08), 0 14px 38px rgba(0,0,0,.55)"><span>e/3 · floating</span></div>
+        <div class="elev-item" style="box-shadow:0 1px 0 rgba(255,200,140,.10), 0 28px 64px rgba(0,0,0,.65)"><span>e/4 · modal</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MOTIFS -->
+  <section class="ds-section">
+    <h3 class="ds-section-title"><span class="num">05</span> Motifs</h3>
+    <p class="ds-p">A small library of game-piece glyphs. Used in icons, empty states, badges, and as decorative inks.</p>
+    <div class="motif-grid">
+      <div class="motif">
+        <svg viewBox="0 0 60 60" width="56" height="56"><path d="M30 8 c5 0 9 4 9 9 0 3.2-1.7 6-4.3 7.5 7 2.4 12 9 12 17V46 H13.3 v-4.5 c0-8 5-14.6 12-17 -2.6-1.5-4.3-4.3-4.3-7.5 0-5 4-9 9-9 z" fill="#dccfb6"/></svg>
+        <span>Meeple</span>
+      </div>
+      <div class="motif">
+        <svg viewBox="0 0 60 60" width="56" height="56"><rect x="12" y="12" width="36" height="36" rx="6" fill="#dccfb6"/><circle cx="22" cy="22" r="3" fill="#1a1410"/><circle cx="38" cy="38" r="3" fill="#1a1410"/><circle cx="22" cy="38" r="3" fill="#1a1410"/><circle cx="38" cy="22" r="3" fill="#1a1410"/><circle cx="30" cy="30" r="3" fill="#1a1410"/></svg>
+        <span>D6 · pip 5</span>
+      </div>
+      <div class="motif">
+        <svg viewBox="0 0 60 60" width="56" height="56"><path d="M30 6 L52 18 V42 L30 54 L8 42 V18 Z" fill="none" stroke="#dccfb6" stroke-width="3"/><path d="M30 18 L42 25 V35 L30 42 L18 35 V25 Z" fill="#dccfb6"/></svg>
+        <span>Hex</span>
+      </div>
+      <div class="motif">
+        <svg viewBox="0 0 60 60" width="56" height="56"><circle cx="30" cy="30" r="20" fill="#dccfb6"/><circle cx="30" cy="30" r="14" fill="#1a1410"/><circle cx="30" cy="30" r="8" fill="#dccfb6"/></svg>
+        <span>Token</span>
+      </div>
+      <div class="motif">
+        <svg viewBox="0 0 60 60" width="56" height="56"><path d="M30 12 c-2 0-3 1.5-3 3.5 0 1 .4 1.8 1 2.5 -3 .8-5 3.4-5 6.5 0 1.8 .8 3.4 2 4.5 -3 1.5-5 4.5-5 8 V44 H40 v-7 c0-3.5-2-6.5-5-8 1.2-1.1 2-2.7 2-4.5 0-3.1-2-5.7-5-6.5 .6-.7 1-1.5 1-2.5 0-2-1-3.5-3-3.5 z" fill="#dccfb6"/></svg>
+        <span>Pawn</span>
+      </div>
+      <div class="motif">
+        <svg viewBox="0 0 60 60" width="56" height="56"><rect x="14" y="10" width="32" height="44" rx="3" fill="#dccfb6"/><path d="M22 22 l8 -8 l8 8 z M22 42 l8 8 l8 -8 z" fill="#1a1410"/></svg>
+        <span>Card</span>
+      </div>
+      <div class="motif">
+        <svg viewBox="0 0 60 60" width="56" height="56"><circle cx="20" cy="30" r="14" fill="#dccfb6"/><circle cx="40" cy="30" r="14" fill="none" stroke="#dccfb6" stroke-width="3"/></svg>
+        <span>Chips</span>
+      </div>
+      <div class="motif">
+        <svg viewBox="0 0 60 60" width="56" height="56"><path d="M14 8 H46 L34 28 L46 48 L14 48 L26 28 Z" fill="#dccfb6"/><circle cx="30" cy="28" r="3" fill="#1a1410"/></svg>
+        <span>Sand-timer</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUTTONS -->
+  <section class="ds-section">
+    <h3 class="ds-section-title"><span class="num">06</span> Buttons</h3>
+    <div class="ds-block">
+      <h4 class="ds-h4">Variants</h4>
+      <div class="btn-row">
+        <button class="btn btn-primary">Add to Owned</button>
+        <button class="btn btn-secondary">Add to Wishlist</button>
+        <button class="btn btn-ghost">Cancel</button>
+        <button class="btn btn-outline">Follow</button>
+        <button class="btn btn-danger">Remove</button>
+      </div>
+      <h4 class="ds-h4" style="margin-top:32px">States — primary</h4>
+      <div class="btn-row">
+        <button class="btn btn-primary">default</button>
+        <button class="btn btn-primary is-hover">hover</button>
+        <button class="btn btn-primary is-pressed">pressed</button>
+        <button class="btn btn-primary is-focus">focus</button>
+        <button class="btn btn-primary" disabled>disabled</button>
+        <button class="btn btn-primary is-loading">loading <span class="spinner"></span></button>
+      </div>
+      <h4 class="ds-h4" style="margin-top:32px">Sizes</h4>
+      <div class="btn-row" style="align-items:center">
+        <button class="btn btn-primary btn-sm">Small</button>
+        <button class="btn btn-primary">Medium</button>
+        <button class="btn btn-primary btn-lg">Large</button>
+        <button class="btn btn-primary btn-icon" aria-label="add">＋</button>
+      </div>
+      <h4 class="ds-h4" style="margin-top:32px">With glyph</h4>
+      <div class="btn-row">
+        <button class="btn btn-primary"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Log a play</button>
+        <button class="btn btn-secondary"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 14s-5-3.2-5-7a3 3 0 015-2.2A3 3 0 0113 7c0 3.8-5 7-5 7z" fill="currentColor"/></svg> Wishlist</button>
+        <button class="btn btn-outline"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="6" r="3" fill="currentColor"/><path d="M2 14a6 6 0 0112 0" fill="currentColor"/></svg> Follow</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- INPUTS -->
+  <section class="ds-section">
+    <h3 class="ds-section-title"><span class="num">07</span> Form inputs</h3>
+    <div class="ds-block input-grid">
+      <label class="field">
+        <span class="field-label">Username</span>
+        <input class="input" value="marta" />
+        <span class="field-hint">Used in your URL: bghub.app/u/marta</span>
+      </label>
+      <label class="field">
+        <span class="field-label">Email</span>
+        <input class="input" type="email" placeholder="you@table.club" />
+      </label>
+      <label class="field">
+        <span class="field-label">Password</span>
+        <input class="input" type="password" value="●●●●●●●●●●" />
+      </label>
+      <label class="field">
+        <span class="field-label">Search games</span>
+        <div class="input input-with-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <input placeholder="Try “Wingspan”…" />
+        </div>
+      </label>
+      <label class="field">
+        <span class="field-label">Notes</span>
+        <textarea class="input" rows="3">Tight third game of Ark Nova. Marta won by 4 points with a pelican lock.</textarea>
+      </label>
+      <label class="field">
+        <span class="field-label">Result (free-text)</span>
+        <input class="input is-error" value="" />
+        <span class="field-error">Result is required.</span>
+      </label>
+      <div class="field">
+        <span class="field-label">Privacy</span>
+        <div class="seg">
+          <button class="seg-btn is-active">Public</button>
+          <button class="seg-btn">Private</button>
+        </div>
+      </div>
+      <div class="field">
+        <span class="field-label">Tag players</span>
+        <div class="chips">
+          <span class="tag-chip"><span class="tag-dot"></span>marta <button aria-label="remove">×</button></span>
+          <span class="tag-chip"><span class="tag-dot" style="background:#3f8a5a"></span>liam <button aria-label="remove">×</button></span>
+          <span class="tag-chip"><span class="tag-dot" style="background:#c2553d"></span>ana <button aria-label="remove">×</button></span>
+          <button class="tag-add">+ add</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RATING -->
+  <section class="ds-section">
+    <h3 class="ds-section-title"><span class="num">08</span> Rating component</h3>
+    <p class="ds-p">A "stamp" — a wax-seal medallion stamped on the table. Score is /10 (BGG convention) shown big in mono. Below it, a 1–5 meeple line for quick personal ratings.</p>
+
+    <div class="ds-block rating-row">
+      <div class="rating-stamp">
+        <svg viewBox="0 0 120 120" width="140" height="140" aria-hidden="true">
+          <defs>
+            <radialGradient id="seal" cx=".4" cy=".35" r=".75">
+              <stop offset="0" stop-color="#f4be5d"/>
+              <stop offset="1" stop-color="#a47828"/>
+            </radialGradient>
+          </defs>
+          <circle cx="60" cy="60" r="56" fill="url(#seal)"/>
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#3a2916" stroke-width="1.5" stroke-dasharray="2 4"/>
+        </svg>
+        <div class="rating-num">8.4</div>
+        <div class="rating-cap">/10</div>
+      </div>
+      <div class="rating-detail">
+        <div class="rating-label">Community score</div>
+        <div class="rating-meta">based on 2,481 plays</div>
+        <div class="meeple-rate">
+          <div class="mr-row">
+            <span class="mr-label">Your rating</span>
+            <div class="mr-meeples" data-rate="4">
+              <span class="mr-m on"></span><span class="mr-m on"></span><span class="mr-m on"></span><span class="mr-m on"></span><span class="mr-m"></span>
+            </div>
+            <span class="mr-num">4 / 5</span>
+          </div>
+          <div class="mr-row">
+            <span class="mr-label">Complexity</span>
+            <div class="mr-meeples">
+              <span class="mr-m on" style="background:#c2553d"></span><span class="mr-m on" style="background:#c2553d"></span><span class="mr-m on" style="background:#c2553d"></span><span class="mr-m"></span><span class="mr-m"></span>
+            </div>
+            <span class="mr-num">3.0 weight</span>
+          </div>
+        </div>
+        <div class="dist-row">
+          <div class="dist-bar"><div style="height:24%"></div><div style="height:36%"></div><div style="height:48%"></div><div style="height:62%"></div><div style="height:78%"></div><div style="height:92%"></div><div style="height:80%"></div><div style="height:64%"></div><div style="height:38%"></div><div style="height:18%"></div></div>
+          <div class="dist-axis"><span>1</span><span>10</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BADGES -->
+  <section class="ds-section">
+    <h3 class="ds-section-title"><span class="num">09</span> Badges &amp; chips</h3>
+
+    <div class="ds-block">
+      <h4 class="ds-h4">Status chips (inline)</h4>
+      <div class="chip-row">
+        <span class="chip chip-owned"><span class="chip-dot"></span>Owned</span>
+        <span class="chip chip-wish"><span class="chip-dot"></span>Wishlist</span>
+        <span class="chip chip-played"><span class="chip-dot"></span>Played 12×</span>
+        <span class="chip chip-new"><span class="chip-dot"></span>New</span>
+        <span class="chip chip-private">Private</span>
+      </div>
+      <h4 class="ds-h4" style="margin-top:24px">Category tags</h4>
+      <div class="chip-row">
+        <span class="tag">Strategy</span>
+        <span class="tag">Worker placement</span>
+        <span class="tag">Engine builder</span>
+        <span class="tag">2–4 players</span>
+        <span class="tag">90 min</span>
+      </div>
+    </div>
+
+    <div class="ds-block">
+      <h4 class="ds-h4">Achievement seals</h4>
+      <p class="ds-p">Stamped collectibles. Earned by play activity. Each is a die-cut "boardgame box stamp" with a glyph.</p>
+      <div class="badge-grid">
+        <div class="bbadge">
+          <svg viewBox="0 0 100 100" width="92" height="92"><polygon points="50,4 61,20 80,18 78,38 95,50 78,62 80,82 61,80 50,96 39,80 20,82 22,62 5,50 22,38 20,18 39,20" fill="#3f8a5a" stroke="#0f2a1d" stroke-width="2"/><path d="M50 30 c4 0 7 3 7 7 0 2.5-1.3 4.6-3.3 5.8 5.5 1.8 9.3 7 9.3 13V60 H37 v-4.2 c0-6 3.8-11.2 9.3-13 -2-1.2-3.3-3.3-3.3-5.8 0-4 3-7 7-7 z" fill="#f6efe1"/></svg>
+          <div class="bbadge-name">First Play</div>
+          <div class="bbadge-meta">Logged your first play</div>
+        </div>
+        <div class="bbadge">
+          <svg viewBox="0 0 100 100" width="92" height="92"><polygon points="50,4 61,20 80,18 78,38 95,50 78,62 80,82 61,80 50,96 39,80 20,82 22,62 5,50 22,38 20,18 39,20" fill="#f0a830" stroke="#3a2916" stroke-width="2"/><text x="50" y="62" text-anchor="middle" font-family="JetBrains Mono" font-weight="700" font-size="34" fill="#1a1410">10</text></svg>
+          <div class="bbadge-name">Decahedron</div>
+          <div class="bbadge-meta">10 different games played</div>
+        </div>
+        <div class="bbadge">
+          <svg viewBox="0 0 100 100" width="92" height="92"><polygon points="50,4 61,20 80,18 78,38 95,50 78,62 80,82 61,80 50,96 39,80 20,82 22,62 5,50 22,38 20,18 39,20" fill="#c2553d" stroke="#3a1810" stroke-width="2"/><path d="M30 36 H70 V64 H30 Z M30 36 L50 52 L70 36" fill="none" stroke="#f6efe1" stroke-width="3.5" stroke-linejoin="round"/></svg>
+          <div class="bbadge-name">Postcard Player</div>
+          <div class="bbadge-meta">Played with a remote friend</div>
+        </div>
+        <div class="bbadge">
+          <svg viewBox="0 0 100 100" width="92" height="92"><polygon points="50,4 61,20 80,18 78,38 95,50 78,62 80,82 61,80 50,96 39,80 20,82 22,62 5,50 22,38 20,18 39,20" fill="#241d18" stroke="#5b4a3c" stroke-width="2"/><circle cx="36" cy="42" r="5" fill="#f0a830"/><circle cx="64" cy="42" r="5" fill="#f0a830"/><circle cx="36" cy="58" r="5" fill="#f0a830"/><circle cx="64" cy="58" r="5" fill="#f0a830"/></svg>
+          <div class="bbadge-name">Quartet</div>
+          <div class="bbadge-meta">Played a 4-player game</div>
+        </div>
+        <div class="bbadge locked">
+          <svg viewBox="0 0 100 100" width="92" height="92"><polygon points="50,4 61,20 80,18 78,38 95,50 78,62 80,82 61,80 50,96 39,80 20,82 22,62 5,50 22,38 20,18 39,20" fill="#322820" stroke="#5b4a3c" stroke-width="2"/><path d="M40 50 v-6 a10 10 0 0120 0 v6 M34 50 H66 V72 H34 Z" fill="none" stroke="#7a6c5a" stroke-width="3"/></svg>
+          <div class="bbadge-name">Marathoner</div>
+          <div class="bbadge-meta">Locked · Play 50 unique games</div>
+        </div>
+        <div class="bbadge locked">
+          <svg viewBox="0 0 100 100" width="92" height="92"><polygon points="50,4 61,20 80,18 78,38 95,50 78,62 80,82 61,80 50,96 39,80 20,82 22,62 5,50 22,38 20,18 39,20" fill="#322820" stroke="#5b4a3c" stroke-width="2"/><path d="M40 50 v-6 a10 10 0 0120 0 v6 M34 50 H66 V72 H34 Z" fill="none" stroke="#7a6c5a" stroke-width="3"/></svg>
+          <div class="bbadge-name">Collector</div>
+          <div class="bbadge-meta">Locked · Own 100 games</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AVATARS -->
+  <section class="ds-section">
+    <h3 class="ds-section-title"><span class="num">10</span> Avatars</h3>
+    <div class="ds-block">
+      <p class="ds-p">Round meeple-shape mask. Letter-fallback uses paired warm hues. Status dot lower-right.</p>
+      <div class="avatar-row">
+        <div class="avatar avatar-xl"><span style="background:linear-gradient(135deg,#f0a830,#c2553d)">M</span><i class="dot"></i></div>
+        <div class="avatar avatar-lg"><span style="background:linear-gradient(135deg,#3f8a5a,#1f4f37)">L</span></div>
+        <div class="avatar"><span style="background:linear-gradient(135deg,#7a6c5a,#41342a)">A</span></div>
+        <div class="avatar avatar-sm"><span style="background:linear-gradient(135deg,#a47828,#6b4a1c)">J</span></div>
+        <div class="avatar avatar-xs"><span style="background:linear-gradient(135deg,#c2553d,#7a2f1f)">R</span></div>
+        <div class="avatar"><span style="background:#241d18"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M12 5 c1.7 0 3 1.3 3 3 0 1.1-.6 2-1.4 2.5 2.4 .8 4 3 4 5.5V18 H6.4 v-2 c0-2.5 1.6-4.7 4-5.5 -.8-.5-1.4-1.4-1.4-2.5 0-1.7 1.3-3 3-3 z" fill="#a89881"/></svg></span></div>
+        <div class="avatar avatar-stack"><div class="avatar avatar-sm"><span style="background:linear-gradient(135deg,#f0a830,#c2553d)">M</span></div><div class="avatar avatar-sm"><span style="background:linear-gradient(135deg,#3f8a5a,#1f4f37)">L</span></div><div class="avatar avatar-sm"><span style="background:linear-gradient(135deg,#a47828,#6b4a1c)">J</span></div><div class="avatar avatar-sm more"><span>+4</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARDS -->
+  <section class="ds-section">
+    <h3 class="ds-section-title"><span class="num">11</span> Cards</h3>
+
+    <div class="ds-block card-grid">
+      <!-- Game card -->
+      <article class="card game-card">
+        <div class="game-cover">
+          <div class="cover-placeholder">
+            <svg viewBox="0 0 100 100" width="60" height="60"><polygon points="50,8 88,30 88,70 50,92 12,70 12,30" fill="none" stroke="#dccfb6" stroke-width="2.5"/><polygon points="50,28 70,40 70,60 50,72 30,60 30,40" fill="#dccfb6" opacity=".7"/></svg>
+            <span>game cover</span>
+          </div>
+          <span class="cover-year">2019</span>
+        </div>
+        <div class="game-body">
+          <div class="game-stamp">
+            <span class="gs-num">8.4</span>
+          </div>
+          <h4 class="game-title">Wingspan</h4>
+          <div class="game-meta"><span>1–5</span><span>·</span><span>40–70m</span><span>·</span><span>★ 7.9</span></div>
+          <div class="chip-row tight">
+            <span class="tag">Engine builder</span>
+            <span class="tag">Cards</span>
+          </div>
+          <div class="game-actions">
+            <button class="btn btn-primary btn-sm">＋ Owned</button>
+            <button class="btn btn-ghost btn-sm">Wishlist</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Game card — owned variant -->
+      <article class="card game-card is-owned">
+        <div class="game-cover" style="--ph:#2e6b48">
+          <div class="cover-placeholder">
+            <svg viewBox="0 0 100 100" width="60" height="60"><rect x="20" y="20" width="60" height="60" rx="8" fill="#dccfb6" opacity=".7"/></svg>
+            <span>game cover</span>
+          </div>
+          <span class="cover-year">2021</span>
+          <span class="cover-flag">Owned</span>
+        </div>
+        <div class="game-body">
+          <div class="game-stamp"><span class="gs-num">9.1</span></div>
+          <h4 class="game-title">Ark Nova</h4>
+          <div class="game-meta"><span>1–4</span><span>·</span><span>90–150m</span><span>·</span><span>★ 8.5</span></div>
+          <div class="chip-row tight"><span class="tag">Heavy</span><span class="tag">Tableau</span></div>
+          <div class="game-actions">
+            <button class="btn btn-secondary btn-sm">In your shelf</button>
+            <button class="btn btn-ghost btn-sm">Log play</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- User card -->
+      <article class="card user-card">
+        <div class="uc-bg"></div>
+        <div class="uc-top">
+          <div class="avatar avatar-lg"><span style="background:linear-gradient(135deg,#f0a830,#c2553d)">M</span></div>
+          <div>
+            <div class="uc-name">Marta Vega</div>
+            <div class="uc-handle">@marta · she/her</div>
+          </div>
+        </div>
+        <p class="uc-bio">Heavy euros &amp; word games. Always down for a 4-player Ark Nova. Tuesday gaming nights in Lisbon.</p>
+        <div class="uc-stats">
+          <div><strong>247</strong><span>Owned</span></div>
+          <div><strong>38</strong><span>Wishlist</span></div>
+          <div><strong>1,204</strong><span>Plays</span></div>
+        </div>
+        <div class="uc-actions">
+          <button class="btn btn-primary btn-sm">Follow</button>
+          <button class="btn btn-ghost btn-sm">View shelf</button>
+        </div>
+      </article>
+
+      <!-- Feed card: PlayLog -->
+      <article class="card feed-card">
+        <div class="feed-head">
+          <div class="avatar"><span style="background:linear-gradient(135deg,#3f8a5a,#1f4f37)">L</span></div>
+          <div>
+            <div class="feed-actor"><strong>liam</strong> logged a play</div>
+            <div class="feed-time">2h ago · with marta, ana</div>
+          </div>
+          <span class="feed-kind kind-play">Played</span>
+        </div>
+        <div class="feed-body">
+          <div class="feed-game">
+            <div class="feed-cover"><svg viewBox="0 0 40 40" width="32" height="32"><rect x="6" y="6" width="28" height="28" rx="4" fill="#dccfb6" opacity=".7"/></svg></div>
+            <div>
+              <div class="feed-title">Ark Nova</div>
+              <div class="feed-sub">Friday Night · 4 players · 142 min</div>
+            </div>
+            <div class="feed-stamp">9.1</div>
+          </div>
+          <p class="feed-note">"Marta closed it out with a pelican lock in round 7. Brutal."</p>
+        </div>
+      </article>
+
+      <!-- Feed card: Owned add -->
+      <article class="card feed-card">
+        <div class="feed-head">
+          <div class="avatar"><span style="background:linear-gradient(135deg,#a47828,#6b4a1c)">J</span></div>
+          <div>
+            <div class="feed-actor"><strong>jules</strong> added to <span class="under emerald">Owned</span></div>
+            <div class="feed-time">yesterday</div>
+          </div>
+          <span class="feed-kind kind-owned">Owned</span>
+        </div>
+        <div class="feed-body">
+          <div class="feed-game">
+            <div class="feed-cover"><svg viewBox="0 0 40 40" width="32" height="32"><polygon points="20,4 36,12 36,28 20,36 4,28 4,12" fill="#dccfb6" opacity=".7"/></svg></div>
+            <div>
+              <div class="feed-title">Brass: Birmingham</div>
+              <div class="feed-sub">2018 · 2–4 players</div>
+            </div>
+            <div class="feed-stamp">8.6</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Feed card: Wishlist -->
+      <article class="card feed-card">
+        <div class="feed-head">
+          <div class="avatar"><span style="background:linear-gradient(135deg,#c2553d,#7a2f1f)">A</span></div>
+          <div>
+            <div class="feed-actor"><strong>ana</strong> added to <span class="under rust">Wishlist</span></div>
+            <div class="feed-time">3 days ago</div>
+          </div>
+          <span class="feed-kind kind-wish">Wishlist</span>
+        </div>
+        <div class="feed-body">
+          <div class="feed-game">
+            <div class="feed-cover"><svg viewBox="0 0 40 40" width="32" height="32"><circle cx="20" cy="20" r="14" fill="#dccfb6" opacity=".7"/></svg></div>
+            <div>
+              <div class="feed-title">SETI: Search for Extraterrestrial Intelligence</div>
+              <div class="feed-sub">2024 · 1–4 players</div>
+            </div>
+            <div class="feed-stamp">8.1</div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- SIDEBAR / NAV / TABS -->
+  <section class="ds-section">
+    <h3 class="ds-section-title"><span class="num">12</span> Navigation</h3>
+
+    <div class="ds-block nav-row">
+      <aside class="sidebar">
+        <div class="sb-brand">
+          <svg width="28" height="28" viewBox="0 0 44 44"><path d="M22 2 L40 12 L40 32 L22 42 L4 32 L4 12 Z" fill="#f0a830"/><path d="M22 13 c2.6 0 4.6 2 4.6 4.5 0 1.6-.8 2.9-2 3.7 3.6 1.2 6 4.4 6 8.3 V32 H13.4 v-2.5 c0-3.9 2.4-7.1 6-8.3 -1.2-.8-2-2.1-2-3.7 0-2.5 2-4.5 4.6-4.5 z" fill="#1a1410"/></svg>
+          <span>BG Hub</span>
+        </div>
+        <div class="sb-search">
+          <svg width="14" height="14" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <span>Search games…</span>
+          <kbd>⌘K</kbd>
+        </div>
+        <nav class="sb-nav">
+          <div class="sb-section">Home</div>
+          <a class="sb-item is-active"><span class="sb-i">⌂</span>Feed</a>
+          <a class="sb-item"><span class="sb-i">◇</span>Discover</a>
+          <div class="sb-section">My collection</div>
+          <a class="sb-item"><span class="sb-i sb-i-emerald">●</span>Owned <em>247</em></a>
+          <a class="sb-item"><span class="sb-i sb-i-rust">●</span>Wishlist <em>38</em></a>
+          <a class="sb-item"><span class="sb-i sb-i-amber">●</span>Plays <em>1,204</em></a>
+          <div class="sb-section">Social</div>
+          <a class="sb-item"><span class="sb-i">→</span>Following <em>52</em></a>
+          <a class="sb-item"><span class="sb-i">←</span>Followers <em>118</em><span class="sb-pill">3</span></a>
+        </nav>
+        <div class="sb-footer">
+          <div class="avatar avatar-sm"><span style="background:linear-gradient(135deg,#f0a830,#c2553d)">M</span></div>
+          <div><div class="sb-foot-name">marta</div><div class="sb-foot-sub">Public profile</div></div>
+        </div>
+      </aside>
+      <div class="nav-callouts">
+        <div class="callout">
+          <h4 class="ds-h4">Tab bar</h4>
+          <div class="tabs">
+            <button class="tab is-active">Owned <span>247</span></button>
+            <button class="tab">Wishlist <span>38</span></button>
+            <button class="tab">Plays <span>1,204</span></button>
+          </div>
+          <h4 class="ds-h4" style="margin-top:24px">Tab — secondary (chip style)</h4>
+          <div class="tabs-chip">
+            <button class="cchip is-active">All</button>
+            <button class="cchip">Heavy</button>
+            <button class="cchip">Family</button>
+            <button class="cchip">Party</button>
+            <button class="cchip">Solo</button>
+          </div>
+        </div>
+
+        <div class="callout">
+          <h4 class="ds-h4">Top bar (mobile)</h4>
+          <div class="topbar">
+            <button class="tb-icon">←</button>
+            <div class="tb-title">@marta</div>
+            <button class="tb-icon">⋯</button>
+          </div>
+          <h4 class="ds-h4" style="margin-top:24px">Bottom tab (mobile)</h4>
+          <div class="bottombar">
+            <button class="bb is-active"><span>⌂</span>Feed</button>
+            <button class="bb"><span>◇</span>Discover</button>
+            <button class="bb bb-fab"><span>＋</span></button>
+            <button class="bb"><span>★</span>Shelf</button>
+            <button class="bb"><span>◉</span>Me</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODAL / SHEET -->
+  <section class="ds-section">
+    <h3 class="ds-section-title"><span class="num">13</span> Modal &amp; sheet</h3>
+    <div class="ds-block modal-row">
+      <div class="modal-stage">
+        <div class="modal">
+          <div class="modal-head">
+            <h3>Log a play</h3>
+            <button class="x">×</button>
+          </div>
+          <div class="modal-body">
+            <label class="field"><span class="field-label">Game</span>
+              <div class="picked"><div class="feed-cover"><svg viewBox="0 0 40 40" width="22" height="22"><rect x="6" y="6" width="28" height="28" rx="4" fill="#dccfb6" opacity=".7"/></svg></div><div><div class="feed-title">Ark Nova</div><div class="feed-sub">2021 · 1–4 players</div></div><button class="btn btn-ghost btn-sm">Change</button></div>
+            </label>
+            <div class="field-row">
+              <label class="field"><span class="field-label">Date &amp; time</span><input class="input" value="May 5, 2026 · 8:30pm" /></label>
+              <label class="field"><span class="field-label">Length</span><input class="input" value="142 min" /></label>
+            </div>
+            <label class="field"><span class="field-label">Players</span>
+              <div class="chips">
+                <span class="tag-chip"><span class="tag-dot"></span>marta <button>×</button></span>
+                <span class="tag-chip"><span class="tag-dot" style="background:#3f8a5a"></span>liam <button>×</button></span>
+                <span class="tag-chip"><span class="tag-dot" style="background:#c2553d"></span>ana <button>×</button></span>
+                <button class="tag-add">+ tag</button>
+              </div>
+            </label>
+            <label class="field"><span class="field-label">Result</span><input class="input" value="Marta won by 4 points" /></label>
+            <label class="field"><span class="field-label">Notes</span><textarea class="input" rows="2">Pelican lock in round 7. Brutal.</textarea></label>
+          </div>
+          <div class="modal-foot">
+            <button class="btn btn-ghost">Cancel</button>
+            <button class="btn btn-primary">Save play</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-stage">
+        <div class="sheet">
+          <div class="sheet-grip"></div>
+          <h3 class="sheet-title">Add Wingspan</h3>
+          <p class="sheet-sub">Where do you want it?</p>
+          <button class="sheet-row"><span class="sb-i sb-i-emerald">●</span>Owned<span class="sheet-meta">on your shelf</span></button>
+          <button class="sheet-row"><span class="sb-i sb-i-rust">●</span>Wishlist<span class="sheet-meta">save for later</span></button>
+          <button class="sheet-row"><span class="sb-i sb-i-amber">●</span>Log a play<span class="sheet-meta">just played it</span></button>
+          <button class="btn btn-ghost btn-block">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EMPTY STATES -->
+  <section class="ds-section">
+    <h3 class="ds-section-title"><span class="num">14</span> Empty states</h3>
+    <div class="ds-block empty-grid">
+      <div class="empty">
+        <svg viewBox="0 0 160 120" width="160" height="120">
+          <rect x="22" y="64" width="116" height="44" rx="6" fill="#241d18" stroke="#5b4a3c"/>
+          <path d="M30 30 c10 0 12 14 22 14 s12-14 22-14 12 14 22 14 12-14 22-14" stroke="#5b4a3c" stroke-width="2" fill="none"/>
+          <circle cx="58" cy="86" r="6" fill="#f0a830"/>
+          <rect x="78" y="80" width="14" height="14" rx="2" fill="#3f8a5a"/>
+          <polygon points="118,82 124,78 130,82 130,90 124,94 118,90" fill="#c2553d"/>
+        </svg>
+        <h4>Your shelf is empty</h4>
+        <p>Add the first game to your collection. We'll start building your stats from there.</p>
+        <button class="btn btn-primary btn-sm">Find a game</button>
+      </div>
+      <div class="empty">
+        <svg viewBox="0 0 160 120" width="160" height="120">
+          <rect x="40" y="22" width="80" height="80" rx="8" fill="none" stroke="#5b4a3c" stroke-width="2" stroke-dasharray="3 5"/>
+          <path d="M80 50 c4 0 7 3 7 7 0 2.5-1.3 4.6-3.3 5.8 5.5 1.8 9.3 7 9.3 13V80 H67 v-4.2 c0-6 3.8-11.2 9.3-13 -2-1.2-3.3-3.3-3.3-5.8 0-4 3-7 7-7 z" fill="#5b4a3c"/>
+        </svg>
+        <h4>No plays yet</h4>
+        <p>Played a game tonight? Log it to remember the score, the players, and the story.</p>
+        <button class="btn btn-primary btn-sm">Log a play</button>
+      </div>
+      <div class="empty">
+        <svg viewBox="0 0 160 120" width="160" height="120">
+          <circle cx="60" cy="60" r="22" fill="none" stroke="#5b4a3c" stroke-width="2"/>
+          <path d="M76 76 l16 16" stroke="#5b4a3c" stroke-width="2" stroke-linecap="round"/>
+          <path d="M118 38 l8 -6 M120 50 l10 0 M118 62 l8 6" stroke="#5b4a3c" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <h4>Nothing matches "boop"</h4>
+        <p>We searched our local catalog and BoardGameGeek. Try another spelling, or check back later.</p>
+        <button class="btn btn-ghost btn-sm">Clear search</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGO -->
+  <section class="ds-section">
+    <h3 class="ds-section-title"><span class="num">15</span> Logo &amp; wordmark</h3>
+    <div class="ds-block logo-grid">
+      <div class="logo-card">
+        <div class="logo-art big">
+          <svg width="96" height="96" viewBox="0 0 44 44">
+            <defs><linearGradient id="hexbig" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0a830"/><stop offset="1" stop-color="#c97a1a"/></linearGradient></defs>
+            <path d="M22 2 L40 12 L40 32 L22 42 L4 32 L4 12 Z" fill="url(#hexbig)" stroke="#3a2916" stroke-width="1.2"/>
+            <path d="M22 13 c2.6 0 4.6 2 4.6 4.5 0 1.6-.8 2.9-2 3.7 3.6 1.2 6 4.4 6 8.3 V32 H13.4 v-2.5 c0-3.9 2.4-7.1 6-8.3 -1.2-.8-2-2.1-2-3.7 0-2.5 2-4.5 4.6-4.5 z" fill="#1a1410"/>
+          </svg>
+          <div class="wordmark">BG <em>Hub</em></div>
+        </div>
+        <div class="logo-meta">Primary lockup — wordmark + meeple-in-hex mark</div>
+      </div>
+
+      <div class="logo-card">
+        <div class="logo-art">
+          <div class="wordmark big">BG <em>Hub</em></div>
+        </div>
+        <div class="logo-meta">Wordmark only — light surfaces</div>
+      </div>
+
+      <div class="logo-card light">
+        <div class="logo-art">
+          <svg width="64" height="64" viewBox="0 0 44 44"><path d="M22 2 L40 12 L40 32 L22 42 L4 32 L4 12 Z" fill="#1a1410"/><path d="M22 13 c2.6 0 4.6 2 4.6 4.5 0 1.6-.8 2.9-2 3.7 3.6 1.2 6 4.4 6 8.3 V32 H13.4 v-2.5 c0-3.9 2.4-7.1 6-8.3 -1.2-.8-2-2.1-2-3.7 0-2.5 2-4.5 4.6-4.5 z" fill="#f0a830"/></svg>
+          <div class="wordmark dark">BG <em>Hub</em></div>
+        </div>
+        <div class="logo-meta">Inverse — for receipts &amp; print</div>
+      </div>
+
+      <div class="logo-card">
+        <div class="logo-art">
+          <div class="favico"><svg width="40" height="40" viewBox="0 0 44 44"><path d="M22 2 L40 12 L40 32 L22 42 L4 32 L4 12 Z" fill="#f0a830"/><path d="M22 13 c2.6 0 4.6 2 4.6 4.5 0 1.6-.8 2.9-2 3.7 3.6 1.2 6 4.4 6 8.3 V32 H13.4 v-2.5 c0-3.9 2.4-7.1 6-8.3 -1.2-.8-2-2.1-2-3.7 0-2.5 2-4.5 4.6-4.5 z" fill="#1a1410"/></svg></div>
+          <div class="favico"><svg width="32" height="32" viewBox="0 0 44 44"><path d="M22 2 L40 12 L40 32 L22 42 L4 32 L4 12 Z" fill="#f0a830"/><path d="M22 13 c2.6 0 4.6 2 4.6 4.5 0 1.6-.8 2.9-2 3.7 3.6 1.2 6 4.4 6 8.3 V32 H13.4 v-2.5 c0-3.9 2.4-7.1 6-8.3 -1.2-.8-2-2.1-2-3.7 0-2.5 2-4.5 4.6-4.5 z" fill="#1a1410"/></svg></div>
+          <div class="favico sm"><svg width="20" height="20" viewBox="0 0 44 44"><path d="M22 2 L40 12 L40 32 L22 42 L4 32 L4 12 Z" fill="#f0a830"/><circle cx="22" cy="22" r="7" fill="#1a1410"/></svg></div>
+        </div>
+        <div class="logo-meta">App icon at 40 / 32 / 20 px</div>
+      </div>
+    </div>
+
+    <div class="ds-block construction">
+      <h4 class="ds-h4">Construction notes</h4>
+      <ul class="con-list">
+        <li><strong>Mark:</strong> a flat hex (the universal boardgame tile) holding a single meeple silhouette — collection + community in one shape.</li>
+        <li><strong>Wordmark:</strong> Bricolage Grotesque 700, "Hub" italic for warmth, tracked tight (-2%).</li>
+        <li><strong>Clear space:</strong> the height of the meeple's head all around the lockup.</li>
+        <li><strong>Min size:</strong> mark 20px / lockup 100px wide.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- IN USE -->
+  <section class="ds-section">
+    <h3 class="ds-section-title"><span class="num">16</span> The system in use — Home Feed</h3>
+    <p class="ds-p">Composed entirely of the components above.</p>
+
+    <div class="ds-block">
+      <div class="app-frame">
+        <aside class="sidebar in-frame">
+          <div class="sb-brand">
+            <svg width="28" height="28" viewBox="0 0 44 44"><path d="M22 2 L40 12 L40 32 L22 42 L4 32 L4 12 Z" fill="#f0a830"/><path d="M22 13 c2.6 0 4.6 2 4.6 4.5 0 1.6-.8 2.9-2 3.7 3.6 1.2 6 4.4 6 8.3 V32 H13.4 v-2.5 c0-3.9 2.4-7.1 6-8.3 -1.2-.8-2-2.1-2-3.7 0-2.5 2-4.5 4.6-4.5 z" fill="#1a1410"/></svg>
+            <span>BG Hub</span>
+          </div>
+          <div class="sb-search">
+            <svg width="14" height="14" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <span>Search games…</span><kbd>⌘K</kbd>
+          </div>
+          <nav class="sb-nav">
+            <div class="sb-section">Home</div>
+            <a class="sb-item is-active"><span class="sb-i">⌂</span>Feed</a>
+            <a class="sb-item"><span class="sb-i">◇</span>Discover</a>
+            <div class="sb-section">My collection</div>
+            <a class="sb-item"><span class="sb-i sb-i-emerald">●</span>Owned <em>247</em></a>
+            <a class="sb-item"><span class="sb-i sb-i-rust">●</span>Wishlist <em>38</em></a>
+            <a class="sb-item"><span class="sb-i sb-i-amber">●</span>Plays <em>1,204</em></a>
+            <div class="sb-section">Social</div>
+            <a class="sb-item"><span class="sb-i">→</span>Following <em>52</em></a>
+            <a class="sb-item"><span class="sb-i">←</span>Followers <em>118</em><span class="sb-pill">3</span></a>
+          </nav>
+          <div class="sb-footer">
+            <div class="avatar avatar-sm"><span style="background:linear-gradient(135deg,#f0a830,#c2553d)">M</span></div>
+            <div><div class="sb-foot-name">marta</div><div class="sb-foot-sub">Public profile</div></div>
+          </div>
+        </aside>
+
+        <main class="frame-main">
+          <header class="frame-head">
+            <div>
+              <div class="ds-eyebrow" style="margin:0">Home</div>
+              <h2 class="ds-h" style="margin:4px 0 0;font-size:36px">Around the table</h2>
+            </div>
+            <div class="frame-head-actions">
+              <button class="btn btn-ghost btn-sm">Newest first ▾</button>
+              <button class="btn btn-primary btn-sm">＋ Log a play</button>
+            </div>
+          </header>
+
+          <div class="frame-grid">
+            <div class="frame-feed">
+              <article class="card feed-card">
+                <div class="feed-head">
+                  <div class="avatar"><span style="background:linear-gradient(135deg,#3f8a5a,#1f4f37)">L</span></div>
+                  <div>
+                    <div class="feed-actor"><strong>liam</strong> logged a play</div>
+                    <div class="feed-time">2h ago · with marta, ana, jules</div>
+                  </div>
+                  <span class="feed-kind kind-play">Played</span>
+                </div>
+                <div class="feed-body">
+                  <div class="feed-game">
+                    <div class="feed-cover"><svg viewBox="0 0 40 40" width="32" height="32"><rect x="6" y="6" width="28" height="28" rx="4" fill="#dccfb6" opacity=".7"/></svg></div>
+                    <div>
+                      <div class="feed-title">Ark Nova</div>
+                      <div class="feed-sub">Friday Night · 4 players · 142 min</div>
+                    </div>
+                    <div class="feed-stamp">9.1</div>
+                  </div>
+                  <p class="feed-note">"Marta closed it out with a pelican lock in round 7. Brutal."</p>
+                </div>
+              </article>
+
+              <article class="card feed-card">
+                <div class="feed-head">
+                  <div class="avatar"><span style="background:linear-gradient(135deg,#a47828,#6b4a1c)">J</span></div>
+                  <div>
+                    <div class="feed-actor"><strong>jules</strong> added to <span class="under emerald">Owned</span></div>
+                    <div class="feed-time">yesterday</div>
+                  </div>
+                  <span class="feed-kind kind-owned">Owned</span>
+                </div>
+                <div class="feed-body">
+                  <div class="feed-game">
+                    <div class="feed-cover"><svg viewBox="0 0 40 40" width="32" height="32"><polygon points="20,4 36,12 36,28 20,36 4,28 4,12" fill="#dccfb6" opacity=".7"/></svg></div>
+                    <div>
+                      <div class="feed-title">Brass: Birmingham</div>
+                      <div class="feed-sub">2018 · 2–4 players · ★ 8.6</div>
+                    </div>
+                    <div class="feed-stamp">8.6</div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="card feed-card">
+                <div class="feed-head">
+                  <div class="avatar"><span style="background:linear-gradient(135deg,#c2553d,#7a2f1f)">A</span></div>
+                  <div>
+                    <div class="feed-actor"><strong>ana</strong> added to <span class="under rust">Wishlist</span></div>
+                    <div class="feed-time">3 days ago</div>
+                  </div>
+                  <span class="feed-kind kind-wish">Wishlist</span>
+                </div>
+                <div class="feed-body">
+                  <div class="feed-game">
+                    <div class="feed-cover"><svg viewBox="0 0 40 40" width="32" height="32"><circle cx="20" cy="20" r="14" fill="#dccfb6" opacity=".7"/></svg></div>
+                    <div>
+                      <div class="feed-title">SETI: Search for Extraterrestrial Intelligence</div>
+                      <div class="feed-sub">2024 · 1–4 players · ★ 8.1</div>
+                    </div>
+                    <div class="feed-stamp">8.1</div>
+                  </div>
+                </div>
+              </article>
+
+              <button class="btn btn-outline btn-block">Load more</button>
+            </div>
+
+            <aside class="frame-side">
+              <div class="card side-card">
+                <h4 class="side-h">Your week</h4>
+                <div class="side-stats">
+                  <div><strong>3</strong><span>plays</span></div>
+                  <div><strong>2</strong><span>new owned</span></div>
+                  <div><strong>1</strong><span>wishlisted</span></div>
+                </div>
+              </div>
+              <div class="card side-card">
+                <h4 class="side-h">Suggested players</h4>
+                <div class="suggest">
+                  <div class="avatar avatar-sm"><span style="background:linear-gradient(135deg,#f0a830,#c2553d)">M</span></div>
+                  <div><div class="sg-name">marta</div><div class="sg-sub">12 games in common</div></div>
+                  <button class="btn btn-primary btn-sm">Follow</button>
+                </div>
+                <div class="suggest">
+                  <div class="avatar avatar-sm"><span style="background:linear-gradient(135deg,#3f8a5a,#1f4f37)">L</span></div>
+                  <div><div class="sg-name">liam</div><div class="sg-sub">8 games in common</div></div>
+                  <button class="btn btn-primary btn-sm">Follow</button>
+                </div>
+                <div class="suggest">
+                  <div class="avatar avatar-sm"><span style="background:linear-gradient(135deg,#a47828,#6b4a1c)">J</span></div>
+                  <div><div class="sg-name">jules</div><div class="sg-sub">6 games in common</div></div>
+                  <button class="btn btn-primary btn-sm">Follow</button>
+                </div>
+              </div>
+              <div class="card side-card">
+                <h4 class="side-h">Recently earned</h4>
+                <div class="earn-row">
+                  <svg viewBox="0 0 100 100" width="48" height="48"><polygon points="50,4 61,20 80,18 78,38 95,50 78,62 80,82 61,80 50,96 39,80 20,82 22,62 5,50 22,38 20,18 39,20" fill="#3f8a5a" stroke="#0f2a1d" stroke-width="2"/><path d="M50 30 c4 0 7 3 7 7 0 2.5-1.3 4.6-3.3 5.8 5.5 1.8 9.3 7 9.3 13V60 H37 v-4.2 c0-6 3.8-11.2 9.3-13 -2-1.2-3.3-3.3-3.3-5.8 0-4 3-7 7-7 z" fill="#f6efe1"/></svg>
+                  <div><div class="sg-name">First Play</div><div class="sg-sub">Earned 2 days ago</div></div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </main>
+      </div>
+    </div>
+  </section>
+
+  <footer class="ds-foot">
+    <div>BG Hub · Design System v0.1 · A cozy place at the table</div>
+  </footer>
+</main>
+
+</body>
+</html>

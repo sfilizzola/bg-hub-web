@@ -1,5 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { search } from "../api/search";
+import { getByBggId } from "../api/games";
 import {
   addOwned,
   addWishlist,
@@ -10,8 +12,7 @@ import {
   followUserById,
   unfollowUserById,
 } from "../api/me";
-import type { GameDto } from "../api/games";
-import type { SearchUserDto } from "../api/search";
+import type { GameSearchItemDto, SearchUserDto } from "../api/search";
 import { GameCard } from "../components/GameCard";
 import { UserCard } from "../components/UserCard";
 import { useAuth } from "../contexts/useAuth";
@@ -21,22 +22,32 @@ import {
   TextField,
   Button,
   Alert,
-  Grid,
-  Container,
-  Stack,
+  List,
+  ListItem,
+  Snackbar,
 } from "@mui/material";
 
+const SEARCH_DEBOUNCE_MS = 400;
+const DEFAULT_GAMES_LIMIT = 20;
+const RESULTS_MAX_HEIGHT = "60vh";
+
 export function SearchPage() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [q, setQ] = useState("");
-  const [games, setGames] = useState<GameDto[]>([]);
+  const [games, setGames] = useState<GameSearchItemDto[]>([]);
   const [users, setUsers] = useState<SearchUserDto[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState("");
+  const [hasMoreGames, setHasMoreGames] = useState(false);
   const [acting, setActing] = useState<Record<string, string>>({});
   const [actingFollow, setActingFollow] = useState<Record<string, boolean>>({});
   const [ownedIds, setOwnedIds] = useState<string[]>([]);
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
+  const [importingBggId, setImportingBggId] = useState<number | null>(null);
+  const [snackMessage, setSnackMessage] = useState<string | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -62,21 +73,77 @@ export function SearchPage() {
     };
   }, [user]);
 
-  async function handleSearch(e: { preventDefault(): void }) {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    try {
-      const res = await search(q);
-      setGames(res.games);
-      setUsers(res.users);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Search failed");
+  const runSearch = useCallback(
+    async (query: string, offset = 0, append = false) => {
+      const trimmed = query.trim();
+      if (!trimmed) {
+        if (!append) {
+          setGames([]);
+          setUsers([]);
+          setHasMoreGames(false);
+        }
+        return;
+      }
+      if (append) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+      }
+      setError("");
+      try {
+        const res = await search(trimmed, {
+          gamesLimit: DEFAULT_GAMES_LIMIT,
+          gamesOffset: offset,
+        });
+        if (append) {
+          setGames((prev) => [...prev, ...res.games]);
+        } else {
+          setGames(res.games);
+          setUsers(res.users);
+        }
+        setHasMoreGames(res.hasMoreGames ?? false);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Search failed");
+        if (!append) {
+          setGames([]);
+          setUsers([]);
+          setHasMoreGames(false);
+        }
+      } finally {
+        setLoading(false);
+        setLoadingMore(false);
+      }
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    const trimmed = q.trim();
+    if (!trimmed) {
       setGames([]);
       setUsers([]);
-    } finally {
-      setLoading(false);
+      setHasMoreGames(false);
+      return;
     }
+    debounceRef.current = setTimeout(() => {
+      debounceRef.current = null;
+      runSearch(q, 0, false);
+    }, SEARCH_DEBOUNCE_MS);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [q, runSearch]);
+
+  async function handleSearch(e: { preventDefault(): void }) {
+    e.preventDefault();
+    if (!q.trim()) return;
+    runSearch(q, 0, false);
+  }
+
+  function handleLoadMoreGames() {
+    if (loadingMore || !hasMoreGames) return;
+    runSearch(q, games.length, true);
   }
 
   async function addTo(gameId: string, key: "owned" | "wishlist") {
@@ -124,6 +191,20 @@ export function SearchPage() {
     }
   }
 
+  async function handleBggGameClick(game: GameSearchItemDto) {
+    if (game.source !== "BGG" || game.bggId == null) return;
+    setImportingBggId(game.bggId);
+    setSnackMessage(null);
+    try {
+      const saved = await getByBggId(game.bggId);
+      navigate(`/games/${saved.id}`);
+    } catch {
+      setSnackMessage("Could not import game from BoardGameGeek. Try again later.");
+    } finally {
+      setImportingBggId(null);
+    }
+  }
+
   async function handleFollowToggle(user: SearchUserDto) {
     const id = user.id;
     if (actingFollow[id]) return;
@@ -151,128 +232,190 @@ export function SearchPage() {
     }
   }
 
-  const hasSearched = !!q && !loading;
+  const hasSearched = q.trim() !== "" && !loading;
   const isEmpty = hasSearched && games.length === 0 && users.length === 0;
   const isEmptyQuery = q.trim() === "";
 
-  const searchForm = (
-    <Box
-      component="form"
-      onSubmit={handleSearch}
-      sx={{ display: "flex", gap: 1, flexWrap: "wrap", width: "100%", maxWidth: 420 }}
-    >
-      <TextField
-        type="search"
-        placeholder="Games and users…"
-        value={q}
-        onChange={(e) => setQ(e.target.value)}
-        size="small"
-        sx={{ minWidth: 220, flex: 1 }}
-      />
-      <Button type="submit" variant="contained" disabled={loading}>
-        {loading ? "Searching…" : "Search"}
-      </Button>
-    </Box>
-  );
-
-  if (isEmptyQuery) {
-    return (
-      <Container maxWidth="sm">
-        <Box
-          sx={{
-            minHeight: { xs: "50vh", md: "60vh" },
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            py: 4,
-          }}
-        >
-          <Stack alignItems="center" spacing={3} sx={{ width: "100%" }}>
-            <Typography
-              variant="h4"
-              component="h1"
-              textAlign="center"
-              sx={{
-                fontWeight: 600,
-                typography: { xs: "h5", md: "h4" },
-              }}
-            >
-              {user
-                ? `Welcome to BG Hub, ${user.username}`
-                : "Welcome to BG Hub"}
-            </Typography>
-            {searchForm}
-          </Stack>
-        </Box>
-      </Container>
-    );
-  }
-
   return (
-    <Box>
+    <Box sx={{ display: "flex", flexDirection: "column", minHeight: 0 }}>
       <Typography variant="h2" component="h1" sx={{ mb: 2 }}>
         Search
       </Typography>
-      <Box sx={{ mb: 3 }}>{searchForm}</Box>
+      {/* Stable search form: same position in tree so focus is preserved when q changes */}
+      <Box
+        component="form"
+        onSubmit={handleSearch}
+        sx={{ display: "flex", gap: 1, flexWrap: "wrap", width: "100%", maxWidth: 420, mb: 2 }}
+      >
+        <TextField
+          type="search"
+          placeholder="Games and users…"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          size="small"
+          sx={{ minWidth: 220, flex: 1 }}
+        />
+        <Button type="submit" variant="contained" disabled={loading}>
+          {loading ? "Searching…" : "Search"}
+        </Button>
+      </Box>
+
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
         </Alert>
       )}
 
-      {games.length > 0 && (
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
-            Games
+      {/* Content area: welcome when empty query, results when searched */}
+      {isEmptyQuery ? (
+        <Box
+          sx={{
+            flex: 1,
+            minHeight: { xs: "40vh", md: "50vh" },
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            py: 4,
+          }}
+        >
+          <Typography
+            variant="h5"
+            component="p"
+            textAlign="center"
+            color="text.secondary"
+            sx={{ typography: { xs: "h6", md: "h5" } }}
+          >
+            {user
+              ? `Welcome to BG Hub, ${user.username}`
+              : "Welcome to BG Hub"}
           </Typography>
-          <Grid container spacing={2}>
-            {games.map((g) => (
-              <Grid key={g.id} size={{ xs: 12, sm: 6, md: 4 }} sx={{ minWidth: 0 }}>
-                <Box sx={{ width: "100%", minWidth: 0 }}>
-                  <GameCard
-                  game={g}
-                  variant="search"
-                  inCollection={ownedIds.includes(g.id)}
-                  inWishlist={wishlistIds.includes(g.id)}
-                  acting={acting[g.id]}
-                  onAddOwned={user ? () => addTo(g.id, "owned") : undefined}
-                  onAddWishlist={user ? () => addTo(g.id, "wishlist") : undefined}
-                  onRemoveOwned={user && ownedIds.includes(g.id) ? () => removeFrom(g.id, "owned") : undefined}
-                  onRemoveWishlist={user && wishlistIds.includes(g.id) ? () => removeFrom(g.id, "wishlist") : undefined}
-                  />
+        </Box>
+      ) : (
+        <Box sx={{ display: "flex", flexDirection: "column", minHeight: 0, flex: 1 }}>
+          {games.length > 0 && (
+            <Box sx={{ mb: 2, flexShrink: 0, display: "flex", flexDirection: "column", minHeight: 0 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>
+                Games
+              </Typography>
+              <Box
+                sx={{
+                  maxHeight: RESULTS_MAX_HEIGHT,
+                  minHeight: 0,
+                  overflowY: "auto",
+                  border: 1,
+                  borderColor: "divider",
+                  borderRadius: 1,
+                  bgcolor: "background.paper",
+                }}
+              >
+                <List disablePadding>
+                  {games.map((g) => {
+                    const stableKey = g.id ?? `bgg-${g.bggId ?? 0}`;
+                    const isLocal = g.source === "LOCAL" && g.id;
+                    return (
+                      <ListItem
+                        key={stableKey}
+                        disablePadding
+                        sx={{
+                          borderBottom: 1,
+                          borderColor: "divider",
+                          "&:last-of-type": { borderBottom: 0 },
+                          py: 1,
+                        }}
+                      >
+                        <Box sx={{ width: "100%", minWidth: 0 }}>
+                          <GameCard
+                            game={g}
+                            variant="search"
+                            compact
+                            inCollection={!!isLocal && ownedIds.includes(g.id!)}
+                            inWishlist={!!isLocal && wishlistIds.includes(g.id!)}
+                            acting={isLocal ? acting[g.id!] : undefined}
+                            onAddOwned={user && isLocal ? () => addTo(g.id!, "owned") : undefined}
+                            onAddWishlist={user && isLocal ? () => addTo(g.id!, "wishlist") : undefined}
+                            onRemoveOwned={user && isLocal && ownedIds.includes(g.id!) ? () => removeFrom(g.id!, "owned") : undefined}
+                            onRemoveWishlist={user && isLocal && wishlistIds.includes(g.id!) ? () => removeFrom(g.id!, "wishlist") : undefined}
+                            onBggGameClick={g.source === "BGG" ? handleBggGameClick : undefined}
+                            importingBggId={importingBggId}
+                          />
+                        </Box>
+                      </ListItem>
+                    );
+                  })}
+                </List>
+              </Box>
+              {hasMoreGames && (
+                <Box sx={{ mt: 1.5 }}>
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    size="medium"
+                    disabled={loadingMore}
+                    onClick={handleLoadMoreGames}
+                  >
+                    {loadingMore ? "Loading…" : "Load more"}
+                  </Button>
                 </Box>
-              </Grid>
-            ))}
-          </Grid>
+              )}
+            </Box>
+          )}
+
+          {users.length > 0 && (
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>
+                Users
+              </Typography>
+              <Box
+                sx={{
+                  maxHeight: "40vh",
+                  overflowY: "auto",
+                  border: 1,
+                  borderColor: "divider",
+                  borderRadius: 1,
+                  bgcolor: "background.paper",
+                }}
+              >
+                <List disablePadding>
+                  {users.map((u) => (
+                    <ListItem
+                      key={u.id}
+                      disablePadding
+                      sx={{
+                        borderBottom: 1,
+                        borderColor: "divider",
+                        "&:last-of-type": { borderBottom: 0 },
+                      }}
+                    >
+                      <Box sx={{ width: "100%", p: 0.5 }}>
+                        <UserCard
+                          user={u}
+                          showActions
+                          acting={!!actingFollow[u.id]}
+                          onFollowToggle={() => handleFollowToggle(u)}
+                        />
+                      </Box>
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
+            </Box>
+          )}
+
+          {isEmpty && !error && (
+            <Typography color="text.secondary">
+              No games or users found. Try another search.
+            </Typography>
+          )}
         </Box>
       )}
 
-      {users.length > 0 && (
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
-            Users
-          </Typography>
-          <Grid container spacing={2}>
-            {users.map((u) => (
-              <Grid key={u.id} size={{ xs: 12, sm: 6, md: 4 }}>
-                <UserCard
-                  user={u}
-                  showActions
-                  acting={!!actingFollow[u.id]}
-                  onFollowToggle={() => handleFollowToggle(u)}
-                />
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-      )}
-
-      {isEmpty && !error && (
-        <Typography color="text.secondary">
-          No games or users found. Try another search.
-        </Typography>
-      )}
+      <Snackbar
+        open={!!snackMessage}
+        autoHideDuration={6000}
+        onClose={() => setSnackMessage(null)}
+        message={snackMessage}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      />
     </Box>
   );
 }

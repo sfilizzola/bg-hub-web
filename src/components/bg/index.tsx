@@ -10,11 +10,11 @@ import {
   Chip,
   Avatar,
   Stack,
-  SxProps,
-  Theme,
   Skeleton,
   CircularProgress,
 } from "@mui/material";
+import type { Theme } from "@mui/material/styles";
+import type { SxProps } from "@mui/system/styleFunctionSx";
 import { tokens } from "@/theme";
 
 // ============================================================================

@@ -17,7 +17,7 @@ export class BggGameProvider implements GameProvider {
   }
 
   async search(query: string): Promise<ExternalGame[]> {
-    const items = await this.bggService.searchGames(query);
+    const { items } = await this.bggService.searchGames(query);
     return items.map((item) => ({
       externalId: String(item.bggId),
       apiRef: 'bgg',

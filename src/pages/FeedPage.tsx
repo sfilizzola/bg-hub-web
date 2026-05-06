@@ -34,6 +34,7 @@ export function FeedPage() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const load = useCallback(async (cursor?: string) => {
     const isFirst = cursor == null;
@@ -77,8 +78,6 @@ export function FeedPage() {
       </Box>
     );
   }
-
-  const navigate = useNavigate();
 
   return (
     <Box>
